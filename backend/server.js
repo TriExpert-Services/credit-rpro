@@ -15,6 +15,9 @@ const disputeRoutes = require('./routes/disputes');
 const documentRoutes = require('./routes/documents');
 const dashboardRoutes = require('./routes/dashboard');
 const paymentRoutes = require('./routes/payments');
+const notificationRoutes = require('./routes/notifications');
+const trackingRoutes = require('./routes/tracking');
+const aiRoutes = require('./routes/ai');
 
 const app = express();
 
@@ -52,6 +55,9 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/tracking', trackingRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

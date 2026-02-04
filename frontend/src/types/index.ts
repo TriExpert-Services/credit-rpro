@@ -351,3 +351,224 @@ export interface FormState<T> {
   isSubmitting: boolean;
   isValid: boolean;
 }
+
+// ============================================
+// Notification Types
+// ============================================
+
+export type NotificationType =
+  | 'dispute_created'
+  | 'dispute_sent'
+  | 'dispute_response'
+  | 'dispute_resolved'
+  | 'dispute_rejected'
+  | 'score_updated'
+  | 'score_improved'
+  | 'score_declined'
+  | 'item_deleted'
+  | 'item_verified'
+  | 'item_updated'
+  | 'welcome'
+  | 'password_changed'
+  | 'subscription_expiring'
+  | 'subscription_expired'
+  | 'payment_received'
+  | 'payment_failed'
+  | 'document_uploaded'
+  | 'action_required'
+  | 'reminder'
+  | 'milestone';
+
+export type NotificationPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  priority: NotificationPriority;
+  data?: Record<string, unknown>;
+  readAt?: string;
+  emailSent: boolean;
+  emailSentAt?: string;
+  createdAt: string;
+}
+
+export interface NotificationsResponse {
+  notifications: Notification[];
+  total: number;
+  unreadCount: number;
+}
+
+// ============================================
+// Timeline & Tracking Types
+// ============================================
+
+export type TimelineEventType =
+  | 'account_created'
+  | 'stage_changed'
+  | 'milestone_reached'
+  | 'document_uploaded'
+  | 'document_verified'
+  | 'document_rejected'
+  | 'item_identified'
+  | 'item_status_changed'
+  | 'item_deleted'
+  | 'dispute_created'
+  | 'dispute_letter_generated'
+  | 'dispute_sent'
+  | 'dispute_response_received'
+  | 'dispute_resolved'
+  | 'dispute_rejected'
+  | 'score_recorded'
+  | 'score_improved'
+  | 'score_declined'
+  | 'payment_made'
+  | 'subscription_started'
+  | 'subscription_renewed'
+  | 'note_added'
+  | 'staff_action';
+
+export interface TimelineEvent {
+  id: string;
+  clientId: string;
+  eventType: TimelineEventType;
+  title: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+  relatedEntityType?: string;
+  relatedEntityId?: string;
+  performedBy?: string;
+  performerFirstName?: string;
+  performerLastName?: string;
+  createdAt: string;
+}
+
+export interface ProcessStage {
+  id: string;
+  name: string;
+  nameEn: string;
+  description: string;
+  order: number;
+}
+
+export interface Milestone {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+export interface ProcessProgress {
+  percentage: number;
+  points: number;
+  maxPoints: number;
+}
+
+export interface ProcessStatistics {
+  documents: Record<string, number>;
+  items: Record<CreditItemStatus, number>;
+  disputes: Record<DisputeStatus, number>;
+  scores: Record<CreditBureau, { score: number; date: string }>;
+  totalItemsIdentified: number;
+  totalItemsDeleted: number;
+  totalDisputesSent: number;
+  activeDisputes: number;
+}
+
+export interface NextStep {
+  priority: 'low' | 'medium' | 'high';
+  action: string;
+  description: string;
+}
+
+export interface ProcessStatus {
+  client: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    subscriptionStatus: SubscriptionStatus;
+    memberSince: string;
+  };
+  currentStage: ProcessStage;
+  progress: ProcessProgress;
+  statistics: ProcessStatistics;
+  milestones: {
+    achieved: string[];
+    available: string[];
+  };
+  stages: ProcessStage[];
+}
+
+export interface ProcessSummary {
+  currentStage: ProcessStage;
+  progress: ProcessProgress;
+  statistics: ProcessStatistics;
+  recentActivity: TimelineEvent[];
+  daysInProgram: number;
+  nextSteps: NextStep[];
+  milestonesAchieved: number;
+  totalMilestones: number;
+}
+
+// ============================================
+// AI Service Types
+// ============================================
+
+export interface BureauAddress {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  disputeUrl: string;
+}
+
+export interface GenerateLetterRequest {
+  clientId: string;
+  creditItemId?: string;
+  disputeType: DisputeType;
+  bureau: CreditBureau;
+  additionalContext?: string;
+  language?: 'en' | 'es';
+  tone?: 'professional' | 'assertive' | 'formal';
+}
+
+export interface GeneratedLetter {
+  letter: string;
+  metadata: {
+    generatedAt: string;
+    provider: string;
+    disputeType: DisputeType;
+    bureau: CreditBureau;
+    bureauAddress: BureauAddress;
+  };
+  bureauAddress: BureauAddress;
+}
+
+export interface CreateDisputeWithLetterResponse {
+  dispute: Dispute & { aiGenerated: boolean };
+  bureauAddress: BureauAddress;
+}
+
+export interface CreditReportAnalysis {
+  items: Array<{
+    creditorName: string;
+    accountType: string;
+    reportedBalance?: number;
+    reason: string;
+    recommendedDisputeType: DisputeType;
+    priority: 'low' | 'medium' | 'high';
+  }>;
+  rawAnalysis: string;
+}
+
+export interface CreditRecommendations {
+  priorityActions: string[];
+  timeline: string;
+  highSuccessItems?: string[];
+  recommendations: string[];
+  warnings: string[];
+}

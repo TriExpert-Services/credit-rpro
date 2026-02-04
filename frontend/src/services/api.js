@@ -420,6 +420,179 @@ export const userService = {
 };
 
 // ============================================
+// Notification Services
+// ============================================
+
+/**
+ * Servicios de notificaciones
+ * @namespace notificationService
+ */
+export const notificationService = {
+  /**
+   * Obtiene las notificaciones del usuario
+   * @param {Object} [options] - Opciones de consulta
+   * @param {number} [options.limit=20] - Límite de resultados
+   * @param {number} [options.offset=0] - Offset para paginación
+   * @param {boolean} [options.unreadOnly=false] - Solo no leídas
+   * @returns {Promise<import('axios').AxiosResponse<{notifications: Array, total: number, unreadCount: number}>>}
+   */
+  getNotifications: (options = {}) =>
+    api.get('/notifications', { params: options }),
+
+  /**
+   * Obtiene el conteo de notificaciones no leídas
+   * @returns {Promise<import('axios').AxiosResponse<{unreadCount: number}>>}
+   */
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+
+  /**
+   * Marca notificaciones como leídas
+   * @param {string[]} notificationIds - IDs de notificaciones
+   * @returns {Promise<import('axios').AxiosResponse<{updated: number}>>}
+   */
+  markAsRead: (notificationIds) =>
+    api.put('/notifications/read', { notificationIds }),
+
+  /**
+   * Marca todas las notificaciones como leídas
+   * @returns {Promise<import('axios').AxiosResponse<{updated: number}>>}
+   */
+  markAllAsRead: () => api.put('/notifications/read-all'),
+};
+
+// ============================================
+// Tracking Services
+// ============================================
+
+/**
+ * Servicios de rastreo del proceso
+ * @namespace trackingService
+ */
+export const trackingService = {
+  /**
+   * Obtiene las etapas del proceso
+   * @returns {Promise<import('axios').AxiosResponse<{stages: Array}>>}
+   */
+  getStages: () => api.get('/tracking/stages'),
+
+  /**
+   * Obtiene los hitos disponibles
+   * @returns {Promise<import('axios').AxiosResponse<{milestones: Array}>>}
+   */
+  getMilestones: () => api.get('/tracking/milestones'),
+
+  /**
+   * Obtiene el estado del proceso de un cliente
+   * @param {string} clientId - UUID del cliente
+   * @returns {Promise<import('axios').AxiosResponse<{status: Object}>>}
+   */
+  getClientStatus: (clientId) => api.get(`/tracking/client/${clientId}/status`),
+
+  /**
+   * Obtiene el resumen del proceso de un cliente
+   * @param {string} clientId - UUID del cliente
+   * @returns {Promise<import('axios').AxiosResponse<{summary: Object}>>}
+   */
+  getClientSummary: (clientId) => api.get(`/tracking/client/${clientId}/summary`),
+
+  /**
+   * Obtiene el timeline de un cliente
+   * @param {string} clientId - UUID del cliente
+   * @param {Object} [options] - Opciones de consulta
+   * @returns {Promise<import('axios').AxiosResponse<{events: Array, total: number}>>}
+   */
+  getClientTimeline: (clientId, options = {}) =>
+    api.get(`/tracking/client/${clientId}/timeline`, { params: options }),
+
+  /**
+   * Verifica y otorga hitos pendientes
+   * @param {string} clientId - UUID del cliente
+   * @returns {Promise<import('axios').AxiosResponse<{newMilestones: Array}>>}
+   */
+  checkMilestones: (clientId) =>
+    api.post(`/tracking/client/${clientId}/check-milestones`),
+
+  /**
+   * Obtiene mi estado del proceso (shortcut para clientes)
+   * @returns {Promise<import('axios').AxiosResponse<{status: Object}>>}
+   */
+  getMyStatus: () => api.get('/tracking/my/status'),
+
+  /**
+   * Obtiene mi resumen del proceso (shortcut para clientes)
+   * @returns {Promise<import('axios').AxiosResponse<{summary: Object}>>}
+   */
+  getMySummary: () => api.get('/tracking/my/summary'),
+
+  /**
+   * Obtiene mi timeline (shortcut para clientes)
+   * @param {Object} [options] - Opciones de consulta
+   * @returns {Promise<import('axios').AxiosResponse<{events: Array, total: number}>>}
+   */
+  getMyTimeline: (options = {}) =>
+    api.get('/tracking/my/timeline', { params: options }),
+};
+
+// ============================================
+// AI Services
+// ============================================
+
+/**
+ * Servicios de inteligencia artificial
+ * @namespace aiService
+ */
+export const aiService = {
+  /**
+   * Genera una carta de disputa con AI
+   * @param {Object} data - Datos para generar la carta
+   * @param {string} data.clientId - UUID del cliente
+   * @param {string} [data.creditItemId] - UUID del item de crédito
+   * @param {string} data.disputeType - Tipo de disputa
+   * @param {string} data.bureau - Bureau de crédito
+   * @param {string} [data.additionalContext] - Contexto adicional
+   * @param {string} [data.language='en'] - Idioma (en/es)
+   * @param {string} [data.tone='professional'] - Tono de la carta
+   * @returns {Promise<import('axios').AxiosResponse<{letter: string, metadata: Object, bureauAddress: Object}>>}
+   */
+  generateDisputeLetter: (data) => api.post('/ai/generate-dispute-letter', data),
+
+  /**
+   * Crea una disputa con carta generada por AI
+   * @param {Object} data - Datos para crear la disputa
+   * @param {string} data.clientId - UUID del cliente
+   * @param {string} [data.creditItemId] - UUID del item de crédito
+   * @param {string} data.disputeType - Tipo de disputa
+   * @param {string} data.bureau - Bureau de crédito
+   * @param {string} [data.additionalContext] - Contexto adicional
+   * @param {string} [data.language='en'] - Idioma (en/es)
+   * @returns {Promise<import('axios').AxiosResponse<{dispute: Object, bureauAddress: Object}>>}
+   */
+  createDisputeWithLetter: (data) => api.post('/ai/create-dispute-with-letter', data),
+
+  /**
+   * Analiza un reporte de crédito con AI (solo staff/admin)
+   * @param {Object} data - Datos para el análisis
+   * @param {string} data.clientId - UUID del cliente
+   * @param {string} data.reportText - Texto del reporte de crédito
+   * @returns {Promise<import('axios').AxiosResponse<{analysis: Object}>>}
+   */
+  analyzeCreditReport: (data) => api.post('/ai/analyze-credit-report', data),
+
+  /**
+   * Obtiene recomendaciones personalizadas con AI
+   * @param {string} clientId - UUID del cliente
+   * @returns {Promise<import('axios').AxiosResponse<{recommendations: Object}>>}
+   */
+  getRecommendations: (clientId) => api.get(`/ai/recommendations/${clientId}`),
+
+  /**
+   * Obtiene las direcciones de los bureaus de crédito
+   * @returns {Promise<import('axios').AxiosResponse<{bureaus: Object}>>}
+   */
+  getBureauAddresses: () => api.get('/ai/bureau-addresses'),
+};
+
+// ============================================
 // Utility Functions
 // ============================================
 
