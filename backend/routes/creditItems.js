@@ -3,6 +3,27 @@ const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const { query } = require('../config/database');
 
+// Get all credit items for the current user
+router.get('/', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await query(
+            `SELECT ci.*, 
+                    COUNT(d.id) as dispute_count
+             FROM credit_items ci
+             LEFT JOIN disputes d ON ci.id = d.credit_item_id
+             WHERE ci.client_id = $1
+             GROUP BY ci.id
+             ORDER BY ci.created_at DESC`,
+            [userId]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching credit items:', error);
+        res.status(500).json({ error: 'Failed to fetch credit items' });
+    }
+});
+
 // Get all credit items for a client
 router.get('/client/:clientId', authenticateToken, async (req, res) => {
     try {

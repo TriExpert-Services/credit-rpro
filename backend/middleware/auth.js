@@ -83,10 +83,11 @@ const canAccessClient = async (req, res, next) => {
     return res.status(403).json({ error: 'Access denied to this client data' });
 };
 
-module.exports = {
-    authenticateToken,
-    requireRole,
-    requireStaff,
-    requireAdmin,
-    canAccessClient
-};
+// Backwards-compatible exports:
+// default export is the authenticateToken function, and helper functions are attached as properties
+module.exports = authenticateToken;
+module.exports.authenticateToken = authenticateToken;
+module.exports.requireRole = requireRole;
+module.exports.requireStaff = requireStaff;
+module.exports.requireAdmin = requireAdmin;
+module.exports.canAccessClient = canAccessClient;

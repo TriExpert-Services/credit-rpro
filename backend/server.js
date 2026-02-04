@@ -15,6 +15,15 @@ const disputeRoutes = require('./routes/disputes');
 const documentRoutes = require('./routes/documents');
 const dashboardRoutes = require('./routes/dashboard');
 const paymentRoutes = require('./routes/payments');
+const aiDisputeRoutes = require('./routes/aiDisputes');
+
+// New advanced feature routes
+const adminSettingsRoutes = require('./routes/adminSettings');
+const contractsRoutes = require('./routes/contracts');
+const invoicesRoutes = require('./routes/invoices');
+const notificationsRoutes = require('./routes/notifications');
+const processNotesRoutes = require('./routes/processNotes');
+const onboardingRoutes = require('./routes/onboarding');
 
 const app = express();
 
@@ -52,6 +61,15 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/ai-disputes', aiDisputeRoutes);
+
+// Advanced feature routes
+app.use('/api/admin', adminSettingsRoutes);
+app.use('/api/contracts', contractsRoutes);
+app.use('/api/invoices', invoicesRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/notes', processNotesRoutes);
+app.use('/api/onboarding', onboardingRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -1,5 +1,6 @@
 -- Credit Repair SaaS Database Schema
 -- Created: 2026
+-- Note: Database is created by POSTGRES_DB env var in docker-compose.yml
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -58,7 +59,7 @@ CREATE TABLE credit_items (
     account_number VARCHAR(100),
     bureau VARCHAR(20) NOT NULL CHECK (bureau IN ('experian', 'equifax', 'transunion', 'all')),
     balance DECIMAL(10, 2),
-    status VARCHAR(30) NOT NULL DEFAULT 'identified' CHECK (status IN ('identified', 'disputing', 'deleted', 'verified', 'updated')),
+    status VARCHAR(30) NOT NULL DEFAULT 'identified' CHECK (status IN ('identified', 'in_dispute', 'disputing', 'resolved', 'deleted', 'verified', 'updated')),
     date_opened DATE,
     date_reported DATE,
     description TEXT,
@@ -163,12 +164,185 @@ CREATE INDEX idx_payments_client_id ON payments(client_id);
 INSERT INTO users (email, password_hash, first_name, last_name, role, status)
 VALUES (
     'admin@creditrepair.com',
-    '$2a$10$YQs8qy3W9pKk8h5Y1YJ5KeCbRjVNhNZzJQzZ3mYDHdPXnZKqJfKxW',
+    '$2a$10$baLbyuy3GVGMPeZD56YMoOx7CiWboiwaUElpYd5ZHiTfsPXNbY4m.',
     'Admin',
     'User',
     'admin',
     'active'
 );
+
+-- ============================================================================
+-- PHASE 2: ADVANCED FEATURES - Developer Settings, Contracts, Invoices, etc.
+-- ============================================================================
+
+-- Admin settings for API keys and configuration (encrypted)
+CREATE TABLE admin_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
+    setting_value TEXT NOT NULL, -- Should be encrypted in application layer
+    setting_type VARCHAR(50) NOT NULL CHECK (setting_type IN ('api_key', 'config', 'webhook')),
+    is_encrypted BOOLEAN DEFAULT true,
+    description TEXT,
+    last_updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Contract templates and signed contracts
+CREATE TABLE contracts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    contract_type VARCHAR(50) NOT NULL CHECK (contract_type IN ('service_agreement', 'privacy_policy', 'payment_terms', 'dispute_authorization')),
+    template_version INTEGER NOT NULL DEFAULT 1,
+    template_content TEXT NOT NULL, -- HTML content
+    effective_date DATE NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Client signed contracts (with digital signature)
+CREATE TABLE client_contracts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    contract_id UUID REFERENCES contracts(id) ON DELETE RESTRICT,
+    contract_type VARCHAR(50) NOT NULL,
+    signed_date TIMESTAMP NOT NULL,
+    signature_data BYTEA, -- Digital signature
+    signature_method VARCHAR(50) CHECK (signature_method IN ('digital', 'electronic', 'uploaded_scanned')),
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    is_valid BOOLEAN DEFAULT true,
+    expires_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Client onboarding flow tracking
+CREATE TABLE client_onboarding (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    onboarding_type VARCHAR(50) NOT NULL CHECK (onboarding_type IN ('self_service', 'admin_guided')),
+    step_current INTEGER DEFAULT 1,
+    step_max INTEGER DEFAULT 5,
+    status VARCHAR(30) NOT NULL DEFAULT 'in_progress' CHECK (status IN ('in_progress', 'completed', 'abandoned', 'paused')),
+    profile_completed BOOLEAN DEFAULT false,
+    documents_uploaded BOOLEAN DEFAULT false,
+    contracts_signed BOOLEAN DEFAULT false,
+    payment_verified BOOLEAN DEFAULT false,
+    onboarding_started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    onboarding_completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Invoices (Billing)
+CREATE TABLE invoices (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    invoice_number VARCHAR(50) UNIQUE NOT NULL,
+    client_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL,
+    tax_amount DECIMAL(10, 2) DEFAULT 0,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    description TEXT,
+    billing_period_start DATE,
+    billing_period_end DATE,
+    due_date DATE,
+    invoice_date DATE DEFAULT CURRENT_DATE,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'paid', 'overdue', 'cancelled', 'refunded')),
+    payment_id UUID REFERENCES payments(id) ON DELETE SET NULL,
+    sent_date TIMESTAMP,
+    paid_date TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications system (email, SMS, in-app)
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    recipient_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    notification_type VARCHAR(50) NOT NULL CHECK (notification_type IN ('welcome', 'dispute_generated', 'dispute_sent', 'payment_reminder', 'contract_reminder', 'score_update', 'bureau_response', 'status_update', 'admin_alert')),
+    channel VARCHAR(50) NOT NULL CHECK (channel IN ('email', 'sms', 'in_app', 'all')),
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT false,
+    sent_at TIMESTAMP,
+    read_at TIMESTAMP,
+    delivery_status VARCHAR(30) DEFAULT 'pending' CHECK (delivery_status IN ('pending', 'sent', 'delivered', 'failed', 'bounced')),
+    retry_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Process notes (detailed apuntes on each stage)
+CREATE TABLE process_notes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    staff_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    process_stage VARCHAR(50) NOT NULL CHECK (process_stage IN ('intake', 'profile', 'analysis', 'strategy', 'disputes', 'follow_up', 'resolution', 'other')),
+    note_text TEXT NOT NULL,
+    note_category VARCHAR(50) CHECK (note_category IN ('action_item', 'observation', 'decision', 'follow_up', 'result')),
+    is_important BOOLEAN DEFAULT false,
+    related_entity_type VARCHAR(50), -- credit_item, dispute, payment, etc.
+    related_entity_id UUID,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Audit log for compliance (FCRA, GDPR)
+CREATE TABLE audit_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    action VARCHAR(255) NOT NULL,
+    action_type VARCHAR(50) CHECK (action_type IN ('create', 'read', 'update', 'delete', 'sign', 'send', 'receive', 'export', 'delete_personal_data')),
+    entity_type VARCHAR(50),
+    entity_id UUID,
+    old_values JSONB,
+    new_values JSONB,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    reason VARCHAR(255),
+    compliance_context VARCHAR(50) CHECK (compliance_context IN ('fcra', 'gdpr', 'ccpa', 'glba', 'other')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Credit score calculation audit (for transparency)
+CREATE TABLE credit_score_audit (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    bureau VARCHAR(20) NOT NULL,
+    previous_score INTEGER,
+    new_score INTEGER,
+    score_change INTEGER,
+    factors JSONB, -- Array of factors affecting score
+    data_source VARCHAR(50), -- manual_entry, api_integration, import
+    verified_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create comprehensive indexes
+CREATE INDEX idx_admin_settings_key ON admin_settings(setting_key);
+CREATE INDEX idx_contracts_type ON contracts(contract_type);
+CREATE INDEX idx_contracts_active ON contracts(is_active);
+CREATE INDEX idx_client_contracts_client_id ON client_contracts(client_id);
+CREATE INDEX idx_client_contracts_signed_date ON client_contracts(signed_date DESC);
+CREATE INDEX idx_onboarding_client_id ON client_onboarding(client_id);
+CREATE INDEX idx_onboarding_status ON client_onboarding(status);
+CREATE INDEX idx_invoices_client_id ON invoices(client_id);
+CREATE INDEX idx_invoices_status ON invoices(status);
+CREATE INDEX idx_invoices_due_date ON invoices(due_date);
+CREATE INDEX idx_notifications_recipient_id ON notifications(recipient_id);
+CREATE INDEX idx_notifications_read ON notifications(is_read);
+CREATE INDEX idx_notifications_type ON notifications(notification_type);
+CREATE INDEX idx_process_notes_client_id ON process_notes(client_id);
+CREATE INDEX idx_process_notes_stage ON process_notes(process_stage);
+CREATE INDEX idx_audit_log_user_id ON audit_log(user_id);
+CREATE INDEX idx_audit_log_entity ON audit_log(entity_type, entity_id);
+CREATE INDEX idx_audit_log_action_type ON audit_log(action_type);
+CREATE INDEX idx_audit_log_compliance ON audit_log(compliance_context);
+CREATE INDEX idx_credit_score_audit_client ON credit_score_audit(client_id);
+CREATE INDEX idx_credit_score_audit_date ON credit_score_audit(created_at DESC);
 
 -- Insert some example email templates
 INSERT INTO email_templates (template_name, subject, body_html, body_text, variables)
@@ -186,4 +360,32 @@ VALUES
     '<h1>Carta de Disputa Enviada</h1><p>Tu carta de disputa al bureau {{bureau}} ha sido enviada exitosamente.</p>',
     'Tu carta de disputa al bureau {{bureau}} ha sido enviada exitosamente.',
     '["bureau", "tracking_number"]'::jsonb
+),
+(
+    'contract_signature_reminder',
+    'Acción Requerida: Firma tu Contrato de Servicios',
+    '<h1>Hola {{first_name}}</h1><p>Por favor firma tu contrato de servicios para completar tu registro.</p><a href="{{signature_link}}">Firmar Contrato</a>',
+    'Hola {{first_name}}. Por favor firma tu contrato en: {{signature_link}}',
+    '["first_name", "signature_link", "contract_type"]'::jsonb
+),
+(
+    'payment_reminder',
+    'Recordatorio de Pago - Factura {{invoice_number}} Vence en {{days_until_due}} días',
+    '<h1>Recordatorio de Pago</h1><p>Tu factura {{invoice_number}} por {{amount}} vence el {{due_date}}.</p>',
+    'Tu factura {{invoice_number}} por {{amount}} vence el {{due_date}}.',
+    '["invoice_number", "amount", "due_date", "days_until_due"]'::jsonb
+),
+(
+    'bureau_response',
+    'Respuesta del Bureau: {{bureau}} - Referencia {{tracking_number}}',
+    '<h1>Respuesta Recibida de {{bureau}}</h1><p>El bureau {{bureau}} ha respondido a tu disputa. Ver detalles:</p>',
+    'El bureau {{bureau}} ha respondido a tu disputa {{tracking_number}}.',
+    '["bureau", "tracking_number", "response_date"]'::jsonb
+),
+(
+    'admin_alert',
+    'Alerta de Sistema: {{alert_type}}',
+    '<h1>Alerta de Sistema</h1><p>{{alert_message}}</p>',
+    '{{alert_message}}',
+    '["alert_type", "alert_message"]'::jsonb
 );

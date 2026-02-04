@@ -5,9 +5,11 @@ import Register from './pages/Register';
 import ClientDashboard from './pages/ClientDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import CreditItems from './pages/CreditItems';
+import AIDisputes from './pages/AIDisputes';
 import Disputes from './pages/Disputes';
 import Documents from './pages/Documents';
 import Profile from './pages/Profile';
+import CreditReportAnalysis from './pages/CreditReportAnalysis';
 import Layout from './components/Layout';
 
 const PrivateRoute = ({ children, requireAdmin }) => {
@@ -46,9 +48,11 @@ function AppRoutes() {
           isAdmin ? <AdminDashboard /> : <ClientDashboard />
         } />
         <Route path="credit-items" element={<CreditItems />} />
+        <Route path="ai-disputes" element={<AIDisputes />} />
         <Route path="disputes" element={<Disputes />} />
         <Route path="documents" element={<Documents />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="credit-report-analysis" element={<CreditReportAnalysis />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" />} />
