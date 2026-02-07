@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/Auth0Context';
 import { creditItemService } from '../services/api';
 import { 
   Plus, Trash2, Edit, AlertCircle, X, Search, Filter, 
@@ -251,7 +251,7 @@ export default function CreditItems() {
             <select
               value={filterBureau}
               onChange={(e) => setFilterBureau(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none bg-white"
+              className="select-field"
             >
               <option value="all">All Bureaus</option>
               <option value="equifax">Equifax</option>
@@ -261,7 +261,7 @@ export default function CreditItems() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none bg-white"
+              className="select-field"
             >
               <option value="all">All Statuses</option>
               <option value="identified">Identified</option>
@@ -356,11 +356,11 @@ export default function CreditItems() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Item Type</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Item Type</label>
                   <select 
                     value={formData.itemType} 
                     onChange={(e) => setFormData({...formData, itemType: e.target.value})} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="select-field"
                   >
                     <option value="late_payment">Late Payment</option>
                     <option value="collection">Collection</option>
@@ -370,11 +370,11 @@ export default function CreditItems() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bureau</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Bureau</label>
                   <select 
                     value={formData.bureau} 
                     onChange={(e) => setFormData({...formData, bureau: e.target.value})} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="select-field"
                   >
                     <option value="all">All Bureaus</option>
                     <option value="experian">Experian</option>

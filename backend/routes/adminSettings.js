@@ -187,4 +187,89 @@ router.get('/integrations/status', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/admin/test-email
+ * Send a test email to verify SMTP configuration
+ */
+router.post('/test-email', authMiddleware, async (req, res) => {
+  // Verify admin role
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  
+  try {
+    const { to } = req.body;
+    const recipientEmail = to || req.user.email;
+    
+    // Get SMTP settings from database or environment
+    const smtpHost = await settingsService.getSettingValue('SMTP_HOST') || process.env.SMTP_HOST;
+    const smtpPort = await settingsService.getSettingValue('SMTP_PORT') || process.env.SMTP_PORT || '587';
+    const smtpUser = await settingsService.getSettingValue('SMTP_USER') || process.env.SMTP_USER;
+    const smtpPass = await settingsService.getSettingValue('SMTP_PASS') || process.env.SMTP_PASS;
+    const fromEmail = await settingsService.getSettingValue('SMTP_FROM_EMAIL') || smtpUser || 'noreply@triexpertservice.com';
+    const fromName = await settingsService.getSettingValue('SMTP_FROM_NAME') || 'TriExpert Credit Repair';
+    
+    if (!smtpHost || !smtpUser || !smtpPass) {
+      return res.status(400).json({
+        success: false,
+        message: 'SMTP no está configurado. Por favor configura SMTP_HOST, SMTP_USER y SMTP_PASS.'
+      });
+    }
+    
+    const nodemailer = require('nodemailer');
+    
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: parseInt(smtpPort),
+      secure: smtpPort === '465',
+      auth: {
+        user: smtpUser,
+        pass: smtpPass
+      }
+    });
+    
+    // Verify connection
+    await transporter.verify();
+    
+    // Send test email
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to: recipientEmail,
+      subject: '✅ Test de Email - TriExpert Credit Repair',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+            <h1 style="color: white; margin: 0;">✅ Email Configurado Correctamente</h1>
+          </div>
+          <div style="background: #f8fafc; padding: 30px; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 16px; color: #334155;">
+              ¡Hola! Este es un email de prueba para verificar que tu configuración SMTP está funcionando correctamente.
+            </p>
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
+              <p style="margin: 0; color: #64748b;"><strong>Servidor SMTP:</strong> ${smtpHost}</p>
+              <p style="margin: 8px 0 0; color: #64748b;"><strong>Puerto:</strong> ${smtpPort}</p>
+              <p style="margin: 8px 0 0; color: #64748b;"><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
+            </div>
+            <p style="font-size: 14px; color: #64748b;">
+              Si recibiste este email, tu configuración de SMTP está lista para enviar notificaciones a clientes.
+            </p>
+          </div>
+        </div>
+      `
+    });
+    
+    res.json({
+      success: true,
+      message: `Email de prueba enviado a ${recipientEmail}`
+    });
+    
+  } catch (error) {
+    console.error('Test email error:', error);
+    res.status(500).json({
+      success: false,
+      message: `Error enviando email: ${error.message}`
+    });
+  }
+});
+
 module.exports = router;

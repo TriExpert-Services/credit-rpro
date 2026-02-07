@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/Auth0Context';
 import { dashboardService } from '../services/api';
 import { 
   TrendingUp, TrendingDown, AlertCircle, FileText, CheckCircle, Zap, ArrowRight, 
@@ -32,12 +32,12 @@ export default function ClientDashboard() {
     try {
       const [statsRes, itemsRes, disputesRes] = await Promise.all([
         dashboardService.getClientStats(user.id),
-        api.get('/api/credit-items').catch(() => ({ data: [] })),
-        api.get('/api/ai-disputes/drafts').catch(() => ({ data: [] }))
+        api.get('/credit-items').catch(() => ({ data: { items: [] } })),
+        api.get('/ai-disputes/drafts').catch(() => ({ data: [] }))
       ]);
 
       setStats(statsRes.data);
-      setCreditItems(itemsRes.data || []);
+      setCreditItems(itemsRes.data?.items || itemsRes.data || []);
       
       const disputes = disputesRes.data || [];
       const sentDisputes = disputes.filter(d => d.status === 'sent');

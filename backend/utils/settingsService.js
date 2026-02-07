@@ -87,6 +87,33 @@ const settingsService = {
   },
 
   /**
+   * Get setting value directly (useful for quick lookups)
+   */
+  getSettingValue: async (settingKey) => {
+    try {
+      const result = await query(
+        'SELECT setting_value, is_encrypted FROM admin_settings WHERE setting_key = $1',
+        [settingKey]
+      );
+      
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const { setting_value, is_encrypted } = result.rows[0];
+      
+      if (is_encrypted) {
+        return decryptValue(setting_value);
+      }
+      
+      return setting_value;
+    } catch (error) {
+      console.error('Error getting setting value:', error);
+      return null;
+    }
+  },
+
+  /**
    * Get all settings (without decryption by default for safety)
    */
   getAllSettings: async (decryptSensitive = false) => {

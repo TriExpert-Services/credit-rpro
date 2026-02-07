@@ -40,10 +40,21 @@ api.interceptors.request.use(
 );
 
 /**
- * Interceptor de response - Maneja errores globalmente
+ * Interceptor de response - Desenvuelve el wrapper de sendSuccess y maneja errores
  */
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Auto-unwrap { data: { ... } } envelope from backend sendSuccess/sendCreated
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'data' in response.data &&
+      !response.config?.responseType // don't unwrap blob/arraybuffer
+    ) {
+      response.data = { ...response.data.data, ...(response.data.message ? { message: response.data.message } : {}) };
+    }
+    return response;
+  },
   (error) => {
     // Error de autenticación - limpiar sesión y redirigir
     if (error.response?.status === 401) {

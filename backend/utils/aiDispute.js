@@ -4,7 +4,7 @@
  */
 
 const { generateDisputeLetter: generateLetterWithAI } = require('./openaiService');
-const pool = require('../config/database');
+const { pool, query } = require('../config/database');
 
 /**
  * Generate a dispute letter using AI

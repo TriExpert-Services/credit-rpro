@@ -30,7 +30,7 @@ const HTTP_STATUS = {
  * @param {number} [statusCode=200] - Código de estado HTTP
  */
 const sendSuccess = (res, data, message = null, statusCode = HTTP_STATUS.OK) => {
-  const response = { ...data };
+  const response = { data };
   if (message) {
     response.message = message;
   }

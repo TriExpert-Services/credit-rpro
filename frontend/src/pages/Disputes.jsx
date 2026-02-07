@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/Auth0Context';
 import { disputeService, creditItemService } from '../services/api';
 import { 
   Send, Eye, X, FileText, Plus, Clock, CheckCircle2, AlertCircle,
@@ -251,19 +251,19 @@ export default function Disputes() {
       {/* Create Dispute Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowForm(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-slate-900 rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-700" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Create New Dispute</h2>
-              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <h2 className="text-xl font-bold text-slate-100">Create New Dispute</h2>
+              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-300">
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Item to Dispute</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Item to Dispute</label>
                 <select 
                   name="creditItemId" 
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                  className="select-field" 
                   required
                 >
                   <option value="">Select an item...</option>
@@ -276,10 +276,10 @@ export default function Disputes() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Dispute Type</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Dispute Type</label>
                   <select 
                     name="disputeType" 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                    className="select-field" 
                     required
                   >
                     <option value="not_mine">Not My Account</option>
@@ -290,10 +290,10 @@ export default function Disputes() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bureau</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Bureau</label>
                   <select 
                     name="bureau" 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                    className="select-field" 
                     required
                   >
                     <option value="experian">Experian</option>
@@ -312,7 +312,7 @@ export default function Disputes() {
                 <button 
                   type="button" 
                   onClick={() => setShowForm(false)} 
-                  className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+                  className="px-6 py-3 border border-slate-700 text-slate-300 rounded-xl font-medium hover:bg-slate-800 transition-colors"
                 >
                   Cancel
                 </button>

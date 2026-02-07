@@ -32,26 +32,41 @@ export default function AdminDashboard() {
     }
   };
 
-  // Generate mock chart data
+  // Use real revenue trend data from backend, fall back to generated data
   const revenueData = useMemo(() => {
+    if (stats?.revenueTrend?.length > 0) {
+      return stats.revenueTrend.map((item) => ({
+        month: format(new Date(item.month), 'MMM'),
+        revenue: parseFloat(item.total) || 0,
+      }));
+    }
     const data = [];
     for (let i = 6; i >= 0; i--) {
       const date = subDays(new Date(), i * 30);
       data.push({
         month: format(date, 'MMM'),
-        revenue: Math.floor(Math.random() * 5000) + (stats?.monthlyRevenue || 2000),
-        clients: Math.floor(Math.random() * 10) + (stats?.totalClients || 5)
+        revenue: stats?.monthlyRevenue || 0,
       });
     }
     return data;
   }, [stats]);
 
-  const disputeStatusData = [
-    { name: 'Draft', value: 15, color: '#94a3b8' },
-    { name: 'Pending', value: 25, color: '#f59e0b' },
-    { name: 'Sent', value: 35, color: '#3b82f6' },
-    { name: 'Resolved', value: 20, color: '#10b981' },
-  ];
+  // Use real dispute status data from backend
+  const DISPUTE_COLORS = { draft: '#94a3b8', pending: '#f59e0b', sent: '#3b82f6', investigating: '#8b5cf6', resolved: '#10b981', rejected: '#ef4444' };
+  const disputeStatusData = useMemo(() => {
+    if (stats?.disputesByStatus?.length > 0) {
+      return stats.disputesByStatus.map((item) => ({
+        name: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+        value: parseInt(item.count),
+        color: DISPUTE_COLORS[item.status] || '#94a3b8',
+      }));
+    }
+    return [
+      { name: 'Draft', value: 0, color: '#94a3b8' },
+      { name: 'Sent', value: 0, color: '#3b82f6' },
+      { name: 'Resolved', value: 0, color: '#10b981' },
+    ];
+  }, [stats]);
 
   const filteredClients = useMemo(() => {
     if (!stats?.recentClients) return [];

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/Auth0Context';
 import { documentService } from '../services/api';
 import { 
   Upload, Trash2, File, FileText, Image, Download, Eye, X,

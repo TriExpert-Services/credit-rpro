@@ -227,6 +227,24 @@ const notificationService = {
   },
 
   /**
+   * Delete a notification
+   */
+  deleteNotification: async (notificationId, userId) => {
+    try {
+      await query(
+        `DELETE FROM notifications 
+         WHERE id = $1 AND recipient_id = $2`,
+        [notificationId, userId]
+      );
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Send template-based notification
    */
   sendTemplateNotification: async (recipientId, templateName, variables, channels = ['email', 'in_app']) => {

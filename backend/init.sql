@@ -9,16 +9,29 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255),  -- Nullable for Auth0 users
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     role VARCHAR(20) NOT NULL DEFAULT 'client' CHECK (role IN ('client', 'admin', 'staff')),
     status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
+    -- Auth0 fields
+    auth0_id VARCHAR(255) UNIQUE,
+    auth_provider VARCHAR(20) DEFAULT 'local' CHECK (auth_provider IN ('local', 'auth0', 'google', 'github')),
+    picture TEXT,
+    email_verified BOOLEAN DEFAULT FALSE,
+    -- Two-Factor Authentication (2FA) fields
+    two_factor_enabled BOOLEAN DEFAULT FALSE,
+    two_factor_secret VARCHAR(255),
+    two_factor_backup_codes TEXT[],
+    -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP
 );
+
+-- Index for Auth0 lookups
+CREATE INDEX IF NOT EXISTS idx_users_auth0_id ON users(auth0_id) WHERE auth0_id IS NOT NULL;
 
 -- Client profiles with additional information
 CREATE TABLE client_profiles (

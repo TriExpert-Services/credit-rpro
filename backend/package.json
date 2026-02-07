@@ -8,30 +8,36 @@
     "dev": "nodemon server.js",
     "migrate": "node migrations/run.js"
   },
-  "keywords": ["credit-repair", "saas", "api"],
+  "keywords": [
+    "credit-repair",
+    "saas",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "pg": "^8.11.3",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
+    "date-fns": "^3.0.6",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-oauth2-jwt-bearer": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5",
+    "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.3",
+    "jwks-rsa": "^3.2.2",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
-    "pdfkit": "^0.13.0",
-    "date-fns": "^3.0.6",
     "openai": "^4.52.7",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.13.0",
+    "pg": "^8.11.3",
+    "plaid": "^23.0.0",
     "stripe": "^14.6.0",
-    "crypto": "^1.0.1",
-    "uuid": "^9.0.1",
-    "joi": "^17.11.0",
-    "express-async-errors": "^3.1.1",
-    "pdf-parse": "^1.1.1"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

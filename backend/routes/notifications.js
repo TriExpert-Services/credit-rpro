@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
+const { requireAdmin: adminOnly } = require('../middleware/auth');
 const notificationService = require('../utils/notificationService');
 
 /**
@@ -45,10 +46,44 @@ router.patch('/:id/read', authMiddleware, async (req, res) => {
 });
 
 /**
- * PATCH /api/notifications/read-all
+ * PUT /api/notifications/:id/read
+ * Mark notification as read (alternative method)
+ */
+router.put('/:id/read', authMiddleware, async (req, res) => {
+  try {
+    await notificationService.markAsRead(req.params.id);
+    
+    res.json({
+      success: true,
+      message: 'Notification marked as read'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/notifications/:id
+ * Delete a notification
+ */
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    await notificationService.deleteNotification(req.params.id, req.user.id);
+    
+    res.json({
+      success: true,
+      message: 'Notification deleted'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * PUT /api/notifications/read-all
  * Mark all notifications as read
  */
-router.patch('/read-all', authMiddleware, async (req, res) => {
+router.put('/read-all', authMiddleware, async (req, res) => {
   try {
     await notificationService.markAllAsRead(req.user.id);
     

@@ -123,9 +123,10 @@ export const AuthProvider = ({ children }) => {
    * Inicia sesión con email y contraseña
    * @param {string} email - Email del usuario
    * @param {string} password - Contraseña
+   * @param {string} [totpCode] - Código 2FA opcional
    * @returns {Promise<AuthResult>} Resultado de la operación
    */
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (email, password, totpCode = null) => {
     try {
       // Validación básica
       if (!email || !password) {
@@ -135,8 +136,19 @@ export const AuthProvider = ({ children }) => {
         };
       }
 
-      const response = await authService.login({ email, password });
-      const { token, user: userData } = response.data;
+      const response = await authService.login({ email, password, totpCode });
+      const { token, user: userData, requires2FA, tempToken } = response.data;
+
+      // Si requiere 2FA, devolver estado especial
+      if (requires2FA) {
+        return {
+          success: false,
+          requires2FA: true,
+          tempToken,
+          email: response.data.user?.email || email,
+          error: null,
+        };
+      }
 
       // Guardar en localStorage
       localStorage.setItem(TOKEN_KEY, token);

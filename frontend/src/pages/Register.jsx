@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, User, Phone, UserPlus, Shield, CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/Auth0Context';
+import { Mail, Lock, User, Phone, UserPlus, Shield, CheckCircle, ArrowRight, Sparkles, Fingerprint, Eye, EyeOff } from 'lucide-react';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -13,9 +13,26 @@ export default function Register() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [auth0Loading, setAuth0Loading] = useState(false);
   const [step, setStep] = useState(1);
-  const { register } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const { register, registerWithAuth0 } = useAuth();
   const navigate = useNavigate();
+
+  // Check if Auth0 is configured
+  const isAuth0Configured = import.meta.env.VITE_AUTH0_DOMAIN && 
+    import.meta.env.VITE_AUTH0_DOMAIN !== 'tu-tenant.us.auth0.com';
+
+  const handleAuth0Register = async () => {
+    setAuth0Loading(true);
+    setError('');
+    try {
+      await registerWithAuth0();
+    } catch (err) {
+      setError('Error al registrarse con Auth0');
+      setAuth0Loading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,57 +131,65 @@ export default function Register() {
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
             </div>
 
-            {error && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                {error}
-              </div>
-            )}
+            <div role="alert" aria-live="polite">
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  {error}
+                </div>
+              )}
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {step === 1 ? (
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
+                      <label htmlFor="reg-firstName" className="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
                         <input
+                          id="reg-firstName"
                           type="text"
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleChange}
                           className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-all"
                           placeholder="Juan"
+                          autoComplete="given-name"
                           required
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Apellido</label>
+                      <label htmlFor="reg-lastName" className="block text-sm font-semibold text-gray-700 mb-2">Apellido</label>
                       <input
+                        id="reg-lastName"
                         type="text"
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-all"
                         placeholder="Pérez"
+                        autoComplete="family-name"
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Teléfono</label>
+                    <label htmlFor="reg-phone" className="block text-sm font-semibold text-gray-700 mb-2">Teléfono</label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
                       <input
+                        id="reg-phone"
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-all"
                         placeholder="(555) 123-4567"
+                        autoComplete="tel"
                       />
                     </div>
                   </div>
@@ -182,47 +207,59 @@ export default function Register() {
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                    <label htmlFor="reg-email" className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
                       <input
+                        id="reg-email"
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-all"
                         placeholder="tu@email.com"
+                        autoComplete="email"
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
+                    <label htmlFor="reg-password" className="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
                       <input
-                        type="password"
+                        id="reg-password"
+                        type={showPassword ? 'text' : 'password'}
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-all"
+                        className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-all"
                         placeholder="••••••••"
+                        autoComplete="new-password"
                         required
                         minLength={6}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                      <Shield size={12} />
+                      <Shield size={12} aria-hidden="true" />
                       Mínimo 6 caracteres con letras y números
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-xl">
-                    <input type="checkbox" className="w-4 h-4 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" required />
-                    <span className="text-xs text-gray-600">
+                    <input id="reg-terms" type="checkbox" className="w-4 h-4 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" required />
+                    <label htmlFor="reg-terms" className="text-xs text-gray-600">
                       Acepto los <a href="#" className="text-indigo-600 hover:underline">Términos de Servicio</a> y la <a href="#" className="text-indigo-600 hover:underline">Política de Privacidad</a>
-                    </span>
+                    </label>
                   </div>
 
                   <div className="flex gap-3 mt-6">
@@ -256,6 +293,43 @@ export default function Register() {
             </form>
 
             <div className="mt-8">
+              {/* Auth0 MFA Registration */}
+              {isAuth0Configured && (
+                <>
+                  <div className="relative mb-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-4 bg-white text-gray-500">o regístrate con</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleAuth0Register}
+                    disabled={auth0Loading}
+                    className="w-full flex items-center justify-center gap-3 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg hover:shadow-emerald-200 transition-all disabled:opacity-50 mb-4"
+                  >
+                    {auth0Loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Conectando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Fingerprint size={22} />
+                        <span>Registrarse con MFA Seguro</span>
+                        <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs">Auth0</span>
+                      </>
+                    )}
+                  </button>
+                  
+                  <p className="text-center text-xs text-gray-500 mb-4">
+                    🔐 Autenticación multifactor para mayor seguridad
+                  </p>
+                </>
+              )}
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>

@@ -128,7 +128,48 @@ docker-compose logs -f
 
 ⚠️ **IMPORTANTE**: Cambia estas credenciales inmediatamente en producción.
 
-## 📁 Estructura del Proyecto
+## � Configuración de Stripe
+
+Para habilitar pagos y suscripciones, configura Stripe:
+
+1. **Crear cuenta en Stripe** (https://stripe.com)
+
+2. **Obtener claves de API**
+   - Ve a Dashboard → Developers → API keys
+   - Copia la Publishable key y Secret key
+
+3. **Configurar Webhook**
+   - En Stripe Dashboard → Developers → Webhooks
+   - Agregar endpoint: `https://tu-dominio.com/api/webhooks/stripe`
+   - Seleccionar eventos:
+     - `customer.subscription.created`
+     - `customer.subscription.updated`
+     - `customer.subscription.deleted`
+     - `invoice.payment_succeeded`
+     - `invoice.payment_failed`
+   - Copiar el Webhook signing secret
+
+4. **Variables de entorno**
+   ```env
+   STRIPE_SECRET_KEY=sk_live_xxx (o sk_test_xxx para pruebas)
+   STRIPE_PUBLISHABLE_KEY=pk_live_xxx (o pk_test_xxx para pruebas)
+   STRIPE_WEBHOOK_SECRET=whsec_xxx
+   ```
+
+5. **Ejecutar migración de base de datos**
+   ```bash
+   docker exec -it credit-repair-backend psql -U creditrepair -d creditrepair_db -f /app/migrations/002_stripe_subscriptions.sql
+   ```
+
+### Planes de Suscripción
+- **Basic** - $99/mes: 3 disputas/mes, soporte email
+- **Professional** - $149/mes: 7 disputas/mes, análisis IA, soporte prioritario
+- **Premium** - $249/mes: Disputas ilimitadas, análisis completo, soporte 24/7
+
+### Garantía de 90 Días
+El sistema incluye una garantía de devolución de dinero si no se ven resultados en 90 días. Los clientes pueden solicitar el reembolso desde su panel y los administradores pueden procesarlo desde la gestión de pagos.
+
+## �📁 Estructura del Proyecto
 
 ```
 credit-repair-saas/

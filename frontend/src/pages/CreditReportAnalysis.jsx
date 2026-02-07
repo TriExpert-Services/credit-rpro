@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/Auth0Context';
 import api from '../services/api';
 import { 
   Upload, FileText, CheckCircle, AlertCircle, Sparkles, TrendingUp, 
