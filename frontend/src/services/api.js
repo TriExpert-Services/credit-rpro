@@ -428,6 +428,13 @@ export const userService = {
    * @returns {Promise<import('axios').AxiosResponse<{message: string}>>}
    */
   updateUserStatus: (id, status) => api.put(`/users/${id}/status`, { status }),
+
+  /**
+   * Elimina un usuario y todos sus datos relacionados
+   * @param {string} id - UUID del usuario
+   * @returns {Promise<import('axios').AxiosResponse<{message: string}>>}
+   */
+  deleteUser: (id) => api.delete(`/users/${id}`),
 };
 
 // ============================================

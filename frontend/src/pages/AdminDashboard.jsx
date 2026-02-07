@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
-import { dashboardService, clientService } from '../services/api';
+import { dashboardService, clientService, userService, getErrorMessage } from '../services/api';
 import { 
   Users, DollarSign, FileText, TrendingUp, ArrowUpRight, ArrowDownRight,
   UserPlus, Calendar, Activity, Clock, ChevronRight, Eye, MoreVertical,
-  CreditCard, Zap, CheckCircle, AlertCircle, Search, Filter
+  CreditCard, Zap, CheckCircle, AlertCircle, Search, Filter, Trash2, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format, subDays } from 'date-fns';
@@ -16,6 +16,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ open: false, user: null });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadDashboard();
@@ -29,6 +31,22 @@ export default function AdminDashboard() {
       console.error('Error loading admin dashboard:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteModal.user) return;
+    setDeleting(true);
+    try {
+      await userService.deleteUser(deleteModal.user.id);
+      setDeleteModal({ open: false, user: null });
+      // Refresh dashboard data
+      const res = await dashboardService.getAdminStats();
+      setStats(res.data);
+    } catch (error) {
+      alert(getErrorMessage(error, 'Error al eliminar usuario'));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -328,11 +346,15 @@ export default function AdminDashboard() {
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
-                      <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                      <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Ver detalles">
                         <Eye size={16} />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                        <MoreVertical size={16} />
+                      <button 
+                        onClick={() => setDeleteModal({ open: true, user: client })}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Eliminar usuario"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
@@ -391,6 +413,70 @@ export default function AdminDashboard() {
           </div>
         </Link>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <Trash2 size={20} className="text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Eliminar Usuario</h3>
+              </div>
+              <button
+                onClick={() => setDeleteModal({ open: false, user: null })}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-gray-600 mb-3">
+                ¿Estás seguro de que deseas eliminar a este usuario? Esta acción es <span className="font-semibold text-red-600">irreversible</span> y eliminará todos sus datos asociados.
+              </p>
+              <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-medium text-sm">
+                  {deleteModal.user?.first_name?.[0]}{deleteModal.user?.last_name?.[0]}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">{deleteModal.user?.first_name} {deleteModal.user?.last_name}</p>
+                  <p className="text-sm text-gray-500">{deleteModal.user?.email}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setDeleteModal({ open: false, user: null })}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteUser}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {deleting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={16} />
+                    Eliminar
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const { validationResult } = require('express-validator');
-const { authenticateToken, requireStaff } = require('../middleware/auth');
+const { authenticateToken, requireStaff, requireAdmin } = require('../middleware/auth');
 const { query } = require('../config/database');
 const { updateProfileValidation } = require('../utils/validators');
 const {
@@ -144,6 +144,50 @@ router.get(
       limit: safeLimit,
       offset: safeOffset,
     });
+  })
+);
+
+// @route   DELETE /api/users/:id
+// @desc    Delete a user and all related data (admin only)
+// @access  Private (Admin)
+router.delete(
+  '/:id',
+  authenticateToken,
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+
+    // Prevent admin from deleting themselves
+    if (userId === req.user.id) {
+      return sendError(res, 'No puedes eliminar tu propia cuenta', 400);
+    }
+
+    // Verify user exists and is not another admin
+    const userResult = await query(
+      'SELECT id, role, email, first_name, last_name FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return sendNotFound(res, 'Usuario');
+    }
+
+    const targetUser = userResult.rows[0];
+
+    if (targetUser.role === 'admin') {
+      return sendError(res, 'No puedes eliminar a otro administrador', 403);
+    }
+
+    // Delete user — CASCADE will remove all related data
+    await query('DELETE FROM users WHERE id = $1', [userId]);
+
+    sendSuccess(res, {
+      deletedUser: {
+        id: targetUser.id,
+        email: targetUser.email,
+        name: `${targetUser.first_name} ${targetUser.last_name}`,
+      },
+    }, 'Usuario eliminado exitosamente');
   })
 );
 
