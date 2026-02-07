@@ -72,7 +72,7 @@ export default function DisputeLetterGenerator() {
         disputeType,
         bureau,
       });
-      setLetterPreview(response.data.data?.letter || response.data.letter);
+      setLetterPreview(response.data.letter);
       setShowPreview(true);
       setSuccess('Letter generated successfully!');
     } catch (err) {

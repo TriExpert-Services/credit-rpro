@@ -40,7 +40,7 @@ export default function PaymentHistory() {
   const fetchPayments = async () => {
     try {
       const response = await api.get('/subscriptions/payments');
-      setPayments(response.data.data);
+      setPayments(response.data);
     } catch (err) {
       setError('Error al cargar el historial de pagos');
     } finally {
@@ -51,7 +51,7 @@ export default function PaymentHistory() {
   const fetchSubscription = async () => {
     try {
       const response = await api.get('/subscriptions/current');
-      setSubscription(response.data.data);
+      setSubscription(response.data);
     } catch (err) {
       // No subscription
     }
@@ -60,8 +60,8 @@ export default function PaymentHistory() {
   const handleManageSubscription = async () => {
     try {
       const response = await api.post('/subscriptions/portal');
-      if (response.data.data.portalUrl) {
-        window.location.href = response.data.data.portalUrl;
+      if (response.data.portalUrl) {
+        window.location.href = response.data.portalUrl;
       }
     } catch (err) {
       setError('Error al abrir el portal de pagos');

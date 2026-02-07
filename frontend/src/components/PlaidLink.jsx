@@ -33,7 +33,7 @@ export default function PlaidLinkButton({
     setError('');
     try {
       const response = await api.post('/plaid/create-link-token', { products });
-      setLinkToken(response.data.data?.linkToken || response.data.linkToken);
+      setLinkToken(response.data.linkToken);
     } catch (err) {
       console.error('Error fetching link token:', err);
       setError('Error al preparar conexión bancaria');
@@ -46,7 +46,7 @@ export default function PlaidLinkButton({
   const fetchAccounts = useCallback(async () => {
     try {
       const response = await api.get('/plaid/accounts');
-      setAccounts(response.data.data?.accounts || response.data.accounts || []);
+      setAccounts(response.data.accounts || []);
     } catch (err) {
       console.error('Error fetching accounts:', err);
     }
@@ -56,7 +56,7 @@ export default function PlaidLinkButton({
   const fetchVerificationStatus = useCallback(async () => {
     try {
       const response = await api.get('/plaid/verification-status');
-      setVerificationStatus(response.data.data || response.data);
+      setVerificationStatus(response.data);
     } catch (err) {
       console.error('Error fetching verification status:', err);
     }
@@ -74,7 +74,7 @@ export default function PlaidLinkButton({
       try {
         const response = await api.post('/plaid/create-link-token', { products });
         if (mounted) {
-          setLinkToken(response.data.data?.linkToken || response.data.linkToken);
+          setLinkToken(response.data.linkToken);
         }
       } catch (err) {
         console.error('Error fetching link token:', err);
@@ -90,8 +90,8 @@ export default function PlaidLinkButton({
             api.get('/plaid/verification-status')
           ]);
           if (mounted) {
-            setAccounts(accountsRes.data.data?.accounts || accountsRes.data.accounts || []);
-            setVerificationStatus(verificationRes.data.data || verificationRes.data);
+            setAccounts(accountsRes.data.accounts || []);
+            setVerificationStatus(verificationRes.data);
           }
         } catch (err) {
           console.error('Error fetching data:', err);
@@ -358,7 +358,7 @@ export function PlaidLinkSimple({ onSuccess, onError }) {
         const response = await api.post('/plaid/create-link-token', { 
           products: ['auth', 'identity'] 
         });
-        setLinkToken(response.data.data?.linkToken || response.data.linkToken);
+        setLinkToken(response.data.linkToken);
       } catch (err) {
         console.error('Error:', err);
         if (onError) onError(err);

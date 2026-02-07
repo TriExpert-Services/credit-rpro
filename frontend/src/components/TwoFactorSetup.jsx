@@ -26,7 +26,7 @@ export default function TwoFactorSetup({ onClose, onStatusChange }) {
     try {
       setLoading(true);
       const res = await api.get('/auth/2fa/status');
-      setStatus(res.data.data);
+      setStatus(res.data);
       setStep('status');
     } catch (err) {
       setError('Error loading 2FA status');
@@ -40,7 +40,7 @@ export default function TwoFactorSetup({ onClose, onStatusChange }) {
       setLoading(true);
       setError('');
       const res = await api.post('/auth/2fa/setup');
-      setSetupData(res.data.data);
+      setSetupData(res.data);
       setStep('setup');
     } catch (err) {
       setError(err.response?.data?.message || 'Error setting up 2FA');
@@ -59,7 +59,7 @@ export default function TwoFactorSetup({ onClose, onStatusChange }) {
       setLoading(true);
       setError('');
       const res = await api.post('/auth/2fa/verify', { code });
-      setBackupCodes(res.data.data.backupCodes);
+      setBackupCodes(res.data.backupCodes);
       setStep('backup');
       setSuccess('2FA enabled successfully!');
       if (onStatusChange) onStatusChange(true);
@@ -103,7 +103,7 @@ export default function TwoFactorSetup({ onClose, onStatusChange }) {
       setLoading(true);
       setError('');
       const res = await api.post('/auth/2fa/regenerate-backup', { password, code });
-      setBackupCodes(res.data.data.backupCodes);
+      setBackupCodes(res.data.backupCodes);
       setStep('backup');
       setSuccess('Backup codes regenerated!');
     } catch (err) {

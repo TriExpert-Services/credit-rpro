@@ -57,7 +57,7 @@ export default function AdminPayments() {
   const fetchStats = async () => {
     try {
       const response = await api.get('/subscriptions/admin/stats');
-      setStats(response.data.data);
+      setStats(response.data);
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
@@ -75,7 +75,7 @@ export default function AdminPayments() {
       });
       
       const response = await api.get(`/subscriptions/admin/transactions?${params}`);
-      setTransactions(response.data.data.transactions || []);
+      setTransactions(response.data.transactions || []);
     } catch (err) {
       setError('Error al cargar transacciones');
     } finally {
@@ -86,7 +86,7 @@ export default function AdminPayments() {
   const fetchGuaranteeClaims = async () => {
     try {
       const response = await api.get('/subscriptions/admin/guarantee-claims');
-      setGuaranteeClaims(response.data.data || []);
+      setGuaranteeClaims(response.data || []);
     } catch (err) {
       console.error('Error fetching guarantee claims:', err);
     }

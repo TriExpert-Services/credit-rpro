@@ -121,7 +121,7 @@ export default function ClientOnboarding() {
   const checkSubscription = async () => {
     try {
       const response = await api.get('/subscriptions/current');
-      setHasSubscription(response.data.data?.hasSubscription || false);
+      setHasSubscription(response.data?.hasSubscription || false);
     } catch (err) {
       setHasSubscription(false);
     }
@@ -131,8 +131,8 @@ export default function ClientOnboarding() {
     setLoading(true);
     try {
       const response = await api.get('/onboarding/data');
-      if (response.data.data) {
-        setFormData(prev => ({ ...prev, ...response.data.data }));
+      if (response.data) {
+        setFormData(prev => ({ ...prev, ...response.data }));
       }
     } catch (err) {
       // No existing data, use defaults
@@ -308,7 +308,7 @@ export default function ClientOnboarding() {
       // Re-check subscription status
       try {
         const response = await api.get('/subscriptions/current');
-        const hasSub = response.data.data?.hasSubscription || false;
+        const hasSub = response.data?.hasSubscription || false;
         setHasSubscription(hasSub);
         
         if (!hasSub) {

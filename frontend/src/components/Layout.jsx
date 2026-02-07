@@ -18,7 +18,7 @@ export default function Layout() {
       if (!isAdmin && user) {
         try {
           const response = await api.get('/onboarding/status');
-          setOnboardingStatus(response.data.data);
+          setOnboardingStatus(response.data);
         } catch (err) {
           // If error, assume onboarding needed
           setOnboardingStatus({ completed: false, status: 'not_started' });

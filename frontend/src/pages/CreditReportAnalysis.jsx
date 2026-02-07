@@ -113,7 +113,7 @@ export default function CreditReportAnalysis() {
       });
 
       setAnalysisResult(response.data);
-      setSuccess(`Análisis completado: ${response.data.data.totalItemsFound} items encontrados`);
+      setSuccess(`Análisis completado: ${response.data.totalItemsFound} items encontrados`);
       setFiles({});
       fetchData();
     } catch (err) {

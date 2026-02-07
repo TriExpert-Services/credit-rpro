@@ -36,8 +36,8 @@ export default function BankAccounts() {
         api.get('/plaid/verification-status'),
       ]);
       
-      setAccounts(accountsRes.data.data?.accounts || accountsRes.data.accounts || []);
-      setVerificationStatus(verificationRes.data.data || verificationRes.data);
+      setAccounts(accountsRes.data.accounts || []);
+      setVerificationStatus(verificationRes.data);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -56,7 +56,7 @@ export default function BankAccounts() {
     setError('');
     try {
       const response = await api.post('/plaid/get-transactions', { days: 90 });
-      const data = response.data.data || response.data;
+      const data = response.data;
       setIncomeAnalysis(data);
       
       if (data.message) {

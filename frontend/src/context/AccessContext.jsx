@@ -43,11 +43,9 @@ export function AccessProvider({ children }) {
   const checkAccess = async () => {
     try {
       const response = await api.get('/subscriptions/access-status');
-      console.log('Access status response:', response.data);
-      // API returns { data: { ... } }
-      setAccessStatus(response.data.data);
+      // Interceptor already unwraps { data: {...} } envelope
+      setAccessStatus(response.data);
     } catch (err) {
-      console.error('Error checking access:', err);
       // If endpoint doesn't exist or error, allow access (fail open for now)
       setAccessStatus({ hasAccess: true, isAdmin: user?.role === 'admin' });
     } finally {

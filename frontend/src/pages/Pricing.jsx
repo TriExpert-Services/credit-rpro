@@ -58,7 +58,7 @@ export default function Pricing() {
   const fetchPlans = async () => {
     try {
       const response = await api.get('/subscriptions/plans');
-      setPlans(response.data.data);
+      setPlans(response.data);
     } catch (err) {
       setError('Error al cargar los planes');
     } finally {
@@ -69,7 +69,7 @@ export default function Pricing() {
   const fetchCurrentSubscription = async () => {
     try {
       const response = await api.get('/subscriptions/current');
-      setCurrentSubscription(response.data.data);
+      setCurrentSubscription(response.data);
     } catch (err) {
       // No subscription
     }
@@ -78,7 +78,7 @@ export default function Pricing() {
   const fetchAccessStatus = async () => {
     try {
       const response = await api.get('/subscriptions/access-status');
-      setAccessStatus(response.data.data);
+      setAccessStatus(response.data);
     } catch (err) {
       console.error('Error fetching access status:', err);
     }
@@ -96,9 +96,9 @@ export default function Pricing() {
     try {
       const response = await api.post('/subscriptions/checkout', { planId });
       
-      if (response.data.data.checkoutUrl) {
+      if (response.data.checkoutUrl) {
         // Redirect to Stripe checkout
-        window.location.href = response.data.data.checkoutUrl;
+        window.location.href = response.data.checkoutUrl;
       } else {
         setError('Error al crear la sesión de pago');
       }
@@ -118,8 +118,8 @@ export default function Pricing() {
   const handleManageSubscription = async () => {
     try {
       const response = await api.post('/subscriptions/portal');
-      if (response.data.data.portalUrl) {
-        window.location.href = response.data.data.portalUrl;
+      if (response.data.portalUrl) {
+        window.location.href = response.data.portalUrl;
       }
     } catch (err) {
       setError('Error al abrir el portal de suscripción');
