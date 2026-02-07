@@ -60,15 +60,8 @@ async function generateDispute(userId, creditItemId, disputeType, bureau, additi
       throw new Error(`Invalid bureau: ${bureau}. Valid bureaus: ${validBureaus.join(', ')}`);
     }
 
-    // Log what data we have for debugging
-    console.log(`📝 Generating personalized dispute letter for:
-       Client: ${clientData.first_name} ${clientData.last_name}
-       Address: ${clientData.address_line1 || 'Not provided'}, ${clientData.city || ''} ${clientData.state || ''}
-       Phone: ${clientData.phone || 'Not provided'}
-       DOB: ${clientData.date_of_birth || 'Not provided'}
-       SSN Last 4: ${clientData.ssn_last_4 ? '****' : 'Not provided'}
-       Creditor: ${creditItem.creditor_name}
-       Bureau: ${bureau.toUpperCase()}`);
+    // Log generation request (no PII)
+    console.log(`📝 Generating dispute letter: type=${disputeType}, bureau=${bureau.toUpperCase()}, itemId=${creditItemId}`);
 
     // Generate letter using OpenAI with full client data
     const letter = await generateLetterWithAI(
@@ -389,7 +382,7 @@ Phone Number: [Your Phone]`,
 
     duplicate: `${currentDate}
 
-${bureau.charAt(0).ToLowerCase() + bureau.slice(1)} Credit Bureau
+${bureau.charAt(0).toUpperCase() + bureau.slice(1)} Credit Bureau
 Dispute Department
 
 RE: Dispute of Duplicate Account Listing - Account Number ${creditItem.account_number || 'XXXX'}

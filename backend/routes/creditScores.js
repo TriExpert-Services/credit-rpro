@@ -164,4 +164,55 @@ router.get('/:clientId/report', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * GET /api/credit-scores/:clientId/anomalies
+ * Detect score anomalies and generate alerts
+ */
+router.get('/:clientId/anomalies', authMiddleware, async (req, res) => {
+  try {
+    const anomalies = await creditScoreService.detectAnomalies(req.params.clientId);
+    
+    res.json({
+      success: true,
+      ...anomalies
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/credit-scores/:clientId/projections
+ * Project score improvements based on resolving negative items
+ */
+router.get('/:clientId/projections', authMiddleware, async (req, res) => {
+  try {
+    const projections = await creditScoreService.projectImprovement(req.params.clientId);
+    
+    res.json({
+      success: true,
+      ...projections
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/credit-scores/:clientId/detailed-factors
+ * Get detailed FICO factor analysis with weighting
+ */
+router.get('/:clientId/detailed-factors', authMiddleware, async (req, res) => {
+  try {
+    const factors = await creditScoreService.getDetailedFactors(req.params.clientId);
+    
+    res.json({
+      success: true,
+      factors
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

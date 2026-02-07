@@ -4,7 +4,8 @@ import api from '../services/api';
 import { 
   Upload, FileText, CheckCircle, AlertCircle, Sparkles, TrendingUp, 
   BarChart3, Shield, Zap, ChevronRight, X, FileUp, Brain, Target,
-  ArrowUpRight, ArrowDownRight, Minus, RefreshCw, Download, Eye
+  ArrowUpRight, ArrowDownRight, Minus, RefreshCw, Download, Eye,
+  AlertTriangle, TrendingDown, Activity, Award
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar } from 'recharts';
 
@@ -26,6 +27,8 @@ export default function CreditReportAnalysis() {
   const [success, setSuccess] = useState('');
   const [generatingDisputes, setGeneratingDisputes] = useState(false);
   const [dragOver, setDragOver] = useState(null);
+  const [anomalies, setAnomalies] = useState(null);
+  const [projections, setProjections] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -43,6 +46,18 @@ export default function CreditReportAnalysis() {
       
       setCreditItems(itemsRes.data.items || []);
       setScores(scoresRes.data);
+
+      // Fetch anomalies and projections in parallel
+      try {
+        const [anomaliesRes, projectionsRes] = await Promise.all([
+          api.get(`/credit-scores/${clientId}/anomalies`),
+          api.get(`/credit-scores/${clientId}/projections`)
+        ]);
+        setAnomalies(anomaliesRes.data);
+        setProjections(projectionsRes.data);
+      } catch (err) {
+        console.error('Error fetching analytics:', err);
+      }
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -462,6 +477,210 @@ export default function CreditReportAnalysis() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Anomaly Alerts */}
+      {anomalies && anomalies.totalAlerts > 0 && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl text-white">
+                <AlertTriangle size={20} />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Alertas Detectadas</h2>
+                <p className="text-sm text-gray-500">
+                  {anomalies.criticalCount > 0 && <span className="text-red-600 font-medium">{anomalies.criticalCount} críticas</span>}
+                  {anomalies.criticalCount > 0 && anomalies.warningCount > 0 && ' · '}
+                  {anomalies.warningCount > 0 && <span className="text-amber-600 font-medium">{anomalies.warningCount} advertencias</span>}
+                  {(anomalies.criticalCount > 0 || anomalies.warningCount > 0) && anomalies.infoCount > 0 && ' · '}
+                  {anomalies.infoCount > 0 && <span className="text-blue-600">{anomalies.infoCount} informativas</span>}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 space-y-3">
+            {anomalies.alerts.map((alert, idx) => (
+              <div
+                key={idx}
+                className={`p-4 rounded-xl border-l-4 ${
+                  alert.severity === 'critical' ? 'bg-red-50 border-red-500' :
+                  alert.severity === 'warning' ? 'bg-amber-50 border-amber-500' :
+                  'bg-blue-50 border-blue-500'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`p-1.5 rounded-lg ${
+                    alert.severity === 'critical' ? 'bg-red-100' :
+                    alert.severity === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
+                  }`}>
+                    {alert.type === 'sudden_drop' && <TrendingDown size={16} className={alert.severity === 'critical' ? 'text-red-600' : 'text-amber-600'} />}
+                    {alert.type === 'bureau_inconsistency' && <Activity size={16} className="text-amber-600" />}
+                    {alert.type === 'stagnant_score' && <Minus size={16} className="text-blue-600" />}
+                    {alert.type === 'approaching_expiration' && <AlertCircle size={16} className={alert.severity === 'critical' ? 'text-red-600' : 'text-blue-600'} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-medium text-sm ${
+                      alert.severity === 'critical' ? 'text-red-900' :
+                      alert.severity === 'warning' ? 'text-amber-900' : 'text-blue-900'
+                    }`}>
+                      {alert.message}
+                    </p>
+                    {alert.detail && <p className="text-xs text-gray-600 mt-1">{alert.detail}</p>}
+                    {alert.recommendation && (
+                      <p className="text-xs mt-2 p-2 bg-white/60 rounded-lg">
+                        💡 <strong>Recomendación:</strong> {alert.recommendation}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Score Projections & Item Impact */}
+      {projections && projections.totalNegativeItems > 0 && (
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Projection Timeline */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl text-white">
+                  <TrendingUp size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Proyección de Mejora</h2>
+                  <p className="text-sm text-gray-500">
+                    Puntaje actual: <span className="font-medium">{projections.currentAverageScore}</span> → Potencial: <span className="font-bold text-emerald-600">{projections.bestCaseScore}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              {/* Score gauge */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1">
+                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-red-500 via-amber-500 via-emerald-500 to-blue-500 rounded-full transition-all duration-1000"
+                      style={{ width: `${((projections.currentAverageScore - 300) / 550) * 100}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>300</span>
+                    <span>580</span>
+                    <span>670</span>
+                    <span>740</span>
+                    <span>850</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Projection summary */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="text-center p-3 bg-gray-50 rounded-xl">
+                  <p className="text-xs text-gray-500">Actual</p>
+                  <p className="text-xl font-bold text-gray-900">{projections.currentAverageScore}</p>
+                  <p className="text-xs text-gray-400">{projections.currentCategory?.range}</p>
+                </div>
+                <div className="text-center p-3 bg-emerald-50 rounded-xl">
+                  <p className="text-xs text-emerald-600">Conservador</p>
+                  <p className="text-xl font-bold text-emerald-700">{projections.conservativeScore}</p>
+                  <p className="text-xs text-emerald-500">+{projections.conservativeScore - projections.currentAverageScore} pts</p>
+                </div>
+                <div className="text-center p-3 bg-indigo-50 rounded-xl">
+                  <p className="text-xs text-indigo-600">Mejor Caso</p>
+                  <p className="text-xl font-bold text-indigo-700">{projections.bestCaseScore}</p>
+                  <p className="text-xs text-indigo-500">+{projections.bestCaseScore - projections.currentAverageScore} pts</p>
+                </div>
+              </div>
+
+              {/* Step-by-step projection */}
+              {projections.projectionTimeline && projections.projectionTimeline.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Si se eliminan por prioridad:</h4>
+                  {projections.projectionTimeline.slice(0, 5).map((step, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg text-sm">
+                      <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                        {step.step}
+                      </span>
+                      <span className="flex-1 text-gray-700 truncate">{step.itemRemoved}</span>
+                      <span className="text-emerald-600 font-medium whitespace-nowrap">+{step.pointsGained} pts</span>
+                      <span className="text-gray-500 font-medium whitespace-nowrap">→ {step.cumulativeScore}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* High Impact Items */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl text-white">
+                  <Target size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Items de Mayor Impacto</h2>
+                  <p className="text-sm text-gray-500">{projections.totalNegativeItems} items negativos activos</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-3">
+              {(projections.topPriorityItems || projections.itemImpacts?.slice(0, 5) || []).map((item, idx) => {
+                const priorityColors = {
+                  critical: 'bg-red-100 text-red-700 border-red-200',
+                  high: 'bg-amber-100 text-amber-700 border-amber-200',
+                  medium: 'bg-blue-100 text-blue-700 border-blue-200',
+                };
+                return (
+                  <div key={idx} className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${priorityColors[item.priority] || priorityColors.medium}`}>
+                            {item.priority === 'critical' ? '🔴 Crítico' : item.priority === 'high' ? '🟡 Alto' : '🔵 Medio'}
+                          </span>
+                          <span className="text-xs text-gray-400">{item.itemTypeName}</span>
+                        </div>
+                        <h4 className="font-medium text-gray-900 truncate">{item.creditorName}</h4>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {item.bureau} · ${parseFloat(item.balance || 0).toLocaleString()} · {item.status}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-emerald-600 font-bold text-sm">
+                          +{item.estimatedImpact?.estimatedMin}–{item.estimatedImpact?.estimatedMax}
+                        </p>
+                        <p className="text-xs text-gray-400">puntos</p>
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            item.priority === 'critical' ? 'bg-red-500' :
+                            item.priority === 'high' ? 'bg-amber-500' : 'bg-blue-500'
+                          }`}
+                          style={{ width: `${Math.min(100, (item.estimatedImpact?.estimatedMax / 150) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {projections.totalNegativeItems > 5 && (
+                <p className="text-center text-sm text-gray-500 pt-2">
+                  +{projections.totalNegativeItems - 5} items adicionales
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}
