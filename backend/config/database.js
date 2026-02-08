@@ -3,22 +3,58 @@ const { logger } = require('../utils/logger');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const pool = new Pool({
+// ─── Connection Pool Configuration ──────────────────────────────────────────
+// Tuned for production workload: ~20 concurrent connections with overflow handling
+const poolConfig = {
     connectionString: process.env.DATABASE_URL,
     ssl: isProduction && process.env.DATABASE_SSL === 'true' 
         ? { rejectUnauthorized: false } 
         : false,
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    // Pool sizing
+    max: parseInt(process.env.DB_POOL_MAX || '20', 10),            // Max connections in pool
+    min: parseInt(process.env.DB_POOL_MIN || '2', 10),             // Min idle connections kept warm
+    // Timeouts
+    idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),        // Close idle connections after 30s
+    connectionTimeoutMillis: parseInt(process.env.DB_CONNECT_TIMEOUT || '5000', 10), // Fail fast if DB unreachable
+    // Reaping — recycle connections to prevent memory leaks
+    maxLifetimeMillis: parseInt(process.env.DB_MAX_LIFETIME || '1800000', 10),      // 30 min max connection lifetime
+    // Statement timeout — kill long-running queries
+    statement_timeout: parseInt(process.env.DB_STATEMENT_TIMEOUT || '30000', 10),   // 30s query timeout
+    // Idle in transaction timeout
+    idle_in_transaction_session_timeout: parseInt(process.env.DB_IDLE_TX_TIMEOUT || '60000', 10), // 60s
+    // Connection-level settings applied on connect
+    application_name: 'credit-repair-pro',
+};
+
+const pool = new Pool(poolConfig);
+
+// ─── Pool Event Handlers ────────────────────────────────────────────────────
+let totalConnections = 0;
+
+pool.on('connect', (client) => {
+    totalConnections++;
+    if (!isProduction) logger.debug({ totalConnections }, 'Database connection acquired');
+    // Set per-connection search_path and timezone
+    client.query("SET timezone = 'UTC'").catch(() => {});
 });
 
-pool.on('connect', () => {
-    if (!isProduction) logger.debug('Database connection established');
+pool.on('remove', () => {
+    totalConnections = Math.max(0, totalConnections - 1);
+    if (!isProduction) logger.debug({ totalConnections }, 'Database connection removed');
 });
 
 pool.on('error', (err) => {
     logger.error({ err }, 'Unexpected database pool error');
+});
+
+// ─── Pool Health Metrics ────────────────────────────────────────────────────
+const getPoolStats = () => ({
+    totalCount: pool.totalCount,
+    idleCount: pool.idleCount,
+    waitingCount: pool.waitingCount,
+    maxConnections: poolConfig.max,
+    minConnections: poolConfig.min,
+    totalConnectionsCreated: totalConnections,
 });
 
 // Query helper with structured logging
@@ -61,5 +97,6 @@ const transaction = async (callback) => {
 module.exports = {
     pool,
     query,
-    transaction
+    transaction,
+    getPoolStats
 };

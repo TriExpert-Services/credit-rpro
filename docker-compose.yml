@@ -62,6 +62,35 @@ services:
     volumes:
       - ./backend/uploads:/app/uploads
 
+  # Automated database backup service (runs daily at 2 AM UTC)
+  db-backup:
+    image: postgres:15-alpine
+    container_name: credit-repair-backup
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-creditrepair}
+      POSTGRES_DB: ${POSTGRES_DB:-creditrepair}
+      POSTGRES_HOST: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:-changeme123}
+      BACKUP_RETENTION: ${BACKUP_RETENTION:-30}
+    volumes:
+      - ./backend/scripts:/scripts
+      - backup_data:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - credit-repair-network
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        chmod +x /scripts/backup-db.sh /scripts/restore-db.sh
+        echo "0 2 * * * /scripts/backup-db.sh >> /var/log/backup.log 2>&1" > /etc/crontabs/root
+        echo "Database backup cron installed (daily at 2:00 AM UTC)"
+        # Run initial backup on container start
+        /scripts/backup-db.sh || echo "Initial backup skipped (may be first run)"
+        crond -f -l 2
+
   frontend:
     build:
       context: ./frontend
@@ -99,6 +128,7 @@ services:
 
 volumes:
   postgres_data:
+  backup_data:
 
 networks:
   credit-repair-network:

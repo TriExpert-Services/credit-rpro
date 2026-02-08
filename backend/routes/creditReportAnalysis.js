@@ -545,11 +545,17 @@ router.delete('/items/:itemId', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Only admin or staff can delete items' });
     }
 
-    // Delete associated disputes first
-    await query(`DELETE FROM disputes WHERE credit_item_id = $1`, [itemId]);
+    // Soft delete associated disputes
+    await query(
+      `UPDATE disputes SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE credit_item_id = $1 AND deleted_at IS NULL`,
+      [itemId]
+    );
     
-    // Delete item
-    await query(`DELETE FROM credit_items WHERE id = $1`, [itemId]);
+    // Soft delete item
+    await query(
+      `UPDATE credit_items SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
+      [itemId]
+    );
 
     res.json({ success: true, message: 'Item deleted' });
 

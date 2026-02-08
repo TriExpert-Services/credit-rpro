@@ -19,66 +19,65 @@ router.get(
       return sendForbidden(res, 'Access denied');
     }
 
-    // Get latest credit scores
-    const scoresResult = await query(
-      `SELECT DISTINCT ON (bureau) bureau, score, score_date
-       FROM credit_scores
-       WHERE client_id = $1
-       ORDER BY bureau, score_date DESC`,
-      [clientId]
-    );
-
-    // Get credit items summary
-    const itemsResult = await query(
-      `SELECT status, COUNT(*) as count
-       FROM credit_items
-       WHERE client_id = $1
-       GROUP BY status`,
-      [clientId]
-    );
-
-    // Get disputes summary
-    const disputesResult = await query(
-      `SELECT status, COUNT(*) as count
-       FROM disputes
-       WHERE client_id = $1
-       GROUP BY status`,
-      [clientId]
-    );
-
-    // Get recent activity
-    const activityResult = await query(
-      `SELECT action, description, created_at
-       FROM activity_log
-       WHERE user_id = $1
-       ORDER BY created_at DESC
-       LIMIT 10`,
-      [clientId]
-    );
-
-    // Calculate score improvement - fixed query using DISTINCT ON per bureau
-    const improvementResult = await query(
-      `WITH first_scores AS (
-          SELECT DISTINCT ON (bureau) bureau, score
-          FROM credit_scores
-          WHERE client_id = $1
-          ORDER BY bureau, score_date ASC
+    // Run all independent queries in parallel (eliminates N+1 sequential bottleneck)
+    const [scoresResult, itemsResult, disputesResult, activityResult, improvementResult] = await Promise.all([
+      // Latest credit scores per bureau
+      query(
+        `SELECT DISTINCT ON (bureau) bureau, score, score_date
+         FROM credit_scores
+         WHERE client_id = $1
+         ORDER BY bureau, score_date DESC`,
+        [clientId]
       ),
-      latest_scores AS (
-          SELECT DISTINCT ON (bureau) bureau, score
-          FROM credit_scores
-          WHERE client_id = $1
-          ORDER BY bureau, score_date DESC
-      )
-      SELECT 
-          l.bureau,
-          f.score as first_score,
-          l.score as latest_score,
-          (l.score - f.score) as improvement
-      FROM latest_scores l
-      LEFT JOIN first_scores f ON l.bureau = f.bureau`,
-      [clientId]
-    );
+      // Credit items summary by status
+      query(
+        `SELECT status, COUNT(*) as count
+         FROM credit_items
+         WHERE client_id = $1 AND deleted_at IS NULL
+         GROUP BY status`,
+        [clientId]
+      ),
+      // Disputes summary by status
+      query(
+        `SELECT status, COUNT(*) as count
+         FROM disputes
+         WHERE client_id = $1 AND deleted_at IS NULL
+         GROUP BY status`,
+        [clientId]
+      ),
+      // Recent activity
+      query(
+        `SELECT action, description, created_at
+         FROM activity_log
+         WHERE user_id = $1
+         ORDER BY created_at DESC
+         LIMIT 10`,
+        [clientId]
+      ),
+      // Score improvement (first vs latest per bureau in single CTE)
+      query(
+        `WITH first_scores AS (
+            SELECT DISTINCT ON (bureau) bureau, score
+            FROM credit_scores
+            WHERE client_id = $1
+            ORDER BY bureau, score_date ASC
+        ),
+        latest_scores AS (
+            SELECT DISTINCT ON (bureau) bureau, score
+            FROM credit_scores
+            WHERE client_id = $1
+            ORDER BY bureau, score_date DESC
+        )
+        SELECT 
+            l.bureau,
+            f.score as first_score,
+            l.score as latest_score,
+            (l.score - f.score) as improvement
+        FROM latest_scores l
+        LEFT JOIN first_scores f ON l.bureau = f.bureau`,
+        [clientId]
+      ),
+    ]);
 
     sendSuccess(res, {
       currentScores: scoresResult.rows,
@@ -96,61 +95,62 @@ router.get(
   authenticateToken,
   requireStaff,
   asyncHandler(async (req, res) => {
-    // Total clients
-    const clientsResult = await query(
-      `SELECT COUNT(*) as total FROM users WHERE role = 'client'`
-    );
+    // Run all independent admin queries in parallel
+    const [
+      clientsResult,
+      activeSubsResult,
+      disputesByStatus,
+      revenueResult,
+      recentClientsResult,
+      revenueTrend,
+    ] = await Promise.all([
+      // Total clients
+      query(`SELECT COUNT(*) as total FROM users WHERE role = 'client' AND deleted_at IS NULL`),
+      // Active subscriptions
+      query(`SELECT COUNT(*) as active FROM client_profiles WHERE subscription_status = 'active'`),
+      // Disputes by status (also gives total via SUM)
+      query(`SELECT status, COUNT(*) as count FROM disputes WHERE deleted_at IS NULL GROUP BY status`),
+      // Revenue this month
+      query(
+        `SELECT COALESCE(SUM(amount), 0) as revenue
+         FROM payments
+         WHERE payment_status = 'completed'
+         AND deleted_at IS NULL
+         AND payment_date >= date_trunc('month', CURRENT_DATE)`
+      ),
+      // Recent clients
+      query(
+        `SELECT u.id, u.first_name, u.last_name, u.email, u.created_at,
+                cp.subscription_status
+         FROM users u
+         JOIN client_profiles cp ON u.id = cp.user_id
+         WHERE u.role = 'client' AND u.deleted_at IS NULL
+         ORDER BY u.created_at DESC
+         LIMIT 10`
+      ),
+      // Monthly revenue trend (last 6 months)
+      query(
+        `SELECT 
+          date_trunc('month', payment_date) as month,
+          SUM(amount) as total
+         FROM payments
+         WHERE payment_status = 'completed'
+         AND deleted_at IS NULL
+         AND payment_date >= CURRENT_DATE - INTERVAL '6 months'
+         GROUP BY date_trunc('month', payment_date)
+         ORDER BY month`
+      ),
+    ]);
 
-    // Active subscriptions
-    const activeSubsResult = await query(
-      `SELECT COUNT(*) as active FROM client_profiles WHERE subscription_status = 'active'`
-    );
-
-    // Total disputes
-    const disputesResult = await query(
-      `SELECT COUNT(*) as total FROM disputes`
-    );
-
-    // Revenue this month
-    const revenueResult = await query(
-      `SELECT COALESCE(SUM(amount), 0) as revenue
-       FROM payments
-       WHERE payment_status = 'completed'
-       AND payment_date >= date_trunc('month', CURRENT_DATE)`
-    );
-
-    // Recent clients (no password_hash or sensitive data)
-    const recentClientsResult = await query(
-      `SELECT u.id, u.first_name, u.last_name, u.email, u.created_at,
-              cp.subscription_status
-       FROM users u
-       JOIN client_profiles cp ON u.id = cp.user_id
-       WHERE u.role = 'client'
-       ORDER BY u.created_at DESC
-       LIMIT 10`
-    );
-
-    // Disputes by status
-    const disputesByStatus = await query(
-      `SELECT status, COUNT(*) as count FROM disputes GROUP BY status`
-    );
-
-    // Monthly revenue trend (last 6 months)
-    const revenueTrend = await query(
-      `SELECT 
-        date_trunc('month', payment_date) as month,
-        SUM(amount) as total
-       FROM payments
-       WHERE payment_status = 'completed'
-       AND payment_date >= CURRENT_DATE - INTERVAL '6 months'
-       GROUP BY date_trunc('month', payment_date)
-       ORDER BY month`
+    // Calculate total disputes from the grouped result
+    const totalDisputes = disputesByStatus.rows.reduce(
+      (sum, row) => sum + parseInt(row.count), 0
     );
 
     sendSuccess(res, {
       totalClients: parseInt(clientsResult.rows[0].total),
       activeSubscriptions: parseInt(activeSubsResult.rows[0].active),
-      totalDisputes: parseInt(disputesResult.rows[0].total),
+      totalDisputes,
       monthlyRevenue: parseFloat(revenueResult.rows[0].revenue),
       recentClients: recentClientsResult.rows,
       disputesByStatus: disputesByStatus.rows,

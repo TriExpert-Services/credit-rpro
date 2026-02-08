@@ -102,7 +102,7 @@ router.get(
              cp.subscription_status
       FROM users u
       LEFT JOIN client_profiles cp ON u.id = cp.user_id
-      WHERE 1=1
+      WHERE u.deleted_at IS NULL
     `;
     const params = [];
     let paramIndex = 1;
@@ -125,7 +125,7 @@ router.get(
     const result = await query(queryText, params);
 
     // Get total count with same filters
-    let countText = 'SELECT COUNT(*) FROM users u WHERE 1=1';
+    let countText = 'SELECT COUNT(*) FROM users u WHERE u.deleted_at IS NULL';
     const countParams = [];
     let countIndex = 1;
     if (role) {
@@ -165,7 +165,7 @@ router.delete(
 
     // Verify user exists and is not another admin
     const userResult = await query(
-      'SELECT id, role, email, first_name, last_name FROM users WHERE id = $1',
+      'SELECT id, role, email, first_name, last_name FROM users WHERE id = $1 AND deleted_at IS NULL',
       [userId]
     );
 
@@ -179,8 +179,21 @@ router.delete(
       return sendError(res, 'No puedes eliminar a otro administrador', 403);
     }
 
-    // Delete user — CASCADE will remove all related data
-    await query('DELETE FROM users WHERE id = $1', [userId]);
+    // Soft delete user — mark as deleted instead of physical removal
+    await query(
+      `UPDATE users SET deleted_at = CURRENT_TIMESTAMP, status = 'inactive', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
+      [userId]
+    );
+
+    // Soft delete all related data
+    await Promise.all([
+      query(`UPDATE credit_items SET deleted_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND deleted_at IS NULL`, [userId]),
+      query(`UPDATE disputes SET deleted_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND deleted_at IS NULL`, [userId]),
+      query(`UPDATE documents SET deleted_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND deleted_at IS NULL`, [userId]),
+      query(`UPDATE payments SET deleted_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND deleted_at IS NULL`, [userId]),
+      query(`UPDATE invoices SET deleted_at = CURRENT_TIMESTAMP WHERE client_id = $1 AND deleted_at IS NULL`, [userId]),
+      query(`UPDATE notifications SET deleted_at = CURRENT_TIMESTAMP WHERE recipient_id = $1 AND deleted_at IS NULL`, [userId]),
+    ]);
 
     // Explicit audit log for user deletion
     await auditFromRequest(

@@ -4,7 +4,7 @@
  *
  * @module utils/healthCheck
  */
-const { pool, query } = require('../config/database');
+const { pool, query, getPoolStats } = require('../config/database');
 const { logger } = require('./logger');
 
 /**
@@ -17,11 +17,7 @@ async function checkDatabase() {
     const result = await query('SELECT NOW() AS time, current_database() AS db, pg_postmaster_start_time() AS uptime');
     const row = result.rows[0];
     const latency = Date.now() - start;
-    const poolInfo = {
-      total: pool.totalCount,
-      idle: pool.idleCount,
-      waiting: pool.waitingCount,
-    };
+    const poolInfo = getPoolStats();
 
     return {
       status: latency < 1000 ? 'healthy' : 'degraded',

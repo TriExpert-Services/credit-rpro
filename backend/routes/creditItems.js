@@ -24,7 +24,7 @@ const {
  * Verify ownership of a credit item
  */
 const verifyItemOwnership = async (itemId, userId, userRole) => {
-  const result = await query('SELECT client_id FROM credit_items WHERE id = $1', [itemId]);
+  const result = await query('SELECT client_id FROM credit_items WHERE id = $1 AND deleted_at IS NULL', [itemId]);
   if (result.rows.length === 0) return { found: false };
   const item = result.rows[0];
   if (userRole === 'admin' || userRole === 'staff') return { found: true, owned: true };
@@ -46,8 +46,8 @@ router.get(
               ci.created_at, ci.updated_at,
               COUNT(d.id) as dispute_count
        FROM credit_items ci
-       LEFT JOIN disputes d ON ci.id = d.credit_item_id
-       WHERE ci.client_id = $1
+       LEFT JOIN disputes d ON ci.id = d.credit_item_id AND d.deleted_at IS NULL
+       WHERE ci.client_id = $1 AND ci.deleted_at IS NULL
        GROUP BY ci.id
        ORDER BY ci.created_at DESC
        LIMIT $2 OFFSET $3`,
@@ -55,7 +55,7 @@ router.get(
     );
 
     const countResult = await query(
-      'SELECT COUNT(*) FROM credit_items WHERE client_id = $1',
+      'SELECT COUNT(*) FROM credit_items WHERE client_id = $1 AND deleted_at IS NULL',
       [userId]
     );
 
@@ -86,8 +86,8 @@ router.get(
               ci.created_at, ci.updated_at,
               COUNT(d.id) as dispute_count
        FROM credit_items ci
-       LEFT JOIN disputes d ON ci.id = d.credit_item_id
-       WHERE ci.client_id = $1
+       LEFT JOIN disputes d ON ci.id = d.credit_item_id AND d.deleted_at IS NULL
+       WHERE ci.client_id = $1 AND ci.deleted_at IS NULL
        GROUP BY ci.id
        ORDER BY ci.created_at DESC`,
       [clientId]
@@ -160,7 +160,10 @@ router.delete(
     if (!ownership.found) return sendNotFound(res, 'Credit item');
     if (!ownership.owned) return sendForbidden(res, 'Access denied');
 
-    await query('DELETE FROM credit_items WHERE id = $1', [req.params.id]);
+    await query(
+      `UPDATE credit_items SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
+      [req.params.id]
+    );
     sendSuccess(res, {}, 'Credit item deleted');
   })
 );

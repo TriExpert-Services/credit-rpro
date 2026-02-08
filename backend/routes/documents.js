@@ -154,7 +154,7 @@ router.delete(
   authenticateToken,
   asyncHandler(async (req, res) => {
     const result = await query(
-      'SELECT id, client_id, file_path FROM documents WHERE id = $1',
+      'SELECT id, client_id, file_path FROM documents WHERE id = $1 AND deleted_at IS NULL',
       [req.params.id]
     );
 
@@ -178,7 +178,10 @@ router.delete(
       }
     }
 
-    await query('DELETE FROM documents WHERE id = $1', [req.params.id]);
+    await query(
+      `UPDATE documents SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1`,
+      [req.params.id]
+    );
     sendSuccess(res, {}, 'Document deleted successfully');
   })
 );

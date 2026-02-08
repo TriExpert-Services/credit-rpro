@@ -53,10 +53,10 @@ END $$;
 
 DO $$ 
 BEGIN
-    -- Add contract_id column
+    -- Add contract_id column (UUID type)
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                    WHERE table_name = 'consumer_rights_acknowledgments' AND column_name = 'contract_id') THEN
-        ALTER TABLE consumer_rights_acknowledgments ADD COLUMN contract_id INTEGER REFERENCES client_contracts(id);
+        ALTER TABLE consumer_rights_acknowledgments ADD COLUMN contract_id UUID REFERENCES client_contracts(id);
     END IF;
 
     -- Add acknowledgment_data column
@@ -98,11 +98,11 @@ END $$;
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS compliance_audit_log (
-    id SERIAL PRIMARY KEY,
-    client_id INTEGER REFERENCES users(id),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES users(id),
     action_type VARCHAR(100) NOT NULL,
     entity_type VARCHAR(50), -- 'contract', 'rights', 'fees', 'cancellation'
-    entity_id INTEGER,
+    entity_id UUID,
     old_values JSONB,
     new_values JSONB,
     ip_address VARCHAR(50),
@@ -116,8 +116,8 @@ CREATE TABLE IF NOT EXISTS compliance_audit_log (
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS email_log (
-    id SERIAL PRIMARY KEY,
-    client_id INTEGER REFERENCES users(id),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES users(id),
     email_type VARCHAR(100) NOT NULL, -- 'contract_confirmation', 'cancellation', 'rights', 'fees'
     recipient_email VARCHAR(255) NOT NULL,
     subject VARCHAR(500),
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS email_log (
 -- INDEXES FOR COMPLIANCE TABLES
 -- =====================================================
 
-CREATE INDEX IF NOT EXISTS idx_compliance_events_client ON compliance_events(client_id);
+CREATE INDEX IF NOT EXISTS idx_compliance_events_client ON compliance_events(user_id);
 CREATE INDEX IF NOT EXISTS idx_compliance_events_type ON compliance_events(event_type);
 CREATE INDEX IF NOT EXISTS idx_compliance_events_created ON compliance_events(created_at);
 
@@ -143,7 +143,7 @@ CREATE INDEX IF NOT EXISTS idx_email_log_client ON email_log(client_id);
 CREATE INDEX IF NOT EXISTS idx_email_log_type ON email_log(email_type);
 CREATE INDEX IF NOT EXISTS idx_email_log_sent ON email_log(sent_at);
 
-CREATE INDEX IF NOT EXISTS idx_cancellation_requests_client ON cancellation_requests(client_id);
+CREATE INDEX IF NOT EXISTS idx_cancellation_requests_client ON cancellation_requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_cancellation_requests_status ON cancellation_requests(status);
 
 -- =====================================================
@@ -165,18 +165,18 @@ SELECT
     cc.cancelled_at,
     cra.acknowledged_at AS rights_acknowledged,
     fd.acknowledged_at AS fees_acknowledged,
-    fd.total_amount AS disclosed_amount,
-    (SELECT COUNT(*) FROM compliance_events WHERE client_id = u.id) AS total_compliance_events,
-    (SELECT COUNT(*) FROM cancellation_requests WHERE client_id = u.id) AS cancellation_requests
+    fd.total_cost AS disclosed_amount,
+    (SELECT COUNT(*) FROM compliance_events WHERE user_id = u.id) AS total_compliance_events,
+    (SELECT COUNT(*) FROM cancellation_requests WHERE user_id = u.id) AS cancellation_requests
 FROM users u
 LEFT JOIN client_contracts cc ON u.id = cc.client_id AND cc.id = (
     SELECT id FROM client_contracts WHERE client_id = u.id ORDER BY signed_at DESC LIMIT 1
 )
-LEFT JOIN consumer_rights_acknowledgments cra ON u.id = cra.client_id AND cra.id = (
-    SELECT id FROM consumer_rights_acknowledgments WHERE client_id = u.id ORDER BY acknowledged_at DESC LIMIT 1
+LEFT JOIN consumer_rights_acknowledgments cra ON u.id = cra.user_id AND cra.id = (
+    SELECT id FROM consumer_rights_acknowledgments WHERE user_id = u.id ORDER BY acknowledged_at DESC LIMIT 1
 )
-LEFT JOIN fee_disclosures fd ON u.id = fd.client_id AND fd.id = (
-    SELECT id FROM fee_disclosures WHERE client_id = u.id ORDER BY acknowledged_at DESC LIMIT 1
+LEFT JOIN fee_disclosures fd ON u.id = fd.user_id AND fd.id = (
+    SELECT id FROM fee_disclosures WHERE user_id = u.id ORDER BY acknowledged_at DESC LIMIT 1
 )
 WHERE u.role = 'client';
 
