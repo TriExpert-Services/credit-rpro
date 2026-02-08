@@ -56,11 +56,11 @@ export default function AdminCompliance() {
 
   const getEventIcon = (type) => {
     switch (type) {
-      case 'contract_signed': return <FileText className="w-4 h-4 text-green-600" />;
-      case 'rights_acknowledged': return <Shield className="w-4 h-4 text-blue-600" />;
+      case 'contract_signed': return <FileText className="w-4 h-4 text-emerald-400" />;
+      case 'rights_acknowledged': return <Shield className="w-4 h-4 text-sky-400" />;
       case 'fees_acknowledged': return <DollarSign className="w-4 h-4 text-emerald-600" />;
-      case 'contract_cancelled': return <XCircle className="w-4 h-4 text-red-600" />;
-      default: return <Activity className="w-4 h-4 text-gray-600" />;
+      case 'contract_cancelled': return <XCircle className="w-4 h-4 text-rose-400" />;
+      default: return <Activity className="w-4 h-4 text-slate-300" />;
     }
   };
 
@@ -86,12 +86,12 @@ export default function AdminCompliance() {
   });
 
   const StatCard = ({ icon: Icon, label, value, color, subtext }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border border-slate-700/30 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500">{label}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
-          {subtext && <p className="text-xs text-gray-400 mt-1">{subtext}</p>}
+          <p className="text-sm text-slate-400">{label}</p>
+          <p className="text-3xl font-bold text-white mt-1">{value}</p>
+          {subtext && <p className="text-xs text-slate-500 mt-1">{subtext}</p>}
         </div>
         <div className={`p-4 rounded-xl ${color}`}>
           <Icon className="w-6 h-6 text-white" />
@@ -105,8 +105,8 @@ export default function AdminCompliance() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Cumplimiento Legal</h1>
-          <p className="text-gray-500 mt-1">Registros de compliance CROA, FCRA, GLBA</p>
+          <h1 className="text-2xl font-bold text-white">Cumplimiento Legal</h1>
+          <p className="text-slate-400 mt-1">Registros de compliance CROA, FCRA, GLBA</p>
         </div>
         <button
           onClick={loadComplianceData}
@@ -130,13 +130,13 @@ export default function AdminCompliance() {
           icon={CheckCircle}
           label="Contratos Activos"
           value={stats.activeContracts}
-          color="bg-green-500"
+          color="bg-emerald-500"
         />
         <StatCard
           icon={XCircle}
           label="Cancelaciones"
           value={stats.cancellations}
-          color="bg-red-500"
+          color="bg-rose-500"
         />
         <StatCard
           icon={AlertTriangle}
@@ -147,8 +147,8 @@ export default function AdminCompliance() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="border-b border-gray-200">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border border-slate-700/30">
+        <div className="border-b border-slate-700/50">
           <nav className="flex -mb-px">
             {[
               { id: 'events', label: 'Eventos de Compliance', icon: Activity },
@@ -160,8 +160,8 @@ export default function AdminCompliance() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-indigo-600 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-indigo-600 text-indigo-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-600/50'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -172,22 +172,22 @@ export default function AdminCompliance() {
         </div>
 
         {/* Filters */}
-        <div className="p-4 border-b border-gray-100 bg-gray-50">
+        <div className="p-4 border-b border-slate-700/30 bg-slate-700/30">
           <div className="flex flex-wrap gap-4 items-center">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="text"
                 placeholder="Buscar por nombre o email..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-slate-700/50 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
             <select
               value={filters.eventType}
               onChange={(e) => setFilters(prev => ({ ...prev, eventType: e.target.value }))}
-              className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="px-4 py-2 border border-slate-700/50 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             >
               <option value="">Todos los eventos</option>
               <option value="contract_signed">Contratos Firmados</option>
@@ -202,12 +202,12 @@ export default function AdminCompliance() {
         <div className="p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
             </div>
           ) : activeTab === 'events' ? (
             <div className="space-y-4">
               {filteredEvents.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-slate-400">
                   <Activity className="w-12 h-12 mx-auto mb-4 opacity-30" />
                   <p>No hay eventos de compliance registrados</p>
                 </div>
@@ -215,31 +215,31 @@ export default function AdminCompliance() {
                 filteredEvents.map((event, index) => (
                   <div
                     key={event.id || index}
-                    className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors"
                   >
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <div className="p-2 bg-slate-800/50 rounded-lg shadow-sm">
                       {getEventIcon(event.event_type)}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-white">
                           {getEventLabel(event.event_type)}
                         </span>
                         <span className={`px-2 py-0.5 text-xs rounded-full ${
-                          event.compliance_law === 'CROA' ? 'bg-blue-100 text-blue-700' :
-                          event.compliance_law === 'FCRA' ? 'bg-green-100 text-green-700' :
-                          'bg-gray-100 text-gray-700'
+                          event.compliance_law === 'CROA' ? 'bg-sky-500/20 text-sky-400' :
+                          event.compliance_law === 'FCRA' ? 'bg-emerald-500/20 text-emerald-400' :
+                          'bg-slate-700/50 text-slate-300'
                         }`}>
                           {event.compliance_law}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-slate-300 mt-1">
                         {event.email || 'Usuario'} - {event.first_name} {event.last_name}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-slate-500 mt-1">
                         {event.description}
                       </p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                      <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           {new Date(event.created_at).toLocaleString('es-ES')}
@@ -247,7 +247,7 @@ export default function AdminCompliance() {
                         <span>IP: {event.ip_address || 'N/A'}</span>
                       </div>
                     </div>
-                    <button className="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
+                    <button className="p-2 text-slate-500 hover:text-indigo-400 transition-colors">
                       <Eye className="w-4 h-4" />
                     </button>
                   </div>
@@ -255,12 +255,12 @@ export default function AdminCompliance() {
               )}
             </div>
           ) : activeTab === 'contracts' ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-slate-400">
               <FileText className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p>Vista de contratos en desarrollo</p>
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-slate-400">
               <Shield className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p>Vista de auditoría en desarrollo</p>
             </div>
@@ -269,12 +269,12 @@ export default function AdminCompliance() {
       </div>
 
       {/* Legal Notice */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
         <div className="flex items-start gap-4">
           <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0" />
           <div>
-            <h3 className="font-semibold text-amber-900">Nota de Cumplimiento Legal</h3>
-            <p className="text-sm text-amber-800 mt-1">
+            <h3 className="font-semibold text-amber-400">Nota de Cumplimiento Legal</h3>
+            <p className="text-sm text-amber-400 mt-1">
               Todos los registros mostrados aquí son requeridos por las leyes CROA, FCRA y GLBA. 
               Estos registros deben mantenerse por un mínimo de 5 años y estar disponibles para 
               inspección por parte de reguladores federales y estatales.

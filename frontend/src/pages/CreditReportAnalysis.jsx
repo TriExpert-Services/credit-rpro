@@ -10,9 +10,9 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar } from 'recharts';
 
 const bureaus = [
-  { id: 'experian', name: 'Experian', color: 'from-blue-500 to-blue-600', bg: 'bg-blue-500', light: 'bg-blue-50', text: 'text-blue-600' },
-  { id: 'equifax', name: 'Equifax', color: 'from-red-500 to-red-600', bg: 'bg-red-500', light: 'bg-red-50', text: 'text-red-600' },
-  { id: 'transunion', name: 'TransUnion', color: 'from-green-500 to-green-600', bg: 'bg-green-500', light: 'bg-green-50', text: 'text-green-600' }
+  { id: 'experian', name: 'Experian', color: 'from-blue-500 to-blue-600', bg: 'bg-sky-500', light: 'bg-sky-500/10', text: 'text-sky-400' },
+  { id: 'equifax', name: 'Equifax', color: 'from-red-500 to-red-600', bg: 'bg-rose-500', light: 'bg-rose-500/10', text: 'text-rose-400' },
+  { id: 'transunion', name: 'TransUnion', color: 'from-green-500 to-green-600', bg: 'bg-emerald-500', light: 'bg-emerald-500/10', text: 'text-emerald-400' }
 ];
 
 export default function CreditReportAnalysis() {
@@ -167,28 +167,28 @@ export default function CreditReportAnalysis() {
 
   const getStatusConfig = (status) => {
     const configs = {
-      identified: { bg: 'bg-amber-100', text: 'text-amber-700', icon: AlertCircle, label: 'Identificado' },
-      in_dispute: { bg: 'bg-blue-100', text: 'text-blue-700', icon: FileText, label: 'En Disputa' },
+      identified: { bg: 'bg-amber-500/20', text: 'text-amber-700', icon: AlertCircle, label: 'Identificado' },
+      in_dispute: { bg: 'bg-sky-500/20', text: 'text-sky-400', icon: FileText, label: 'En Disputa' },
       resolved: { bg: 'bg-emerald-100', text: 'text-emerald-700', icon: CheckCircle, label: 'Resuelto' },
-      deleted: { bg: 'bg-gray-100', text: 'text-gray-700', icon: X, label: 'Eliminado' }
+      deleted: { bg: 'bg-slate-700/50', text: 'text-slate-300', icon: X, label: 'Eliminado' }
     };
     return configs[status] || configs.identified;
   };
 
   const getScoreCategory = (score) => {
     if (score >= 750) return { label: 'Excelente', color: 'text-emerald-600', bg: 'bg-emerald-500' };
-    if (score >= 700) return { label: 'Bueno', color: 'text-blue-600', bg: 'bg-blue-500' };
+    if (score >= 700) return { label: 'Bueno', color: 'text-sky-400', bg: 'bg-sky-500' };
     if (score >= 650) return { label: 'Regular', color: 'text-amber-600', bg: 'bg-amber-500' };
     if (score >= 600) return { label: 'Bajo', color: 'text-orange-600', bg: 'bg-orange-500' };
-    return { label: 'Muy Bajo', color: 'text-red-600', bg: 'bg-red-500' };
+    return { label: 'Muy Bajo', color: 'text-rose-400', bg: 'bg-rose-500' };
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 font-medium">Cargando análisis...</p>
+          <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400 font-medium">Cargando análisis...</p>
         </div>
       </div>
     );
@@ -199,12 +199,12 @@ export default function CreditReportAnalysis() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white shadow-lg shadow-indigo-200">
+          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white shadow-lg shadow-indigo-500/25">
             <Brain size={28} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Análisis IA de Crédito</h1>
-            <p className="text-gray-500">Analiza tus reportes con inteligencia artificial</p>
+            <h1 className="text-2xl font-bold text-white">Análisis IA de Crédito</h1>
+            <p className="text-slate-400">Analiza tus reportes con inteligencia artificial</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -218,89 +218,89 @@ export default function CreditReportAnalysis() {
       {/* Stats Cards */}
       {creditItems.length > 0 && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-indigo-100 rounded-xl">
-                <Target size={20} className="text-indigo-600" />
+              <div className="p-2 bg-indigo-500/20 rounded-xl">
+                <Target size={20} className="text-indigo-400" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-            <p className="text-sm text-gray-500">Total Items</p>
+            <p className="text-2xl font-bold text-white">{stats.total}</p>
+            <p className="text-sm text-slate-400">Total Items</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-amber-100 rounded-xl">
+              <div className="p-2 bg-amber-500/20 rounded-xl">
                 <AlertCircle size={20} className="text-amber-600" />
               </div>
             </div>
             <p className="text-2xl font-bold text-amber-600">{stats.identified}</p>
-            <p className="text-sm text-gray-500">Identificados</p>
+            <p className="text-sm text-slate-400">Identificados</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-blue-100 rounded-xl">
-                <FileText size={20} className="text-blue-600" />
+              <div className="p-2 bg-sky-500/20 rounded-xl">
+                <FileText size={20} className="text-sky-400" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-blue-600">{stats.inDispute}</p>
-            <p className="text-sm text-gray-500">En Disputa</p>
+            <p className="text-2xl font-bold text-sky-400">{stats.inDispute}</p>
+            <p className="text-sm text-slate-400">En Disputa</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 bg-emerald-100 rounded-xl">
                 <CheckCircle size={20} className="text-emerald-600" />
               </div>
             </div>
             <p className="text-2xl font-bold text-emerald-600">{stats.resolved}</p>
-            <p className="text-sm text-gray-500">Resueltos</p>
+            <p className="text-sm text-slate-400">Resueltos</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 bg-rose-100 rounded-xl">
                 <TrendingUp size={20} className="text-rose-600" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">${stats.totalBalance.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Balance Total</p>
+            <p className="text-2xl font-bold text-white">${stats.totalBalance.toLocaleString()}</p>
+            <p className="text-sm text-slate-400">Balance Total</p>
           </div>
         </div>
       )}
 
       {/* Upload Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+        <div className="p-6 border-b border-slate-700/30">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl text-white">
               <Upload size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Subir Reportes de Crédito</h2>
-              <p className="text-sm text-gray-500">Arrastra o selecciona tus reportes de los 3 burós</p>
+              <h2 className="text-lg font-semibold text-white">Subir Reportes de Crédito</h2>
+              <p className="text-sm text-slate-400">Arrastra o selecciona tus reportes de los 3 burós</p>
             </div>
           </div>
         </div>
 
         <div className="p-6">
           {/* How it works */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+          <div className="mb-6 p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl border border-indigo-500/30">
             <div className="flex items-center gap-2 mb-3">
-              <Zap size={18} className="text-indigo-600" />
-              <span className="font-semibold text-indigo-900">¿Cómo funciona?</span>
+              <Zap size={18} className="text-indigo-400" />
+              <span className="font-semibold text-indigo-400">¿Cómo funciona?</span>
             </div>
             <div className="flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                <span className="text-gray-700">Sube tus reportes</span>
+                <span className="text-slate-300">Sube tus reportes</span>
               </div>
-              <ChevronRight size={16} className="text-gray-400 hidden sm:block" />
+              <ChevronRight size={16} className="text-slate-500 hidden sm:block" />
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                <span className="text-gray-700">IA analiza items negativos</span>
+                <span className="text-slate-300">IA analiza items negativos</span>
               </div>
-              <ChevronRight size={16} className="text-gray-400 hidden sm:block" />
+              <ChevronRight size={16} className="text-slate-500 hidden sm:block" />
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                <span className="text-gray-700">Genera disputas automáticas</span>
+                <span className="text-slate-300">Genera disputas automáticas</span>
               </div>
             </div>
           </div>
@@ -315,10 +315,10 @@ export default function CreditReportAnalysis() {
                 onDrop={(e) => handleDrop(bureau.id, e)}
                 className={`relative border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer hover:shadow-md ${
                   files[bureau.id] 
-                    ? 'border-emerald-400 bg-emerald-50' 
+                    ? 'border-emerald-400 bg-emerald-500/10' 
                     : dragOver === bureau.id 
-                      ? 'border-indigo-400 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-indigo-400 bg-indigo-500/15'
+                      : 'border-slate-700/50 hover:border-slate-600/50'
                 }`}
               >
                 <input
@@ -332,7 +332,7 @@ export default function CreditReportAnalysis() {
                   <span className="text-lg font-bold">{bureau.name[0]}</span>
                 </div>
                 
-                <h3 className="text-center font-semibold text-gray-900 mb-2">{bureau.name}</h3>
+                <h3 className="text-center font-semibold text-white mb-2">{bureau.name}</h3>
                 
                 {files[bureau.id] ? (
                   <div className="text-center">
@@ -344,7 +344,7 @@ export default function CreditReportAnalysis() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-center text-sm text-gray-500">
+                  <p className="text-center text-sm text-slate-400">
                     Arrastra o haz clic para subir
                   </p>
                 )}
@@ -354,17 +354,17 @@ export default function CreditReportAnalysis() {
 
           {/* Messages */}
           {error && (
-            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-4">
-              <AlertCircle size={20} className="text-red-600 shrink-0" />
-              <p className="text-red-700">{error}</p>
-              <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-red-600">
+            <div className="flex items-center gap-3 p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl mb-4">
+              <AlertCircle size={20} className="text-rose-400 shrink-0" />
+              <p className="text-rose-400">{error}</p>
+              <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-rose-400">
                 <X size={18} />
               </button>
             </div>
           )}
 
           {success && (
-            <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl mb-4">
+            <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl mb-4">
               <CheckCircle size={20} className="text-emerald-600 shrink-0" />
               <p className="text-emerald-700">{success}</p>
               <button onClick={() => setSuccess('')} className="ml-auto text-emerald-400 hover:text-emerald-600">
@@ -379,8 +379,8 @@ export default function CreditReportAnalysis() {
             disabled={uploading || Object.keys(files).length === 0}
             className={`w-full py-4 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-3 ${
               uploading || Object.keys(files).length === 0 
-                ? 'bg-gray-300 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-200 hover:shadow-xl'
+                ? 'bg-slate-600 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25 hover:shadow-xl'
             }`}
           >
             {uploading ? (
@@ -400,15 +400,15 @@ export default function CreditReportAnalysis() {
 
       {/* Credit Scores Section */}
       {scores && scores.latestScores && scores.latestScores.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+          <div className="p-6 border-b border-slate-700/30">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl text-white">
                 <TrendingUp size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Puntajes de Crédito</h2>
-                <p className="text-sm text-gray-500">Resumen de tus puntajes actuales</p>
+                <h2 className="text-lg font-semibold text-white">Puntajes de Crédito</h2>
+                <p className="text-sm text-slate-400">Resumen de tus puntajes actuales</p>
               </div>
             </div>
           </div>
@@ -417,7 +417,7 @@ export default function CreditReportAnalysis() {
             <div className="grid md:grid-cols-4 gap-4 mb-6">
               {/* Average Score */}
               <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-800/50/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <p className="text-purple-200 text-sm mb-1">Promedio</p>
                 <p className="text-5xl font-bold mb-2">{scores.averageScore || '--'}</p>
                 {scores.averageScore && (
@@ -434,7 +434,7 @@ export default function CreditReportAnalysis() {
                 const category = getScoreCategory(score.score);
                 return (
                   <div key={score.bureau} className={`bg-gradient-to-br ${bureau?.color || 'from-gray-500 to-gray-600'} rounded-2xl p-6 text-white relative overflow-hidden`}>
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-slate-800/50/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                     <p className="text-white/80 text-sm mb-1">{bureau?.name || score.bureau}</p>
                     <p className="text-4xl font-bold mb-2">{score.score}</p>
                     {improvement !== 0 && (
@@ -450,8 +450,8 @@ export default function CreditReportAnalysis() {
 
             {/* Score History Chart */}
             {scores.scoreHistory && scores.scoreHistory.length > 0 && (
-              <div className="bg-gray-50 rounded-xl p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Historial de Puntajes</h3>
+              <div className="bg-slate-700/30 rounded-xl p-4">
+                <h3 className="font-semibold text-white mb-4">Historial de Puntajes</h3>
                 <div className="h-48">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={scores.scoreHistory.slice(-12)}>
@@ -483,20 +483,20 @@ export default function CreditReportAnalysis() {
 
       {/* Anomaly Alerts */}
       {anomalies && anomalies.totalAlerts > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+          <div className="p-6 border-b border-slate-700/30">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl text-white">
                 <AlertTriangle size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Alertas Detectadas</h2>
-                <p className="text-sm text-gray-500">
-                  {anomalies.criticalCount > 0 && <span className="text-red-600 font-medium">{anomalies.criticalCount} críticas</span>}
+                <h2 className="text-lg font-semibold text-white">Alertas Detectadas</h2>
+                <p className="text-sm text-slate-400">
+                  {anomalies.criticalCount > 0 && <span className="text-rose-400 font-medium">{anomalies.criticalCount} críticas</span>}
                   {anomalies.criticalCount > 0 && anomalies.warningCount > 0 && ' · '}
                   {anomalies.warningCount > 0 && <span className="text-amber-600 font-medium">{anomalies.warningCount} advertencias</span>}
                   {(anomalies.criticalCount > 0 || anomalies.warningCount > 0) && anomalies.infoCount > 0 && ' · '}
-                  {anomalies.infoCount > 0 && <span className="text-blue-600">{anomalies.infoCount} informativas</span>}
+                  {anomalies.infoCount > 0 && <span className="text-sky-400">{anomalies.infoCount} informativas</span>}
                 </p>
               </div>
             </div>
@@ -506,31 +506,31 @@ export default function CreditReportAnalysis() {
               <div
                 key={idx}
                 className={`p-4 rounded-xl border-l-4 ${
-                  alert.severity === 'critical' ? 'bg-red-50 border-red-500' :
-                  alert.severity === 'warning' ? 'bg-amber-50 border-amber-500' :
-                  'bg-blue-50 border-blue-500'
+                  alert.severity === 'critical' ? 'bg-rose-500/10 border-rose-500' :
+                  alert.severity === 'warning' ? 'bg-amber-500/10 border-amber-500' :
+                  'bg-sky-500/10 border-sky-500'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`p-1.5 rounded-lg ${
-                    alert.severity === 'critical' ? 'bg-red-100' :
-                    alert.severity === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
+                    alert.severity === 'critical' ? 'bg-rose-500/20' :
+                    alert.severity === 'warning' ? 'bg-amber-500/20' : 'bg-sky-500/20'
                   }`}>
-                    {alert.type === 'sudden_drop' && <TrendingDown size={16} className={alert.severity === 'critical' ? 'text-red-600' : 'text-amber-600'} />}
+                    {alert.type === 'sudden_drop' && <TrendingDown size={16} className={alert.severity === 'critical' ? 'text-rose-400' : 'text-amber-600'} />}
                     {alert.type === 'bureau_inconsistency' && <Activity size={16} className="text-amber-600" />}
-                    {alert.type === 'stagnant_score' && <Minus size={16} className="text-blue-600" />}
-                    {alert.type === 'approaching_expiration' && <AlertCircle size={16} className={alert.severity === 'critical' ? 'text-red-600' : 'text-blue-600'} />}
+                    {alert.type === 'stagnant_score' && <Minus size={16} className="text-sky-400" />}
+                    {alert.type === 'approaching_expiration' && <AlertCircle size={16} className={alert.severity === 'critical' ? 'text-rose-400' : 'text-sky-400'} />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`font-medium text-sm ${
-                      alert.severity === 'critical' ? 'text-red-900' :
-                      alert.severity === 'warning' ? 'text-amber-900' : 'text-blue-900'
+                      alert.severity === 'critical' ? 'text-rose-400' :
+                      alert.severity === 'warning' ? 'text-amber-400' : 'text-sky-400'
                     }`}>
                       {alert.message}
                     </p>
-                    {alert.detail && <p className="text-xs text-gray-600 mt-1">{alert.detail}</p>}
+                    {alert.detail && <p className="text-xs text-slate-300 mt-1">{alert.detail}</p>}
                     {alert.recommendation && (
-                      <p className="text-xs mt-2 p-2 bg-white/60 rounded-lg">
+                      <p className="text-xs mt-2 p-2 bg-slate-800/50/60 rounded-lg">
                         💡 <strong>Recomendación:</strong> {alert.recommendation}
                       </p>
                     )}
@@ -546,15 +546,15 @@ export default function CreditReportAnalysis() {
       {projections && projections.totalNegativeItems > 0 && (
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Projection Timeline */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+            <div className="p-6 border-b border-slate-700/30">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl text-white">
                   <TrendingUp size={20} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Proyección de Mejora</h2>
-                  <p className="text-sm text-gray-500">
+                  <h2 className="text-lg font-semibold text-white">Proyección de Mejora</h2>
+                  <p className="text-sm text-slate-400">
                     Puntaje actual: <span className="font-medium">{projections.currentAverageScore}</span> → Potencial: <span className="font-bold text-emerald-600">{projections.bestCaseScore}</span>
                   </p>
                 </div>
@@ -564,13 +564,13 @@ export default function CreditReportAnalysis() {
               {/* Score gauge */}
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex-1">
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-red-500 via-amber-500 via-emerald-500 to-blue-500 rounded-full transition-all duration-1000"
                       style={{ width: `${((projections.currentAverageScore - 300) / 550) * 100}%` }}
                     ></div>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <div className="flex justify-between text-xs text-slate-500 mt-1">
                     <span>300</span>
                     <span>580</span>
                     <span>670</span>
@@ -582,18 +582,18 @@ export default function CreditReportAnalysis() {
 
               {/* Projection summary */}
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="text-center p-3 bg-gray-50 rounded-xl">
-                  <p className="text-xs text-gray-500">Actual</p>
-                  <p className="text-xl font-bold text-gray-900">{projections.currentAverageScore}</p>
-                  <p className="text-xs text-gray-400">{projections.currentCategory?.range}</p>
+                <div className="text-center p-3 bg-slate-700/30 rounded-xl">
+                  <p className="text-xs text-slate-400">Actual</p>
+                  <p className="text-xl font-bold text-white">{projections.currentAverageScore}</p>
+                  <p className="text-xs text-slate-500">{projections.currentCategory?.range}</p>
                 </div>
-                <div className="text-center p-3 bg-emerald-50 rounded-xl">
+                <div className="text-center p-3 bg-emerald-500/10 rounded-xl">
                   <p className="text-xs text-emerald-600">Conservador</p>
                   <p className="text-xl font-bold text-emerald-700">{projections.conservativeScore}</p>
                   <p className="text-xs text-emerald-500">+{projections.conservativeScore - projections.currentAverageScore} pts</p>
                 </div>
-                <div className="text-center p-3 bg-indigo-50 rounded-xl">
-                  <p className="text-xs text-indigo-600">Mejor Caso</p>
+                <div className="text-center p-3 bg-indigo-500/15 rounded-xl">
+                  <p className="text-xs text-indigo-400">Mejor Caso</p>
                   <p className="text-xl font-bold text-indigo-700">{projections.bestCaseScore}</p>
                   <p className="text-xs text-indigo-500">+{projections.bestCaseScore - projections.currentAverageScore} pts</p>
                 </div>
@@ -602,15 +602,15 @@ export default function CreditReportAnalysis() {
               {/* Step-by-step projection */}
               {projections.projectionTimeline && projections.projectionTimeline.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Si se eliminan por prioridad:</h4>
+                  <h4 className="text-sm font-medium text-slate-300 mb-2">Si se eliminan por prioridad:</h4>
                   {projections.projectionTimeline.slice(0, 5).map((step, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg text-sm">
+                    <div key={idx} className="flex items-center gap-3 p-2 bg-slate-700/30 rounded-lg text-sm">
                       <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
                         {step.step}
                       </span>
-                      <span className="flex-1 text-gray-700 truncate">{step.itemRemoved}</span>
+                      <span className="flex-1 text-slate-300 truncate">{step.itemRemoved}</span>
                       <span className="text-emerald-600 font-medium whitespace-nowrap">+{step.pointsGained} pts</span>
-                      <span className="text-gray-500 font-medium whitespace-nowrap">→ {step.cumulativeScore}</span>
+                      <span className="text-slate-400 font-medium whitespace-nowrap">→ {step.cumulativeScore}</span>
                     </div>
                   ))}
                 </div>
@@ -619,37 +619,37 @@ export default function CreditReportAnalysis() {
           </div>
 
           {/* High Impact Items */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+            <div className="p-6 border-b border-slate-700/30">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl text-white">
                   <Target size={20} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Items de Mayor Impacto</h2>
-                  <p className="text-sm text-gray-500">{projections.totalNegativeItems} items negativos activos</p>
+                  <h2 className="text-lg font-semibold text-white">Items de Mayor Impacto</h2>
+                  <p className="text-sm text-slate-400">{projections.totalNegativeItems} items negativos activos</p>
                 </div>
               </div>
             </div>
             <div className="p-6 space-y-3">
               {(projections.topPriorityItems || projections.itemImpacts?.slice(0, 5) || []).map((item, idx) => {
                 const priorityColors = {
-                  critical: 'bg-red-100 text-red-700 border-red-200',
-                  high: 'bg-amber-100 text-amber-700 border-amber-200',
-                  medium: 'bg-blue-100 text-blue-700 border-blue-200',
+                  critical: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+                  high: 'bg-amber-500/20 text-amber-700 border-amber-500/30',
+                  medium: 'bg-sky-500/20 text-sky-400 border-sky-500/30',
                 };
                 return (
-                  <div key={idx} className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                  <div key={idx} className="p-4 bg-slate-700/30 rounded-xl hover:bg-slate-700/50 transition-colors">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${priorityColors[item.priority] || priorityColors.medium}`}>
                             {item.priority === 'critical' ? '🔴 Crítico' : item.priority === 'high' ? '🟡 Alto' : '🔵 Medio'}
                           </span>
-                          <span className="text-xs text-gray-400">{item.itemTypeName}</span>
+                          <span className="text-xs text-slate-500">{item.itemTypeName}</span>
                         </div>
-                        <h4 className="font-medium text-gray-900 truncate">{item.creditorName}</h4>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <h4 className="font-medium text-white truncate">{item.creditorName}</h4>
+                        <p className="text-xs text-slate-400 mt-0.5">
                           {item.bureau} · ${parseFloat(item.balance || 0).toLocaleString()} · {item.status}
                         </p>
                       </div>
@@ -657,15 +657,15 @@ export default function CreditReportAnalysis() {
                         <p className="text-emerald-600 font-bold text-sm">
                           +{item.estimatedImpact?.estimatedMin}–{item.estimatedImpact?.estimatedMax}
                         </p>
-                        <p className="text-xs text-gray-400">puntos</p>
+                        <p className="text-xs text-slate-500">puntos</p>
                       </div>
                     </div>
                     <div className="mt-2">
-                      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            item.priority === 'critical' ? 'bg-red-500' :
-                            item.priority === 'high' ? 'bg-amber-500' : 'bg-blue-500'
+                            item.priority === 'critical' ? 'bg-rose-500' :
+                            item.priority === 'high' ? 'bg-amber-500' : 'bg-sky-500'
                           }`}
                           style={{ width: `${Math.min(100, (item.estimatedImpact?.estimatedMax / 150) * 100)}%` }}
                         ></div>
@@ -676,7 +676,7 @@ export default function CreditReportAnalysis() {
               })}
 
               {projections.totalNegativeItems > 5 && (
-                <p className="text-center text-sm text-gray-500 pt-2">
+                <p className="text-center text-sm text-slate-400 pt-2">
                   +{projections.totalNegativeItems - 5} items adicionales
                 </p>
               )}
@@ -686,23 +686,23 @@ export default function CreditReportAnalysis() {
       )}
 
       {/* Credit Items Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+        <div className="p-6 border-b border-slate-700/30">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl text-white">
                 <Shield size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Items Identificados para Disputa</h2>
-                <p className="text-sm text-gray-500">{creditItems.length} items encontrados en tus reportes</p>
+                <h2 className="text-lg font-semibold text-white">Items Identificados para Disputa</h2>
+                <p className="text-sm text-slate-400">{creditItems.length} items encontrados en tus reportes</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 onClick={fetchData}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                className="p-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-xl transition-colors"
               >
                 <RefreshCw size={20} />
               </button>
@@ -710,7 +710,7 @@ export default function CreditReportAnalysis() {
                 <button
                   onClick={handleGenerateDisputes}
                   disabled={generatingDisputes}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50"
                 >
                   {generatingDisputes ? (
                     <>
@@ -732,11 +732,11 @@ export default function CreditReportAnalysis() {
         <div className="p-6">
           {creditItems.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText size={32} className="text-gray-400" />
+              <div className="w-20 h-20 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText size={32} className="text-slate-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No hay items identificados aún</h3>
-              <p className="text-gray-500 max-w-md mx-auto">
+              <h3 className="text-lg font-medium text-white mb-2">No hay items identificados aún</h3>
+              <p className="text-slate-400 max-w-md mx-auto">
                 Sube tus reportes de crédito para que nuestra IA analice y detecte items negativos automáticamente.
               </p>
             </div>
@@ -750,11 +750,11 @@ export default function CreditReportAnalysis() {
                   const StatusIcon = statusConfig.icon;
                   
                   return (
-                    <div key={item.id} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors">
+                    <div key={item.id} className="p-4 bg-slate-700/30 hover:bg-slate-700/50 rounded-xl transition-colors">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`px-2 py-0.5 rounded text-xs text-white ${bureau?.bg || 'bg-gray-500'}`}>
+                            <span className={`px-2 py-0.5 rounded text-xs text-white ${bureau?.bg || 'bg-slate-700/300'}`}>
                               {bureau?.name || item.bureau}
                             </span>
                             <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${statusConfig.bg} ${statusConfig.text}`}>
@@ -762,21 +762,21 @@ export default function CreditReportAnalysis() {
                               {statusConfig.label}
                             </span>
                           </div>
-                          <h4 className="font-semibold text-gray-900 truncate">{item.creditor_name}</h4>
-                          <p className="text-sm text-gray-500">{item.account_number} • {item.item_type}</p>
+                          <h4 className="font-semibold text-white truncate">{item.creditor_name}</h4>
+                          <p className="text-sm text-slate-400">{item.account_number} • {item.item_type}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-900">${parseFloat(item.balance || 0).toLocaleString()}</p>
+                          <p className="font-bold text-white">${parseFloat(item.balance || 0).toLocaleString()}</p>
                           {item.dispute_id ? (
                             <a 
                               href={`/disputes/${item.dispute_id}`}
-                              className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-1 justify-end mt-1"
+                              className="text-sm text-indigo-400 hover:text-indigo-400 flex items-center gap-1 justify-end mt-1"
                             >
                               <Eye size={14} />
                               Ver Carta
                             </a>
                           ) : (
-                            <span className="text-xs text-gray-400">Pendiente</span>
+                            <span className="text-xs text-slate-500">Pendiente</span>
                           )}
                         </div>
                       </div>
@@ -787,8 +787,8 @@ export default function CreditReportAnalysis() {
 
               {/* Pie Chart */}
               {pieData.length > 0 && (
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <h3 className="font-semibold text-gray-900 mb-4 text-center">Distribución por Estado</h3>
+                <div className="bg-slate-700/30 rounded-xl p-4">
+                  <h3 className="font-semibold text-white mb-4 text-center">Distribución por Estado</h3>
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -813,7 +813,7 @@ export default function CreditReportAnalysis() {
                     {pieData.map((entry, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }}></div>
-                        <span className="text-xs text-gray-600">{entry.name}</span>
+                        <span className="text-xs text-slate-300">{entry.name}</span>
                       </div>
                     ))}
                   </div>
@@ -827,17 +827,17 @@ export default function CreditReportAnalysis() {
       {/* Analysis Result Modal */}
       {analysisResult && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-slate-700/30 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl text-white">
                   <BarChart3 size={20} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Resultado del Análisis</h3>
+                <h3 className="text-xl font-bold text-white">Resultado del Análisis</h3>
               </div>
               <button 
                 onClick={() => setAnalysisResult(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                className="p-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-xl transition-colors"
               >
                 <X size={20} />
               </button>
@@ -858,10 +858,10 @@ export default function CreditReportAnalysis() {
                 </div>
               )}
               
-              <div className="bg-indigo-50 p-4 rounded-xl">
+              <div className="bg-indigo-500/15 p-4 rounded-xl">
                 <div className="flex items-center gap-3 mb-2">
-                  <CheckCircle size={20} className="text-indigo-600" />
-                  <p className="font-semibold text-indigo-900">Items encontrados: {analysisResult.data?.totalItemsFound || 0}</p>
+                  <CheckCircle size={20} className="text-indigo-400" />
+                  <p className="font-semibold text-indigo-400">Items encontrados: {analysisResult.data?.totalItemsFound || 0}</p>
                 </div>
                 <p className="text-sm text-indigo-700">
                   Burós analizados: {analysisResult.data?.bureausAnalyzed?.join(', ') || 'N/A'}
@@ -869,10 +869,10 @@ export default function CreditReportAnalysis() {
               </div>
 
               {analysisResult.data?.errors?.length > 0 && (
-                <div className="bg-amber-50 p-4 rounded-xl">
+                <div className="bg-amber-500/10 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertCircle size={18} className="text-amber-600" />
-                    <p className="font-semibold text-amber-900">Advertencias</p>
+                    <p className="font-semibold text-amber-400">Advertencias</p>
                   </div>
                   {analysisResult.data.errors.map((err, idx) => (
                     <p key={idx} className="text-sm text-amber-700">{err.bureau}: {err.error}</p>

@@ -78,15 +78,15 @@ export default function FeeDisclosure() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-4 shadow-lg">
             <DollarSign className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             DIVULGACIÓN DE TARIFAS
           </h1>
-          <p className="text-gray-600">
+          <p className="text-slate-300">
             Requerido por la Ley CROA antes de procesar cualquier pago
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
           {/* Plan Summary */}
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
             <div className="flex items-center justify-between">
@@ -104,61 +104,61 @@ export default function FeeDisclosure() {
           <div className="p-8">
             {/* Fee Breakdown */}
             <section className="mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-600" />
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-indigo-400" />
                 Desglose de Tarifas
               </h3>
-              <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                  <span className="text-gray-700">Tarifa mensual de servicio</span>
+              <div className="bg-slate-700/30 rounded-xl p-6 space-y-4">
+                <div className="flex justify-between items-center pb-4 border-b border-slate-700/50">
+                  <span className="text-slate-300">Tarifa mensual de servicio</span>
                   <span className="font-semibold">${currentPlan.price}</span>
                 </div>
-                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                  <span className="text-gray-700">Cargo por configuración</span>
-                  <span className="font-semibold text-green-600">$0.00</span>
+                <div className="flex justify-between items-center pb-4 border-b border-slate-700/50">
+                  <span className="text-slate-300">Cargo por configuración</span>
+                  <span className="font-semibold text-emerald-400">$0.00</span>
                 </div>
-                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                  <span className="text-gray-700">Cargos ocultos</span>
-                  <span className="font-semibold text-green-600">NINGUNO</span>
+                <div className="flex justify-between items-center pb-4 border-b border-slate-700/50">
+                  <span className="text-slate-300">Cargos ocultos</span>
+                  <span className="font-semibold text-emerald-400">NINGUNO</span>
                 </div>
                 <div className="flex justify-between items-center pt-2">
-                  <span className="text-gray-900 font-bold">TOTAL MENSUAL</span>
-                  <span className="text-2xl font-bold text-indigo-600">${currentPlan.price}</span>
+                  <span className="text-white font-bold">TOTAL MENSUAL</span>
+                  <span className="text-2xl font-bold text-indigo-400">${currentPlan.price}</span>
                 </div>
               </div>
             </section>
 
             {/* Services Included */}
             <section className="mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-emerald-400" />
                 Servicios Incluidos
               </h3>
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+              <div className="bg-emerald-500/10 rounded-xl p-6 border border-emerald-500/30">
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
                     <span>Análisis completo de reportes de crédito</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
                     <span>Disputas con burós: {currentPlan.disputes}</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
                     <span>Cartas de disputa generadas por IA</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
                     <span>Seguimiento de progreso en tiempo real</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
                     <span>Soporte por email y chat</span>
                   </li>
                   {currentPlan.extras && (
                     <li className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <CheckCircle className="w-5 h-5 text-emerald-400" />
                       <span>Consultas telefónicas ilimitadas</span>
                     </li>
                   )}
@@ -168,15 +168,15 @@ export default function FeeDisclosure() {
 
             {/* Payment Schedule */}
             <section className="mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-indigo-600" />
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-indigo-400" />
                 Calendario de Pagos
               </h3>
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                <p className="text-blue-800 mb-4">
+              <div className="bg-sky-500/10 rounded-xl p-6 border border-sky-500/30">
+                <p className="text-sky-400 mb-4">
                   Su tarjeta será cargada <strong>mensualmente</strong> en la fecha de renovación:
                 </p>
-                <ul className="space-y-2 text-blue-700">
+                <ul className="space-y-2 text-sky-300">
                   <li>• Primer cargo: Después de completar el período de 3 días de cancelación</li>
                   <li>• Cargos subsiguientes: Mismo día de cada mes</li>
                   <li>• Puede cancelar en cualquier momento antes de la fecha de renovación</li>
@@ -186,66 +186,66 @@ export default function FeeDisclosure() {
 
             {/* Legal Acknowledgments */}
             <section className="mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Shield className="w-5 h-5 text-amber-600" />
                 Reconocimientos Legales Requeridos
               </h3>
               <div className="space-y-4">
                 <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  acknowledged.fees ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                  acknowledged.fees ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'
                 }`}>
                   <input
                     type="checkbox"
                     checked={acknowledged.fees}
                     onChange={() => handleAcknowledge('fees')}
-                    className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+                    className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
                   />
-                  <span className="text-gray-700">
+                  <span className="text-slate-300">
                     Entiendo que el costo total del servicio es <strong>${currentPlan.price}/mes</strong> y 
                     no hay cargos adicionales ocultos.
                   </span>
                 </label>
 
                 <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  acknowledged.noAdvanceFees ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                  acknowledged.noAdvanceFees ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'
                 }`}>
                   <input
                     type="checkbox"
                     checked={acknowledged.noAdvanceFees}
                     onChange={() => handleAcknowledge('noAdvanceFees')}
-                    className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+                    className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
                   />
-                  <span className="text-gray-700">
+                  <span className="text-slate-300">
                     Entiendo que bajo la Ley CROA, no se me cobrará hasta que los servicios hayan sido 
                     completamente prestados o se haya cumplido el período de espera de 3 días.
                   </span>
                 </label>
 
                 <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  acknowledged.cancellation ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                  acknowledged.cancellation ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'
                 }`}>
                   <input
                     type="checkbox"
                     checked={acknowledged.cancellation}
                     onChange={() => handleAcknowledge('cancellation')}
-                    className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+                    className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
                   />
-                  <span className="text-gray-700">
+                  <span className="text-slate-300">
                     Entiendo que puedo cancelar mi suscripción en cualquier momento y que tengo 
                     3 días hábiles para cancelar sin cargo alguno después de firmar el contrato.
                   </span>
                 </label>
 
                 <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  acknowledged.noGuarantee ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                  acknowledged.noGuarantee ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'
                 }`}>
                   <input
                     type="checkbox"
                     checked={acknowledged.noGuarantee}
                     onChange={() => handleAcknowledge('noGuarantee')}
-                    className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+                    className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
                   />
-                  <span className="text-gray-700">
+                  <span className="text-slate-300">
                     Entiendo que el pago de estas tarifas <strong>NO garantiza</strong> ningún resultado 
                     específico en mi reporte de crédito o puntaje.
                   </span>
@@ -254,7 +254,7 @@ export default function FeeDisclosure() {
             </section>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-xl border border-red-200">
+              <div className="mb-6 p-4 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/30">
                 {error}
               </div>
             )}
@@ -263,7 +263,7 @@ export default function FeeDisclosure() {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate(-1)}
-                className="flex-1 px-6 py-4 text-gray-600 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                className="flex-1 px-6 py-4 text-slate-300 bg-slate-700/50 rounded-xl font-medium hover:bg-slate-700 transition-colors"
               >
                 Volver
               </button>

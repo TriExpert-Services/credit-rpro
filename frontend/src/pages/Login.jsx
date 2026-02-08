@@ -180,7 +180,7 @@ export default function Login() {
                         </label>
                         <div className="relative group">
                           <div className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-slate-100 rounded-lg group-focus-within:bg-indigo-100 transition-colors duration-300">
-                            <Mail className="text-slate-400 group-focus-within:text-indigo-600 transition-colors duration-300" size={18} aria-hidden="true" />
+                            <Mail className="text-slate-400 group-focus-within:text-indigo-400 transition-colors duration-300" size={18} aria-hidden="true" />
                           </div>
                           <input
                             id="login-email"
@@ -201,7 +201,7 @@ export default function Login() {
                         </label>
                         <div className="relative group">
                           <div className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-slate-100 rounded-lg group-focus-within:bg-indigo-100 transition-colors duration-300">
-                            <Lock className="text-slate-400 group-focus-within:text-indigo-600 transition-colors duration-300" size={18} aria-hidden="true" />
+                            <Lock className="text-slate-400 group-focus-within:text-indigo-400 transition-colors duration-300" size={18} aria-hidden="true" />
                           </div>
                           <input
                             id="login-password"
@@ -233,7 +233,7 @@ export default function Login() {
                           </div>
                           <span className="text-slate-600 font-medium group-hover:text-slate-900 transition-colors">Recordarme</span>
                         </label>
-                        <Link to="/forgot-password" className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-all">
+                        <Link to="/forgot-password" className="text-indigo-400 hover:text-indigo-700 font-semibold hover:underline transition-all">
                           ¿Olvidaste tu contraseña?
                         </Link>
                       </div>

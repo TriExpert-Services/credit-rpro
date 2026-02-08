@@ -378,8 +378,8 @@ export default function ClientOnboarding() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Cargando...</p>
+          <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mx-auto mb-4" />
+          <p className="text-slate-300">Cargando...</p>
         </div>
       </div>
     );
@@ -390,15 +390,15 @@ export default function ClientOnboarding() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Registro de Cliente</h1>
-          <p className="text-gray-600">Complete la información requerida para comenzar su proceso de reparación de crédito</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Registro de Cliente</h1>
+          <p className="text-slate-300">Complete la información requerida para comenzar su proceso de reparación de crédito</p>
         </div>
 
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between relative">
             {/* Progress Line */}
-            <div className="absolute left-0 right-0 top-6 h-1 bg-gray-200 -z-10">
+            <div className="absolute left-0 right-0 top-6 h-1 bg-slate-700 -z-10">
               <div 
                 className="h-full bg-indigo-600 transition-all duration-500"
                 style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
@@ -415,16 +415,16 @@ export default function ClientOnboarding() {
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                       isCompleted
-                        ? 'bg-green-500 text-white'
+                        ? 'bg-emerald-500 text-white'
                         : isCurrent
                         ? 'bg-indigo-600 text-white ring-4 ring-indigo-200'
-                        : 'bg-gray-200 text-gray-400'
+                        : 'bg-slate-700 text-slate-500'
                     }`}
                   >
                     {isCompleted ? <CheckCircle size={24} /> : <Icon size={20} />}
                   </div>
                   <div className="mt-2 text-center hidden md:block">
-                    <p className={`text-xs font-medium ${isCurrent ? 'text-indigo-600' : 'text-gray-500'}`}>
+                    <p className={`text-xs font-medium ${isCurrent ? 'text-indigo-400' : 'text-slate-400'}`}>
                       {step.name}
                     </p>
                   </div>
@@ -435,29 +435,29 @@ export default function ClientOnboarding() {
           
           {/* Mobile Step Indicator */}
           <div className="md:hidden mt-4 text-center">
-            <p className="text-sm font-medium text-indigo-600">
+            <p className="text-sm font-medium text-indigo-400">
               Paso {currentStep} de {steps.length}: {steps[currentStep - 1].name}
             </p>
-            <p className="text-xs text-gray-500">{steps[currentStep - 1].description}</p>
+            <p className="text-xs text-slate-400">{steps[currentStep - 1].description}</p>
           </div>
         </div>
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
+          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-center gap-3 text-rose-400">
             <AlertCircle size={20} />
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
+          <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-3 text-emerald-400">
             <CheckCircle size={20} />
             {success}
           </div>
         )}
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/30 overflow-hidden">
           {/* Step Header */}
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
             <div className="flex items-center gap-3">
@@ -479,26 +479,26 @@ export default function ClientOnboarding() {
               <div className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Primer Nombre <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.firstName}
                       onChange={(e) => handleChange('firstName', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="Juan"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Segundo Nombre
                     </label>
                     <input
                       type="text"
                       value={formData.middleName}
                       onChange={(e) => handleChange('middleName', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="Antonio"
                     />
                   </div>
@@ -506,25 +506,25 @@ export default function ClientOnboarding() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Apellido <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.lastName}
                       onChange={(e) => handleChange('lastName', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="García"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Sufijo
                     </label>
                     <select
                       value={formData.suffix}
                       onChange={(e) => handleChange('suffix', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     >
                       <option value="">Ninguno</option>
                       <option value="Jr.">Jr.</option>
@@ -538,7 +538,7 @@ export default function ClientOnboarding() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       <Calendar size={16} className="inline mr-1" />
                       Fecha de Nacimiento <span className="text-red-500">*</span>
                     </label>
@@ -546,12 +546,12 @@ export default function ClientOnboarding() {
                       type="date"
                       value={formData.dateOfBirth}
                       onChange={(e) => handleChange('dateOfBirth', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       max={new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       <Lock size={16} className="inline mr-1" />
                       Número de Seguro Social (SSN) <span className="text-red-500">*</span>
                     </label>
@@ -559,11 +559,11 @@ export default function ClientOnboarding() {
                       type="text"
                       value={formData.ssn}
                       onChange={(e) => handleChange('ssn', formatSSN(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
                       placeholder="XXX-XX-XXXX"
                       maxLength={11}
                     />
-                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
                       <Shield size={12} />
                       Su SSN está encriptado y protegido
                     </p>
@@ -572,7 +572,7 @@ export default function ClientOnboarding() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       <Phone size={16} className="inline mr-1" />
                       Teléfono Principal <span className="text-red-500">*</span>
                     </label>
@@ -580,13 +580,13 @@ export default function ClientOnboarding() {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => handleChange('phone', formatPhone(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="(555) 123-4567"
                       maxLength={14}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       <Phone size={16} className="inline mr-1" />
                       Teléfono Alternativo
                     </label>
@@ -594,7 +594,7 @@ export default function ClientOnboarding() {
                       type="tel"
                       value={formData.alternatePhone}
                       onChange={(e) => handleChange('alternatePhone', formatPhone(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="(555) 123-4567"
                       maxLength={14}
                     />
@@ -602,7 +602,7 @@ export default function ClientOnboarding() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
                     <Mail size={16} className="inline mr-1" />
                     Correo Electrónico <span className="text-red-500">*</span>
                   </label>
@@ -610,7 +610,7 @@ export default function ClientOnboarding() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="correo@ejemplo.com"
                   />
                 </div>
@@ -621,52 +621,52 @@ export default function ClientOnboarding() {
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
                     Dirección (Línea 1) <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.currentAddress.street1}
                     onChange={(e) => handleChange('street1', e.target.value, 'currentAddress')}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="123 Main Street"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
                     Dirección (Línea 2)
                   </label>
                   <input
                     type="text"
                     value={formData.currentAddress.street2}
                     onChange={(e) => handleChange('street2', e.target.value, 'currentAddress')}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Apt 4B, Suite 100, etc."
                   />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Ciudad <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.currentAddress.city}
                       onChange={(e) => handleChange('city', e.target.value, 'currentAddress')}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="Miami"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Estado <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={formData.currentAddress.state}
                       onChange={(e) => handleChange('state', e.target.value, 'currentAddress')}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     >
                       <option value="">Seleccione</option>
                       {usStates.map(state => (
@@ -675,14 +675,14 @@ export default function ClientOnboarding() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Código Postal <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.currentAddress.zipCode}
                       onChange={(e) => handleChange('zipCode', e.target.value.replace(/\D/g, '').slice(0, 5), 'currentAddress')}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="33101"
                       maxLength={5}
                     />
@@ -691,24 +691,24 @@ export default function ClientOnboarding() {
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Fecha de Mudanza
                     </label>
                     <input
                       type="date"
                       value={formData.currentAddress.moveInDate}
                       onChange={(e) => handleChange('moveInDate', e.target.value, 'currentAddress')}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Tipo de Residencia
                     </label>
                     <select
                       value={formData.currentAddress.residenceType}
                       onChange={(e) => handleChange('residenceType', e.target.value, 'currentAddress')}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     >
                       <option value="rent">Alquiler</option>
                       <option value="own">Propia</option>
@@ -717,16 +717,16 @@ export default function ClientOnboarding() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">
                       Pago Mensual
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
                       <input
                         type="number"
                         value={formData.currentAddress.monthlyPayment}
                         onChange={(e) => handleChange('monthlyPayment', e.target.value, 'currentAddress')}
-                        className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full pl-8 pr-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         placeholder="1500"
                       />
                     </div>
@@ -738,8 +738,8 @@ export default function ClientOnboarding() {
             {/* Step 3: Previous Addresses */}
             {currentStep === 3 && (
               <div className="space-y-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-sky-500/10 border border-sky-500/30 rounded-xl p-4 mb-6">
+                  <p className="text-sm text-sky-400">
                     <AlertCircle size={16} className="inline mr-2" />
                     Por favor agregue todas las direcciones donde ha vivido en los últimos 2 años.
                     Esto es necesario para verificar su historial crediticio.
@@ -747,28 +747,28 @@ export default function ClientOnboarding() {
                 </div>
 
                 {formData.previousAddresses.map((address, index) => (
-                  <div key={index} className="bg-gray-50 rounded-xl p-6 relative">
+                  <div key={index} className="bg-slate-700/30 rounded-xl p-6 relative">
                     <button
                       onClick={() => removePreviousAddress(index)}
-                      className="absolute top-4 right-4 text-red-500 hover:text-red-700"
+                      className="absolute top-4 right-4 text-red-500 hover:text-rose-400"
                     >
                       ×
                     </button>
-                    <h4 className="font-semibold text-gray-700 mb-4">Dirección Anterior #{index + 1}</h4>
+                    <h4 className="font-semibold text-slate-300 mb-4">Dirección Anterior #{index + 1}</h4>
                     
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                       <input
                         type="text"
                         value={address.street1}
                         onChange={(e) => updatePreviousAddress(index, 'street1', e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl"
+                        className="px-4 py-3 border border-slate-700/50 rounded-xl"
                         placeholder="Dirección"
                       />
                       <input
                         type="text"
                         value={address.city}
                         onChange={(e) => updatePreviousAddress(index, 'city', e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl"
+                        className="px-4 py-3 border border-slate-700/50 rounded-xl"
                         placeholder="Ciudad"
                       />
                     </div>
@@ -777,7 +777,7 @@ export default function ClientOnboarding() {
                       <select
                         value={address.state}
                         onChange={(e) => updatePreviousAddress(index, 'state', e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl"
+                        className="px-4 py-3 border border-slate-700/50 rounded-xl"
                       >
                         <option value="">Estado</option>
                         {usStates.map(state => (
@@ -788,7 +788,7 @@ export default function ClientOnboarding() {
                         type="text"
                         value={address.zipCode}
                         onChange={(e) => updatePreviousAddress(index, 'zipCode', e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl"
+                        className="px-4 py-3 border border-slate-700/50 rounded-xl"
                         placeholder="ZIP"
                         maxLength={5}
                       />
@@ -796,14 +796,14 @@ export default function ClientOnboarding() {
                         type="date"
                         value={address.fromDate}
                         onChange={(e) => updatePreviousAddress(index, 'fromDate', e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl"
+                        className="px-4 py-3 border border-slate-700/50 rounded-xl"
                         placeholder="Desde"
                       />
                       <input
                         type="date"
                         value={address.toDate}
                         onChange={(e) => updatePreviousAddress(index, 'toDate', e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl"
+                        className="px-4 py-3 border border-slate-700/50 rounded-xl"
                         placeholder="Hasta"
                       />
                     </div>
@@ -812,13 +812,13 @@ export default function ClientOnboarding() {
 
                 <button
                   onClick={addPreviousAddress}
-                  className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-indigo-500 hover:text-indigo-600 transition-colors"
+                  className="w-full py-4 border-2 border-dashed border-slate-600/50 rounded-xl text-slate-400 hover:border-indigo-500 hover:text-indigo-400 transition-colors"
                 >
                   + Agregar Dirección Anterior
                 </button>
 
                 {formData.previousAddresses.length === 0 && (
-                  <p className="text-center text-gray-500 text-sm">
+                  <p className="text-center text-slate-400 text-sm">
                     Si ha vivido en su dirección actual por más de 2 años, puede continuar sin agregar direcciones anteriores.
                   </p>
                 )}
@@ -829,13 +829,13 @@ export default function ClientOnboarding() {
             {currentStep === 4 && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
                     Estado de Empleo <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formData.employment.status}
                     onChange={(e) => handleChange('status', e.target.value, 'employment')}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   >
                     <option value="employed">Empleado</option>
                     <option value="self-employed">Trabajador Independiente</option>
@@ -849,26 +849,26 @@ export default function ClientOnboarding() {
                   <>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-slate-300 mb-2">
                           Nombre del Empleador/Negocio <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={formData.employment.employerName}
                           onChange={(e) => handleChange('employerName', e.target.value, 'employment')}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Nombre de la empresa"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-slate-300 mb-2">
                           Cargo/Posición
                         </label>
                         <input
                           type="text"
                           value={formData.employment.jobTitle}
                           onChange={(e) => handleChange('jobTitle', e.target.value, 'employment')}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Su título o posición"
                         />
                       </div>
@@ -876,39 +876,39 @@ export default function ClientOnboarding() {
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-slate-300 mb-2">
                           Teléfono del Empleador
                         </label>
                         <input
                           type="tel"
                           value={formData.employment.employerPhone}
                           onChange={(e) => handleChange('employerPhone', formatPhone(e.target.value), 'employment')}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="(555) 123-4567"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-slate-300 mb-2">
                           Fecha de Inicio
                         </label>
                         <input
                           type="date"
                           value={formData.employment.startDate}
                           onChange={(e) => handleChange('startDate', e.target.value, 'employment')}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-slate-300 mb-2">
                         Dirección del Empleador
                       </label>
                       <input
                         type="text"
                         value={formData.employment.employerAddress}
                         onChange={(e) => handleChange('employerAddress', e.target.value, 'employment')}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         placeholder="Dirección completa"
                       />
                     </div>
@@ -916,20 +916,20 @@ export default function ClientOnboarding() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
                     Ingreso Mensual Aproximado
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
                     <input
                       type="number"
                       value={formData.employment.monthlyIncome}
                       onChange={(e) => handleChange('monthlyIncome', e.target.value, 'employment')}
-                      className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full pl-8 pr-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="5000"
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Esta información es confidencial y solo se usa para evaluar su caso.</p>
+                  <p className="text-xs text-slate-400 mt-1">Esta información es confidencial y solo se usa para evaluar su caso.</p>
                 </div>
               </div>
             )}
@@ -937,26 +937,26 @@ export default function ClientOnboarding() {
             {/* Step 5: Documents */}
             {currentStep === 5 && (
               <div className="space-y-6">
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-                  <p className="text-sm text-amber-800">
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-6">
+                  <p className="text-sm text-amber-400">
                     <Shield size={16} className="inline mr-2" />
                     Sus documentos están protegidos con encriptación de nivel bancario y solo son accesibles por personal autorizado.
                   </p>
                 </div>
 
                 {/* Government ID */}
-                <div className="border border-gray-200 rounded-xl p-6">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <div className="border border-slate-700/50 rounded-xl p-6">
+                  <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                     <CreditCard size={20} />
                     Identificación Gubernamental <span className="text-red-500">*</span>
                   </h4>
                   
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de ID</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Tipo de ID</label>
                     <select
                       value={formData.documents.governmentIdType}
                       onChange={(e) => handleChange('governmentIdType', e.target.value, 'documents')}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     >
                       <option value="drivers_license">Licencia de Conducir</option>
                       <option value="passport">Pasaporte</option>
@@ -965,7 +965,7 @@ export default function ClientOnboarding() {
                     </select>
                   </div>
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-500 transition-colors">
+                  <div className="border-2 border-dashed border-slate-600/50 rounded-xl p-6 text-center hover:border-indigo-500 transition-colors">
                     <input
                       type="file"
                       id="governmentId"
@@ -975,15 +975,15 @@ export default function ClientOnboarding() {
                     />
                     <label htmlFor="governmentId" className="cursor-pointer">
                       {formData.documents.governmentId ? (
-                        <div className="flex items-center justify-center gap-2 text-green-600">
+                        <div className="flex items-center justify-center gap-2 text-emerald-400">
                           <CheckCircle size={24} />
                           <span>Documento subido</span>
                         </div>
                       ) : (
                         <>
-                          <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                          <p className="text-gray-600">Haga clic para subir o arrastre el archivo</p>
-                          <p className="text-xs text-gray-400 mt-1">JPG, PNG o PDF (máx. 10MB)</p>
+                          <Upload className="w-10 h-10 text-slate-500 mx-auto mb-2" />
+                          <p className="text-slate-300">Haga clic para subir o arrastre el archivo</p>
+                          <p className="text-xs text-slate-500 mt-1">JPG, PNG o PDF (máx. 10MB)</p>
                         </>
                       )}
                     </label>
@@ -991,16 +991,16 @@ export default function ClientOnboarding() {
                 </div>
 
                 {/* Proof of Address */}
-                <div className="border border-gray-200 rounded-xl p-6">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <div className="border border-slate-700/50 rounded-xl p-6">
+                  <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                     <Home size={20} />
                     Comprobante de Domicilio
                   </h4>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-slate-400 mb-4">
                     Factura de servicios, estado de cuenta bancario, o contrato de arrendamiento (últimos 60 días)
                   </p>
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-500 transition-colors">
+                  <div className="border-2 border-dashed border-slate-600/50 rounded-xl p-6 text-center hover:border-indigo-500 transition-colors">
                     <input
                       type="file"
                       id="proofOfAddress"
@@ -1010,14 +1010,14 @@ export default function ClientOnboarding() {
                     />
                     <label htmlFor="proofOfAddress" className="cursor-pointer">
                       {formData.documents.proofOfAddress ? (
-                        <div className="flex items-center justify-center gap-2 text-green-600">
+                        <div className="flex items-center justify-center gap-2 text-emerald-400">
                           <CheckCircle size={24} />
                           <span>Documento subido</span>
                         </div>
                       ) : (
                         <>
-                          <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                          <p className="text-gray-600">Subir comprobante de domicilio</p>
+                          <Upload className="w-10 h-10 text-slate-500 mx-auto mb-2" />
+                          <p className="text-slate-300">Subir comprobante de domicilio</p>
                         </>
                       )}
                     </label>
@@ -1025,16 +1025,16 @@ export default function ClientOnboarding() {
                 </div>
 
                 {/* Social Security Card */}
-                <div className="border border-gray-200 rounded-xl p-6">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <div className="border border-slate-700/50 rounded-xl p-6">
+                  <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                     <Lock size={20} />
                     Tarjeta de Seguro Social
                   </h4>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-slate-400 mb-4">
                     Opcional pero recomendado para verificación adicional
                   </p>
 
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-500 transition-colors">
+                  <div className="border-2 border-dashed border-slate-600/50 rounded-xl p-6 text-center hover:border-indigo-500 transition-colors">
                     <input
                       type="file"
                       id="proofOfSsn"
@@ -1044,14 +1044,14 @@ export default function ClientOnboarding() {
                     />
                     <label htmlFor="proofOfSsn" className="cursor-pointer">
                       {formData.documents.proofOfSsn ? (
-                        <div className="flex items-center justify-center gap-2 text-green-600">
+                        <div className="flex items-center justify-center gap-2 text-emerald-400">
                           <CheckCircle size={24} />
                           <span>Documento subido</span>
                         </div>
                       ) : (
                         <>
-                          <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                          <p className="text-gray-600">Subir tarjeta de SSN (opcional)</p>
+                          <Upload className="w-10 h-10 text-slate-500 mx-auto mb-2" />
+                          <p className="text-slate-300">Subir tarjeta de SSN (opcional)</p>
                         </>
                       )}
                     </label>
@@ -1063,8 +1063,8 @@ export default function ClientOnboarding() {
             {/* Step 6: Authorizations */}
             {currentStep === 6 && (
               <div className="space-y-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-sky-500/10 border border-sky-500/30 rounded-xl p-4 mb-6">
+                  <p className="text-sm text-sky-400">
                     <FileCheck size={16} className="inline mr-2" />
                     Por favor lea y acepte las siguientes autorizaciones requeridas para proceder con nuestros servicios.
                   </p>
@@ -1073,19 +1073,19 @@ export default function ClientOnboarding() {
                 {/* Required Authorizations */}
                 <div className="space-y-4">
                   {/* FCRA Consent */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.fcraConsent ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.fcraConsent ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.fcraConsent}
                         onChange={() => handleAuthorizationChange('fcraConsent')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Consentimiento FCRA <span className="text-red-500">*</span>
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           Autorizo a TriExpert Credit Repair a actuar en mi nombre bajo la Ley de Informes Crediticios Justos (FCRA) 
                           para disputar información inexacta, incompleta o no verificable en mis reportes de crédito.
                         </p>
@@ -1094,19 +1094,19 @@ export default function ClientOnboarding() {
                   </div>
 
                   {/* Credit Pull Consent */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.creditPullConsent ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.creditPullConsent ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.creditPullConsent}
                         onChange={() => handleAuthorizationChange('creditPullConsent')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Autorización para Obtener Reportes de Crédito <span className="text-red-500">*</span>
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           Autorizo a obtener mis reportes de crédito de Experian, Equifax y TransUnion con el propósito 
                           de analizar y disputar información incorrecta.
                         </p>
@@ -1115,19 +1115,19 @@ export default function ClientOnboarding() {
                   </div>
 
                   {/* Communication Consent */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.communicationConsent ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.communicationConsent ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.communicationConsent}
                         onChange={() => handleAuthorizationChange('communicationConsent')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Consentimiento de Comunicación
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           Autorizo recibir comunicaciones por email, teléfono y SMS relacionadas con mi caso y servicios.
                         </p>
                       </div>
@@ -1135,19 +1135,19 @@ export default function ClientOnboarding() {
                   </div>
 
                   {/* Electronic Signature Consent */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.electronicSignatureConsent ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.electronicSignatureConsent ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.electronicSignatureConsent}
                         onChange={() => handleAuthorizationChange('electronicSignatureConsent')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Consentimiento de Firma Electrónica
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           Acepto que mi firma electrónica tiene la misma validez legal que una firma manuscrita.
                         </p>
                       </div>
@@ -1155,21 +1155,21 @@ export default function ClientOnboarding() {
                   </div>
 
                   {/* Terms of Service */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.termsOfService ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.termsOfService ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.termsOfService}
                         onChange={() => handleAuthorizationChange('termsOfService')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Términos de Servicio <span className="text-red-500">*</span>
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           He leído y acepto los{' '}
-                          <a href="/terms" target="_blank" className="text-indigo-600 hover:underline">
+                          <a href="/terms" target="_blank" className="text-indigo-400 hover:underline">
                             Términos de Servicio
                           </a>
                           {' '}de TriExpert Credit Repair.
@@ -1179,21 +1179,21 @@ export default function ClientOnboarding() {
                   </div>
 
                   {/* Privacy Policy */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.privacyPolicy ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.privacyPolicy ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.privacyPolicy}
                         onChange={() => handleAuthorizationChange('privacyPolicy')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Política de Privacidad <span className="text-red-500">*</span>
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           He leído y acepto la{' '}
-                          <a href="/privacy" target="_blank" className="text-indigo-600 hover:underline">
+                          <a href="/privacy" target="_blank" className="text-indigo-400 hover:underline">
                             Política de Privacidad
                           </a>
                           {' '}que describe cómo se maneja mi información personal.
@@ -1203,19 +1203,19 @@ export default function ClientOnboarding() {
                   </div>
 
                   {/* Limited POA */}
-                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.limitedPoa ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div className={`border rounded-xl p-4 transition-colors ${formData.authorizations.limitedPoa ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.authorizations.limitedPoa}
                         onChange={() => handleAuthorizationChange('limitedPoa')}
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="mt-1 w-5 h-5 rounded border-slate-600/50 text-indigo-400 focus:ring-indigo-500"
                       />
                       <div>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-white">
                           Poder Limitado (POA)
                         </span>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-slate-300 mt-1">
                           Otorgo poder limitado a TriExpert Credit Repair para comunicarse con las agencias de crédito 
                           y acreedores en mi nombre exclusivamente para asuntos relacionados con la reparación de mi crédito.
                         </p>
@@ -1230,28 +1230,28 @@ export default function ClientOnboarding() {
             {currentStep === 7 && (
               <div className="space-y-6">
                 {/* Summary */}
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Resumen de Información</h4>
+                <div className="bg-slate-700/30 rounded-xl p-6">
+                  <h4 className="font-semibold text-white mb-4">Resumen de Información</h4>
                   
                   <div className="grid md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-500">Nombre Completo</p>
+                      <p className="text-slate-400">Nombre Completo</p>
                       <p className="font-medium">{formData.firstName} {formData.middleName} {formData.lastName} {formData.suffix}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Fecha de Nacimiento</p>
+                      <p className="text-slate-400">Fecha de Nacimiento</p>
                       <p className="font-medium">{formData.dateOfBirth}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">SSN</p>
+                      <p className="text-slate-400">SSN</p>
                       <p className="font-medium">***-**-{formData.ssn.slice(-4)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Teléfono</p>
+                      <p className="text-slate-400">Teléfono</p>
                       <p className="font-medium">{formData.phone}</p>
                     </div>
                     <div className="md:col-span-2">
-                      <p className="text-gray-500">Dirección</p>
+                      <p className="text-slate-400">Dirección</p>
                       <p className="font-medium">
                         {formData.currentAddress.street1}, {formData.currentAddress.city}, {formData.currentAddress.state} {formData.currentAddress.zipCode}
                       </p>
@@ -1260,32 +1260,32 @@ export default function ClientOnboarding() {
                 </div>
 
                 {/* Signature */}
-                <div className="border border-gray-200 rounded-xl p-6">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <div className="border border-slate-700/50 rounded-xl p-6">
+                  <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
                     <PenTool size={20} />
                     Firma Electrónica <span className="text-red-500">*</span>
                   </h4>
                   
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-slate-300 mb-4">
                     Al firmar a continuación, confirmo que toda la información proporcionada es verdadera y correcta, 
                     y que he leído y aceptado todos los términos y autorizaciones.
                   </p>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Escriba su nombre completo como firma
                     </label>
                     <input
                       type="text"
                       value={formData.signature}
                       onChange={(e) => handleChange('signature', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-signature text-xl"
+                      className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-signature text-xl"
                       placeholder="Su nombre completo"
                       style={{ fontFamily: 'cursive' }}
                     />
                   </div>
 
-                  <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+                  <div className="mt-4 flex items-center gap-4 text-sm text-slate-400">
                     <div className="flex items-center gap-2">
                       <Calendar size={16} />
                       <span>Fecha: {formData.signatureDate}</span>
@@ -1298,8 +1298,8 @@ export default function ClientOnboarding() {
                 </div>
 
                 {/* Legal Notice */}
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                  <p className="text-sm text-amber-800">
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                  <p className="text-sm text-amber-400">
                     <AlertCircle size={16} className="inline mr-2" />
                     <strong>Aviso Legal:</strong> La firma electrónica proporcionada tiene la misma validez legal 
                     que una firma manuscrita según la Ley E-SIGN (15 U.S.C. § 7001 et seq.) y la Ley UETA.
@@ -1310,14 +1310,14 @@ export default function ClientOnboarding() {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="px-6 md:px-8 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
+          <div className="px-6 md:px-8 py-4 bg-slate-700/30 border-t border-slate-700/50 flex justify-between">
             <button
               onClick={prevStep}
               disabled={currentStep === 1}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
                 currentStep === 1
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                  : 'bg-slate-800/50 border border-slate-600/50 text-slate-300 hover:bg-slate-700/30'
               }`}
             >
               <ChevronLeft size={20} />

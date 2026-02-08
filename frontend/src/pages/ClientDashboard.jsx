@@ -130,7 +130,7 @@ export default function ClientDashboard() {
     
     // Credit score category
     let scoreCategory = 'Unknown';
-    let scoreCategoryColor = 'text-gray-500';
+    let scoreCategoryColor = 'text-slate-400';
     if (avgScore >= 800) { scoreCategory = 'Excellent'; scoreCategoryColor = 'text-emerald-500'; }
     else if (avgScore >= 740) { scoreCategory = 'Very Good'; scoreCategoryColor = 'text-green-500'; }
     else if (avgScore >= 670) { scoreCategory = 'Good'; scoreCategoryColor = 'text-blue-500'; }
@@ -165,8 +165,8 @@ export default function ClientDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading your dashboard...</p>
+          <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400 font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -200,24 +200,24 @@ export default function ClientDashboard() {
       {/* Header with greeting and quick actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, <span className="text-indigo-600">{user.firstName}</span>! 👋
+          <h1 className="text-3xl font-bold text-white">
+            Welcome back, <span className="text-indigo-400">{user.firstName}</span>! 👋
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-slate-400 mt-1">
             Here's your credit repair progress overview for {format(new Date(), 'MMMM yyyy')}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button 
             onClick={handleRefresh}
-            className={`flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all ${refreshing ? 'animate-pulse' : ''}`}
+            className={`flex items-center gap-2 px-4 py-2 text-slate-300 bg-slate-800/60 border border-slate-700/50 rounded-xl hover:bg-slate-700/60 transition-all ${refreshing ? 'animate-pulse' : ''}`}
           >
             <RefreshCw size={18} className={refreshing ? 'animate-spin' : ''} />
             Refresh
           </button>
           <Link 
             to="/credit-report-analysis"
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/25"
           >
             <Sparkles size={18} />
             Analyze Report
@@ -358,15 +358,15 @@ export default function ClientDashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Score History Chart */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-indigo-100 rounded-xl">
-                <Activity size={20} className="text-indigo-600" />
+              <div className="p-2 bg-indigo-500/20 rounded-xl">
+                <Activity size={20} className="text-indigo-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Score Trend</h3>
-                <p className="text-sm text-gray-500">Last 6 months progress</p>
+                <h3 className="font-semibold text-white">Score Trend</h3>
+                <p className="text-sm text-slate-400">Last 6 months progress</p>
               </div>
             </div>
           </div>
@@ -412,7 +412,7 @@ export default function ClientDashboard() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[250px] flex items-center justify-center text-gray-400">
+            <div className="h-[250px] flex items-center justify-center text-slate-500">
               <div className="text-center">
                 <BarChart3 size={48} className="mx-auto mb-2 opacity-50" />
                 <p>No score history available</p>
@@ -422,15 +422,15 @@ export default function ClientDashboard() {
         </div>
 
         {/* Items Distribution */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-xl">
-                <PieChart size={20} className="text-purple-600" />
+              <div className="p-2 bg-purple-500/20 rounded-xl">
+                <PieChart size={20} className="text-purple-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Items by Bureau</h3>
-                <p className="text-sm text-gray-500">{computedData.totalItems} total items</p>
+                <h3 className="font-semibold text-white">Items by Bureau</h3>
+                <p className="text-sm text-slate-400">{computedData.totalItems} total items</p>
               </div>
             </div>
           </div>
@@ -460,15 +460,15 @@ export default function ClientDashboard() {
                   <div key={item.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                      <span className="text-sm text-gray-600">{item.name}</span>
+                      <span className="text-sm text-slate-400">{item.name}</span>
                     </div>
-                    <span className="font-semibold text-gray-900">{item.value}</span>
+                    <span className="font-semibold text-white">{item.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="h-[200px] flex items-center justify-center text-gray-400">
+            <div className="h-[200px] flex items-center justify-center text-slate-500">
               <div className="text-center">
                 <PieChart size={48} className="mx-auto mb-2 opacity-50" />
                 <p>No items to display</p>
@@ -481,18 +481,18 @@ export default function ClientDashboard() {
       {/* Progress & Activity Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Dispute Progress */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-xl">
-                <Target size={20} className="text-green-600" />
+              <div className="p-2 bg-emerald-500/20 rounded-xl">
+                <Target size={20} className="text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Dispute Progress</h3>
-                <p className="text-sm text-gray-500">Track your credit repair journey</p>
+                <h3 className="font-semibold text-white">Dispute Progress</h3>
+                <p className="text-sm text-slate-400">Track your credit repair journey</p>
               </div>
             </div>
-            <Link to="/disputes" className="text-indigo-600 text-sm hover:text-indigo-700 flex items-center gap-1">
+            <Link to="/disputes" className="text-indigo-400 text-sm hover:text-indigo-700 flex items-center gap-1">
               View all <ChevronRight size={16} />
             </Link>
           </div>
@@ -504,9 +504,9 @@ export default function ClientDashboard() {
                 label: 'Items Identified', 
                 count: computedData.totalItems,
                 icon: Eye,
-                color: 'bg-blue-500',
+                color: 'bg-sky-500',
                 bgColor: 'bg-blue-100',
-                textColor: 'text-blue-600'
+                textColor: 'text-sky-400'
               },
               { 
                 label: 'Disputes Created', 
@@ -522,15 +522,15 @@ export default function ClientDashboard() {
                 icon: CheckCircle2,
                 color: 'bg-indigo-500',
                 bgColor: 'bg-indigo-100',
-                textColor: 'text-indigo-600'
+                textColor: 'text-indigo-400'
               },
               { 
                 label: 'Items Resolved', 
                 count: computedData.resolvedItems,
                 icon: Award,
-                color: 'bg-green-500',
+                color: 'bg-emerald-500',
                 bgColor: 'bg-green-100',
-                textColor: 'text-green-600'
+                textColor: 'text-emerald-400'
               },
             ].map((step, index) => (
               <div key={step.label} className="flex items-center gap-4">
@@ -539,10 +539,10 @@ export default function ClientDashboard() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700">{step.label}</span>
-                    <span className="text-sm font-bold text-gray-900">{step.count}</span>
+                    <span className="text-sm font-medium text-slate-300">{step.label}</span>
+                    <span className="text-sm font-bold text-white">{step.count}</span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                     <div 
                       className={`h-full ${step.color} rounded-full transition-all duration-500`}
                       style={{ 
@@ -559,14 +559,14 @@ export default function ClientDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-orange-100 rounded-xl">
-              <Clock size={20} className="text-orange-600" />
+            <div className="p-2 bg-orange-500/20 rounded-xl">
+              <Clock size={20} className="text-orange-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">Recent Activity</h3>
-              <p className="text-sm text-gray-500">Latest updates</p>
+              <h3 className="font-semibold text-white">Recent Activity</h3>
+              <p className="text-sm text-slate-400">Latest updates</p>
             </div>
           </div>
 
@@ -575,16 +575,16 @@ export default function ClientDashboard() {
               {recentActivity.map((activity, index) => (
                 <div key={activity.id} className="flex gap-3 items-start">
                   <div className={`p-1.5 rounded-lg ${
-                    activity.type === 'dispute_sent' ? 'bg-green-100' : 'bg-indigo-100'
+                    activity.type === 'dispute_sent' ? 'bg-emerald-500/20' : 'bg-indigo-500/20'
                   }`}>
                     <activity.icon size={14} className={
-                      activity.type === 'dispute_sent' ? 'text-green-600' : 'text-indigo-600'
+                      activity.type === 'dispute_sent' ? 'text-emerald-400' : 'text-indigo-400'
                     } />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{activity.title}</p>
-                    <p className="text-xs text-gray-500 truncate">{activity.description}</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-sm font-medium text-white truncate">{activity.title}</p>
+                    <p className="text-xs text-slate-400 truncate">{activity.description}</p>
+                    <p className="text-xs text-slate-500 mt-1">
                       {format(new Date(activity.date), 'MMM d, h:mm a')}
                     </p>
                   </div>
@@ -592,7 +592,7 @@ export default function ClientDashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-slate-500">
               <Bell size={32} className="mx-auto mb-2 opacity-50" />
               <p className="text-sm">No recent activity</p>
             </div>
@@ -604,15 +604,15 @@ export default function ClientDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link 
           to="/credit-report-analysis"
-          className="group bg-gradient-to-br from-indigo-50 to-blue-50 hover:from-indigo-100 hover:to-blue-100 border border-indigo-200 rounded-2xl p-5 transition-all"
+          className="group bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-2xl p-5 transition-all"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-indigo-500 rounded-xl text-white group-hover:scale-110 transition-transform">
               <Sparkles size={24} />
             </div>
             <div>
-              <h3 className="font-semibold text-indigo-900">Analyze Credit Report</h3>
-              <p className="text-sm text-indigo-600">AI-powered analysis</p>
+              <h3 className="font-semibold text-indigo-300">Analyze Credit Report</h3>
+              <p className="text-sm text-indigo-400/70">AI-powered analysis</p>
             </div>
             <ArrowRight size={20} className="ml-auto text-indigo-400 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -620,15 +620,15 @@ export default function ClientDashboard() {
 
         <Link 
           to="/ai-disputes"
-          className="group bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 border border-purple-200 rounded-2xl p-5 transition-all"
+          className="group bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-2xl p-5 transition-all"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-purple-500 rounded-xl text-white group-hover:scale-110 transition-transform">
               <Zap size={24} />
             </div>
             <div>
-              <h3 className="font-semibold text-purple-900">Generate AI Letters</h3>
-              <p className="text-sm text-purple-600">Create dispute letters</p>
+              <h3 className="font-semibold text-purple-300">Generate AI Letters</h3>
+              <p className="text-sm text-purple-400/70">Create dispute letters</p>
             </div>
             <ArrowRight size={20} className="ml-auto text-purple-400 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -636,15 +636,15 @@ export default function ClientDashboard() {
 
         <Link 
           to="/credit-items"
-          className="group bg-gradient-to-br from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 border border-emerald-200 rounded-2xl p-5 transition-all"
+          className="group bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-2xl p-5 transition-all"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-emerald-500 rounded-xl text-white group-hover:scale-110 transition-transform">
               <FileText size={24} />
             </div>
             <div>
-              <h3 className="font-semibold text-emerald-900">Manage Items</h3>
-              <p className="text-sm text-emerald-600">Review credit items</p>
+              <h3 className="font-semibold text-emerald-300">Manage Items</h3>
+              <p className="text-sm text-emerald-400/70">Review credit items</p>
             </div>
             <ArrowRight size={20} className="ml-auto text-emerald-400 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -652,7 +652,7 @@ export default function ClientDashboard() {
       </div>
 
       {/* Footer */}
-      <div className="text-center text-sm text-gray-400 pt-4">
+      <div className="text-center text-sm text-slate-500 pt-4">
         <p>© {new Date().getFullYear()} TriExpert Credit Repair. All rights reserved.</p>
       </div>
     </div>

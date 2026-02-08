@@ -20,10 +20,10 @@ const StepIndicator = ({ currentStep, steps }) => (
       <div key={index} className="flex items-center">
         <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
           currentStep > index + 1 
-            ? 'bg-green-500 border-green-500 text-white'
+            ? 'bg-emerald-500 border-emerald-500 text-white'
             : currentStep === index + 1
               ? 'bg-indigo-600 border-indigo-600 text-white'
-              : 'bg-white border-gray-300 text-gray-400'
+              : 'bg-slate-800/50 border-slate-600/50 text-slate-500'
         }`}>
           {currentStep > index + 1 ? (
             <CheckCircle className="w-5 h-5" />
@@ -33,7 +33,7 @@ const StepIndicator = ({ currentStep, steps }) => (
         </div>
         {index < steps.length - 1 && (
           <div className={`w-16 sm:w-24 h-1 mx-2 ${
-            currentStep > index + 1 ? 'bg-green-500' : 'bg-gray-200'
+            currentStep > index + 1 ? 'bg-emerald-500' : 'bg-slate-700'
           }`} />
         )}
       </div>
@@ -56,17 +56,17 @@ const RightsStep = ({ onNext, onAcknowledge }) => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <Shield className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900">Sus Derechos del Consumidor</h2>
-        <p className="text-gray-600">Requerido por la Ley CROA</p>
+        <Shield className="w-16 h-16 text-indigo-400 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white">Sus Derechos del Consumidor</h2>
+        <p className="text-slate-300">Requerido por la Ley CROA</p>
       </div>
 
-      <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6">
-        <h3 className="font-bold text-amber-800 mb-4 flex items-center gap-2">
+      <div className="bg-amber-500/10 border-2 border-amber-300 rounded-xl p-6">
+        <h3 className="font-bold text-amber-400 mb-4 flex items-center gap-2">
           <Scale className="w-5 h-5" />
           DECLARACIÓN DE DERECHOS DEL CONSUMIDOR
         </h3>
-        <div className="space-y-4 text-amber-900 text-sm">
+        <div className="space-y-4 text-amber-400 text-sm">
           <p>Bajo la Ley de Organizaciones de Reparación de Crédito (CROA), usted tiene derecho a:</p>
           <ul className="list-disc pl-5 space-y-2">
             <li>Disputar información inexacta en su reporte de crédito directamente con los burós de crédito, <strong>sin costo alguno</strong>.</li>
@@ -78,9 +78,9 @@ const RightsStep = ({ onNext, onAcknowledge }) => {
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <h4 className="font-semibold text-blue-900 mb-3">Contacto de la FTC</h4>
-        <p className="text-blue-800 text-sm">
+      <div className="bg-sky-500/10 border border-sky-500/30 rounded-xl p-6">
+        <h4 className="font-semibold text-sky-400 mb-3">Contacto de la FTC</h4>
+        <p className="text-sky-400 text-sm">
           Federal Trade Commission<br />
           Consumer Response Center<br />
           600 Pennsylvania Avenue NW, Washington, DC 20580<br />
@@ -89,15 +89,15 @@ const RightsStep = ({ onNext, onAcknowledge }) => {
       </div>
 
       <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-        acknowledged ? 'border-green-300 bg-green-50' : 'border-gray-200 hover:border-gray-300'
+        acknowledged ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50 hover:border-slate-600/50'
       }`}>
         <input
           type="checkbox"
           checked={acknowledged}
           onChange={(e) => setAcknowledged(e.target.checked)}
-          className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+          className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
         />
-        <span className="text-gray-700">
+        <span className="text-slate-300">
           He leído y entiendo completamente mis derechos bajo la Ley de Organizaciones de Reparación de Crédito (CROA).
         </span>
       </label>
@@ -143,9 +143,9 @@ const FeeDisclosureStep = ({ onNext, onBack, selectedPlan, onAcknowledge }) => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <DollarSign className="w-16 h-16 text-green-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900">Divulgación de Tarifas</h2>
-        <p className="text-gray-600">Transparencia total antes del pago</p>
+        <DollarSign className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white">Divulgación de Tarifas</h2>
+        <p className="text-slate-300">Transparencia total antes del pago</p>
       </div>
 
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
@@ -161,22 +161,22 @@ const FeeDisclosureStep = ({ onNext, onBack, selectedPlan, onAcknowledge }) => {
         </div>
       </div>
 
-      <div className="bg-gray-50 rounded-xl p-6 space-y-3">
-        <div className="flex justify-between border-b border-gray-200 pb-2">
+      <div className="bg-slate-700/30 rounded-xl p-6 space-y-3">
+        <div className="flex justify-between border-b border-slate-700/50 pb-2">
           <span>Tarifa mensual de servicio</span>
           <span className="font-semibold">${plan.price}</span>
         </div>
-        <div className="flex justify-between border-b border-gray-200 pb-2">
+        <div className="flex justify-between border-b border-slate-700/50 pb-2">
           <span>Cargo por configuración</span>
-          <span className="font-semibold text-green-600">$0.00</span>
+          <span className="font-semibold text-emerald-400">$0.00</span>
         </div>
-        <div className="flex justify-between border-b border-gray-200 pb-2">
+        <div className="flex justify-between border-b border-slate-700/50 pb-2">
           <span>Cargos ocultos</span>
-          <span className="font-semibold text-green-600">NINGUNO</span>
+          <span className="font-semibold text-emerald-400">NINGUNO</span>
         </div>
         <div className="flex justify-between pt-2">
           <span className="font-bold">TOTAL MENSUAL</span>
-          <span className="text-xl font-bold text-indigo-600">${plan.price}</span>
+          <span className="text-xl font-bold text-indigo-400">${plan.price}</span>
         </div>
       </div>
 
@@ -187,15 +187,15 @@ const FeeDisclosureStep = ({ onNext, onBack, selectedPlan, onAcknowledge }) => {
           { key: 'noGuarantee', text: 'Entiendo que el pago NO garantiza ningún resultado específico en mi crédito.' }
         ].map(({ key, text }) => (
           <label key={key} className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-            acknowledged[key] ? 'border-green-300 bg-green-50' : 'border-gray-200'
+            acknowledged[key] ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'
           }`}>
             <input
               type="checkbox"
               checked={acknowledged[key]}
               onChange={() => setAcknowledged(prev => ({ ...prev, [key]: !prev[key] }))}
-              className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+              className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
             />
-            <span className="text-gray-700">{text}</span>
+            <span className="text-slate-300">{text}</span>
           </label>
         ))}
       </div>
@@ -203,7 +203,7 @@ const FeeDisclosureStep = ({ onNext, onBack, selectedPlan, onAcknowledge }) => {
       <div className="flex gap-4">
         <button
           onClick={onBack}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-slate-700/50 text-slate-300 rounded-xl font-medium hover:bg-slate-700 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Atrás
@@ -247,12 +247,12 @@ const ContractStep = ({ onNext, onBack, user, onSign }) => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <FileText className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900">Contrato de Servicio</h2>
-        <p className="text-gray-600">Firma digital requerida</p>
+        <FileText className="w-16 h-16 text-indigo-400 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white">Contrato de Servicio</h2>
+        <p className="text-slate-300">Firma digital requerida</p>
       </div>
 
-      <div className="bg-gray-50 rounded-xl p-6 max-h-64 overflow-y-auto text-sm text-gray-700">
+      <div className="bg-slate-700/30 rounded-xl p-6 max-h-64 overflow-y-auto text-sm text-slate-300">
         <h4 className="font-bold mb-3">CONTRATO DE SERVICIOS DE REPARACIÓN DE CRÉDITO</h4>
         <p className="mb-3">Este contrato establece los términos bajo los cuales Credit Repair Pro ("Compañía") proporcionará servicios de reparación de crédito al Cliente.</p>
         
@@ -277,21 +277,21 @@ const ContractStep = ({ onNext, onBack, user, onSign }) => {
           { key: 'accurateInfo', text: 'Toda la información que he proporcionado es verdadera y precisa.' }
         ].map(({ key, text }) => (
           <label key={key} className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-            acknowledged[key] ? 'border-green-300 bg-green-50' : 'border-gray-200'
+            acknowledged[key] ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-slate-700/50'
           }`}>
             <input
               type="checkbox"
               checked={acknowledged[key]}
               onChange={() => setAcknowledged(prev => ({ ...prev, [key]: !prev[key] }))}
-              className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mt-0.5"
+              className="w-5 h-5 rounded border-slate-600/50 text-emerald-400 focus:ring-green-500 mt-0.5"
             />
-            <span className="text-gray-700 text-sm">{text}</span>
+            <span className="text-slate-300 text-sm">{text}</span>
           </label>
         ))}
       </div>
 
-      <div className="bg-indigo-50 rounded-xl p-6 border-2 border-indigo-200">
-        <label className="block text-sm font-semibold text-indigo-900 mb-2">
+      <div className="bg-indigo-500/15 rounded-xl p-6 border-2 border-indigo-500/30">
+        <label className="block text-sm font-semibold text-indigo-400 mb-2">
           Firma Digital - Escriba su nombre completo: "{expectedSignature}"
         </label>
         <input
@@ -300,11 +300,11 @@ const ContractStep = ({ onNext, onBack, user, onSign }) => {
           onChange={(e) => setSignature(e.target.value)}
           placeholder={expectedSignature}
           className={`w-full px-4 py-3 border-2 rounded-xl text-lg font-serif italic ${
-            signature && (signatureValid ? 'border-green-500 bg-green-50' : 'border-red-300 bg-red-50')
+            signature && (signatureValid ? 'border-emerald-500 bg-emerald-500/10' : 'border-rose-500/40 bg-rose-500/10')
           }`}
         />
         {signature && !signatureValid && (
-          <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+          <p className="text-rose-400 text-sm mt-2 flex items-center gap-1">
             <AlertTriangle className="w-4 h-4" />
             La firma debe coincidir exactamente con: {expectedSignature}
           </p>
@@ -314,7 +314,7 @@ const ContractStep = ({ onNext, onBack, user, onSign }) => {
       <div className="flex gap-4">
         <button
           onClick={onBack}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-slate-700/50 text-slate-300 rounded-xl font-medium hover:bg-slate-700 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Atrás
@@ -338,20 +338,20 @@ const CompletionStep = ({ contractData, onFinish }) => {
   return (
     <div className="text-center space-y-6">
       <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-        <CheckCircle className="w-10 h-10 text-green-600" />
+        <CheckCircle className="w-10 h-10 text-emerald-400" />
       </div>
       
-      <h2 className="text-2xl font-bold text-gray-900">¡Registro Completado!</h2>
-      <p className="text-gray-600">
+      <h2 className="text-2xl font-bold text-white">¡Registro Completado!</h2>
+      <p className="text-slate-300">
         Ha completado exitosamente el proceso de registro legal.
       </p>
 
-      <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6 text-left">
-        <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
+      <div className="bg-amber-500/10 border-2 border-amber-300 rounded-xl p-6 text-left">
+        <h3 className="font-bold text-amber-400 mb-3 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" />
           IMPORTANTE - Período de Cancelación
         </h3>
-        <p className="text-amber-900">
+        <p className="text-amber-400">
           Tiene hasta el <strong>{new Date(contractData.cancellationDeadline).toLocaleDateString('es-ES', {
             weekday: 'long',
             year: 'numeric',
@@ -361,9 +361,9 @@ const CompletionStep = ({ contractData, onFinish }) => {
         </p>
       </div>
 
-      <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-left">
-        <h3 className="font-semibold text-green-900 mb-3">Lo que sigue:</h3>
-        <ul className="space-y-2 text-green-800">
+      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 text-left">
+        <h3 className="font-semibold text-emerald-400 mb-3">Lo que sigue:</h3>
+        <ul className="space-y-2 text-emerald-400">
           <li className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
             Recibirá un email de confirmación
@@ -479,7 +479,7 @@ export default function LegalOnboarding() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
       </div>
     );
   }
@@ -489,8 +489,8 @@ export default function LegalOnboarding() {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Proceso de Registro Legal</h1>
-          <p className="text-gray-600">Complete estos pasos para activar su cuenta</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Proceso de Registro Legal</h1>
+          <p className="text-slate-300">Complete estos pasos para activar su cuenta</p>
         </div>
 
         {/* Step Indicator */}
@@ -498,14 +498,14 @@ export default function LegalOnboarding() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-xl border border-red-200 flex items-center gap-2">
+          <div className="mb-6 p-4 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/30 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
             {error}
           </div>
         )}
 
         {/* Content Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-8">
           {currentStep === 1 && (
             <RightsStep 
               onNext={() => setCurrentStep(2)} 
@@ -538,15 +538,15 @@ export default function LegalOnboarding() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-400">
             ¿Preguntas? Contáctenos:
           </p>
-          <div className="flex items-center justify-center gap-6 mt-2 text-sm text-gray-600">
-            <a href="tel:+18133693340" className="flex items-center gap-1 hover:text-indigo-600">
+          <div className="flex items-center justify-center gap-6 mt-2 text-sm text-slate-300">
+            <a href="tel:+18133693340" className="flex items-center gap-1 hover:text-indigo-400">
               <Phone className="w-4 h-4" />
               (813) 369-3340
             </a>
-            <a href="mailto:support@triexpertservice.com" className="flex items-center gap-1 hover:text-indigo-600">
+            <a href="mailto:support@triexpertservice.com" className="flex items-center gap-1 hover:text-indigo-400">
               <Mail className="w-4 h-4" />
               support@triexpertservice.com
             </a>

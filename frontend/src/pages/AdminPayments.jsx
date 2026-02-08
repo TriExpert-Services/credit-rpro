@@ -116,9 +116,9 @@ export default function AdminPayments() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Shield className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900">Acceso Restringido</h2>
-          <p className="text-gray-600">Solo administradores pueden acceder a esta sección.</p>
+          <Shield className="h-16 w-16 text-slate-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-white">Acceso Restringido</h2>
+          <p className="text-slate-300">Solo administradores pueden acceder a esta sección.</p>
         </div>
       </div>
     );
@@ -129,12 +129,12 @@ export default function AdminPayments() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestión de Pagos</h1>
-          <p className="text-gray-600">Administra transacciones, ingresos y reclamos de garantía</p>
+          <h1 className="text-2xl font-bold text-white">Gestión de Pagos</h1>
+          <p className="text-slate-300">Administra transacciones, ingresos y reclamos de garantía</p>
         </div>
         <button
           onClick={() => { fetchStats(); fetchTransactions(); fetchGuaranteeClaims(); }}
-          className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 flex items-center gap-2"
+          className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:bg-slate-700/30 text-slate-300 flex items-center gap-2"
         >
           <RefreshCw className="h-4 w-4" />
           Actualizar
@@ -143,64 +143,64 @@ export default function AdminPayments() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+        <div className="bg-rose-500/10 border border-rose-500/30 rounded-lg p-4 flex items-center gap-3">
           <AlertCircle className="h-5 w-5 text-red-500" />
-          <span className="text-red-700">{error}</span>
-          <button onClick={() => setError('')} className="ml-auto text-red-500 hover:text-red-700">×</button>
+          <span className="text-rose-400">{error}</span>
+          <button onClick={() => setError('')} className="ml-auto text-red-500 hover:text-rose-400">×</button>
         </div>
       )}
 
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border p-6">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 rounded-xl">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className="p-3 bg-emerald-500/20 rounded-xl">
+                <DollarSign className="h-6 w-6 text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Ingresos del Mes</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-slate-300">Ingresos del Mes</p>
+                <p className="text-2xl font-bold text-white">
                   ${parseFloat(stats.monthlyRevenue?.net || 0).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border p-6">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-sky-500/20 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-sky-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Ingresos Brutos</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-slate-300">Ingresos Brutos</p>
+                <p className="text-2xl font-bold text-white">
                   ${parseFloat(stats.monthlyRevenue?.gross || 0).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border p-6">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-100 rounded-xl">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="p-3 bg-purple-500/20 rounded-xl">
+                <Users className="h-6 w-6 text-purple-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Suscripciones Activas</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.subscriptions?.active || 0}</p>
+                <p className="text-sm text-slate-300">Suscripciones Activas</p>
+                <p className="text-2xl font-bold text-white">{stats.subscriptions?.active || 0}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border p-6">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-yellow-100 rounded-xl">
-                <Shield className="h-6 w-6 text-yellow-600" />
+              <div className="p-3 bg-amber-500/20 rounded-xl">
+                <Shield className="h-6 w-6 text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Reclamos Pendientes</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-slate-300">Reclamos Pendientes</p>
+                <p className="text-2xl font-bold text-white">
                   {guaranteeClaims.filter(c => c.status === 'pending').length}
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default function AdminPayments() {
       )}
 
       {/* Tabs */}
-      <div className="bg-white rounded-xl shadow-sm border">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border">
         <div className="border-b">
           <nav className="flex -mb-px">
             {[
@@ -224,7 +224,7 @@ export default function AdminPayments() {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-600/50'
                 }`}
               >
                 <tab.icon className="h-4 w-4" />
@@ -238,46 +238,46 @@ export default function AdminPayments() {
           {/* Overview Tab */}
           {activeTab === 'overview' && stats && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-900">Distribución por Plan</h3>
+              <h3 className="text-lg font-semibold text-white">Distribución por Plan</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {stats.planDistribution?.map(plan => (
-                  <div key={plan.name} className="bg-gray-50 rounded-xl p-4">
-                    <h4 className="font-medium text-gray-900">{plan.name}</h4>
+                  <div key={plan.name} className="bg-slate-700/30 rounded-xl p-4">
+                    <h4 className="font-medium text-white">{plan.name}</h4>
                     <p className="text-2xl font-bold text-primary-600">{plan.subscribers}</p>
-                    <p className="text-sm text-gray-500">suscriptores</p>
+                    <p className="text-sm text-slate-400">suscriptores</p>
                   </div>
                 ))}
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-900 mt-8">Resumen del Mes</h3>
+              <h3 className="text-lg font-semibold text-white mt-8">Resumen del Mes</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-                  <p className="text-sm text-green-700">Ingresos Brutos</p>
-                  <p className="text-xl font-bold text-green-900">${parseFloat(stats.monthlyRevenue?.gross || 0).toLocaleString()}</p>
+                <div className="bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/30">
+                  <p className="text-sm text-emerald-400">Ingresos Brutos</p>
+                  <p className="text-xl font-bold text-emerald-300">${parseFloat(stats.monthlyRevenue?.gross || 0).toLocaleString()}</p>
                 </div>
-                <div className="bg-red-50 rounded-xl p-4 border border-red-100">
-                  <p className="text-sm text-red-700">Reembolsos</p>
-                  <p className="text-xl font-bold text-red-900">${parseFloat(stats.monthlyRevenue?.refunds || 0).toLocaleString()}</p>
+                <div className="bg-rose-500/10 rounded-xl p-4 border border-rose-500/30">
+                  <p className="text-sm text-rose-400">Reembolsos</p>
+                  <p className="text-xl font-bold text-rose-300">${parseFloat(stats.monthlyRevenue?.refunds || 0).toLocaleString()}</p>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                  <p className="text-sm text-blue-700">Pagos del Mes</p>
-                  <p className="text-xl font-bold text-blue-900">{stats.monthlyRevenue?.paymentCount || 0}</p>
+                <div className="bg-sky-500/10 rounded-xl p-4 border border-sky-500/30">
+                  <p className="text-sm text-sky-400">Pagos del Mes</p>
+                  <p className="text-xl font-bold text-sky-300">{stats.monthlyRevenue?.paymentCount || 0}</p>
                 </div>
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-900 mt-6">Reclamos de Garantía</h3>
+              <h3 className="text-lg font-semibold text-white mt-6">Reclamos de Garantía</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 rounded-xl p-4 border">
-                  <p className="text-sm text-gray-600">Total Reclamos</p>
-                  <p className="text-xl font-bold text-gray-900">{stats.guaranteeClaims?.total || 0}</p>
+                <div className="bg-slate-700/30 rounded-xl p-4 border">
+                  <p className="text-sm text-slate-300">Total Reclamos</p>
+                  <p className="text-xl font-bold text-white">{stats.guaranteeClaims?.total || 0}</p>
                 </div>
-                <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
-                  <p className="text-sm text-yellow-700">Pendientes</p>
-                  <p className="text-xl font-bold text-yellow-900">{stats.guaranteeClaims?.pending || 0}</p>
+                <div className="bg-amber-500/10 rounded-xl p-4 border border-amber-500/30">
+                  <p className="text-sm text-amber-400">Pendientes</p>
+                  <p className="text-xl font-bold text-amber-300">{stats.guaranteeClaims?.pending || 0}</p>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                  <p className="text-sm text-blue-700">Total Reembolsado</p>
-                  <p className="text-xl font-bold text-blue-900">${parseFloat(stats.guaranteeClaims?.totalRefunded || 0).toLocaleString()}</p>
+                <div className="bg-sky-500/10 rounded-xl p-4 border border-sky-500/30">
+                  <p className="text-sm text-sky-400">Total Reembolsado</p>
+                  <p className="text-xl font-bold text-sky-300">${parseFloat(stats.guaranteeClaims?.totalRefunded || 0).toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -290,13 +290,13 @@ export default function AdminPayments() {
               <div className="flex flex-wrap gap-4">
                 <div className="flex-1 min-w-[200px]">
                   <div className="relative">
-                    <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
                       type="text"
                       placeholder="Buscar por cliente o ID..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full pl-10 pr-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
                 </div>
@@ -304,7 +304,7 @@ export default function AdminPayments() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="all">Todos los estados</option>
                   <option value="succeeded">Completados</option>
@@ -317,13 +317,13 @@ export default function AdminPayments() {
                   type="date"
                   value={dateRange.start}
                   onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
                 <input
                   type="date"
                   value={dateRange.end}
                   onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
 
@@ -334,42 +334,42 @@ export default function AdminPayments() {
                 </div>
               ) : transactions.length === 0 ? (
                 <div className="text-center py-12">
-                  <Receipt className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No se encontraron transacciones</p>
+                  <Receipt className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+                  <p className="text-slate-400">No se encontraron transacciones</p>
                 </div>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-slate-700/50">
+                  <thead className="bg-slate-700/30">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Plan</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Monto</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Fecha</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Cliente</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Plan</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Estado</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Monto</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-slate-700/50">
                     {transactions.map((tx) => {
                       const status = statusConfig[tx.status] || statusConfig.pending;
                       const StatusIcon = status.icon;
                       return (
-                        <tr key={tx.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 text-sm text-gray-900">
+                        <tr key={tx.id} className="hover:bg-slate-700/30">
+                          <td className="px-4 py-3 text-sm text-white">
                             {new Date(tx.created_at).toLocaleDateString('es-ES')}
                           </td>
                           <td className="px-4 py-3">
-                            <div className="text-sm text-gray-900">{tx.client_name || 'N/A'}</div>
-                            <div className="text-xs text-gray-500">{tx.client_email}</div>
+                            <div className="text-sm text-white">{tx.client_name || 'N/A'}</div>
+                            <div className="text-xs text-slate-400">{tx.client_email}</div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{tx.plan_name || 'N/A'}</td>
+                          <td className="px-4 py-3 text-sm text-white">{tx.plan_name || 'N/A'}</td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-${status.color}-100 text-${status.color}-800`}>
                               <StatusIcon className="h-3 w-3" />
                               {status.label}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900">
+                          <td className="px-4 py-3 text-sm text-right font-medium text-white">
                             ${parseFloat(tx.amount_paid || 0).toFixed(2)}
                           </td>
                           <td className="px-4 py-3 text-right">
@@ -398,32 +398,32 @@ export default function AdminPayments() {
             <div className="space-y-4">
               {guaranteeClaims.length === 0 ? (
                 <div className="text-center py-12">
-                  <Shield className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No hay reclamos de garantía</p>
+                  <Shield className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+                  <p className="text-slate-400">No hay reclamos de garantía</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {guaranteeClaims.map((claim) => {
                     const status = claimStatusConfig[claim.status] || claimStatusConfig.pending;
                     return (
-                      <div key={claim.id} className="bg-gray-50 rounded-xl p-4 border">
+                      <div key={claim.id} className="bg-slate-700/30 rounded-xl p-4 border">
                         <div className="flex items-start justify-between">
                           <div>
                             <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-medium text-gray-900">{claim.client_name}</h4>
+                              <h4 className="font-medium text-white">{claim.client_name}</h4>
                               <span className={`px-2 py-0.5 rounded-full text-xs font-medium bg-${status.color}-100 text-${status.color}-800`}>
                                 {status.label}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{claim.client_email}</p>
-                            <p className="text-sm text-gray-700">
+                            <p className="text-sm text-slate-300 mb-2">{claim.client_email}</p>
+                            <p className="text-sm text-slate-300">
                               <strong>Razón:</strong> {claim.reason}
                             </p>
-                            <p className="text-sm text-gray-500 mt-2">
+                            <p className="text-sm text-slate-400 mt-2">
                               Solicitado: {new Date(claim.created_at).toLocaleDateString('es-ES')}
                             </p>
                             {claim.subscription_start && (
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-slate-400">
                                 Inicio suscripción: {new Date(claim.subscription_start).toLocaleDateString('es-ES')}
                               </p>
                             )}
@@ -448,9 +448,9 @@ export default function AdminPayments() {
                         </div>
                         
                         {claim.admin_notes && (
-                          <div className="mt-3 p-3 bg-white rounded-lg">
-                            <p className="text-xs text-gray-500">Notas del administrador:</p>
-                            <p className="text-sm text-gray-700">{claim.admin_notes}</p>
+                          <div className="mt-3 p-3 bg-slate-800/50 rounded-lg">
+                            <p className="text-xs text-slate-400">Notas del administrador:</p>
+                            <p className="text-sm text-slate-300">{claim.admin_notes}</p>
                           </div>
                         )}
                       </div>

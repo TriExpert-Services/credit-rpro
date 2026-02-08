@@ -203,8 +203,8 @@ export default function AdminSettings() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">Acceso Denegado</h1>
-          <p className="text-gray-600 mt-2">Solo administradores pueden acceder a esta página.</p>
+          <h1 className="text-2xl font-bold text-white">Acceso Denegado</h1>
+          <p className="text-slate-300 mt-2">Solo administradores pueden acceder a esta página.</p>
         </div>
       </div>
     );
@@ -214,8 +214,8 @@ export default function AdminSettings() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Cargando configuraciones...</p>
+          <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mx-auto mb-4" />
+          <p className="text-slate-300">Cargando configuraciones...</p>
         </div>
       </div>
     );
@@ -230,14 +230,14 @@ export default function AdminSettings() {
             <Settings size={24} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Configuración del Sistema</h1>
-            <p className="text-gray-500">API Keys, integraciones y ajustes del sistema</p>
+            <h1 className="text-3xl font-bold text-white">Configuración del Sistema</h1>
+            <p className="text-slate-400">API Keys, integraciones y ajustes del sistema</p>
           </div>
         </div>
         
         <button
           onClick={loadSettings}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
         >
           <RefreshCw size={18} />
           Recargar
@@ -246,13 +246,13 @@ export default function AdminSettings() {
 
       {/* Alerts */}
       {success && (
-        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700">
+        <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
           <CheckCircle size={20} />
           {success}
         </div>
       )}
       {error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+        <div className="flex items-center gap-3 p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400">
           <AlertCircle size={20} />
           {error}
         </div>
@@ -261,8 +261,8 @@ export default function AdminSettings() {
       <div className="grid lg:grid-cols-4 gap-6">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Categorías</h3>
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-4 sticky top-4">
+            <h3 className="font-semibold text-white mb-4">Categorías</h3>
             <nav className="space-y-1">
               {Object.entries(settingCategories).map(([key, cat]) => {
                 const Icon = cat.icon;
@@ -275,7 +275,7 @@ export default function AdminSettings() {
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive
                         ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
-                        : 'text-gray-600 hover:bg-gray-100'
+                        : 'text-slate-300 hover:bg-slate-700/50'
                     }`}
                   >
                     <Icon size={20} />
@@ -294,7 +294,7 @@ export default function AdminSettings() {
 
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
             {/* Category Header */}
             <div className={`bg-gradient-to-r ${settingCategories[activeCategory].color} p-6 text-white`}>
               <div className="flex items-center justify-between">
@@ -311,7 +311,7 @@ export default function AdminSettings() {
                 
                 <button
                   onClick={() => saveAllInCategory(activeCategory)}
-                  className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-800/50/20 hover:bg-slate-800/50/30 rounded-lg transition-colors"
                 >
                   <Save size={18} />
                   Guardar Todo
@@ -322,20 +322,20 @@ export default function AdminSettings() {
             {/* Settings List */}
             <div className="p-6 space-y-6">
               {getCategorySettings(activeCategory).map((setting) => (
-                <div key={setting.key} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                <div key={setting.key} className="border-b border-slate-700/30 pb-6 last:border-0 last:pb-0">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <label className="font-semibold text-gray-900 flex items-center gap-2">
+                      <label className="font-semibold text-white flex items-center gap-2">
                         {setting.sensitive && <Lock size={14} className="text-amber-500" />}
                         {setting.label}
                       </label>
-                      <p className="text-sm text-gray-500 mt-1">{setting.description}</p>
+                      <p className="text-sm text-slate-400 mt-1">{setting.description}</p>
                     </div>
                     
                     <button
                       onClick={() => saveSetting(setting)}
                       disabled={saving[setting.key]}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-sm transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/15 hover:bg-indigo-500/20 text-indigo-400 rounded-lg text-sm transition-colors disabled:opacity-50"
                     >
                       {saving[setting.key] ? (
                         <Loader2 size={14} className="animate-spin" />
@@ -355,8 +355,8 @@ export default function AdminSettings() {
                           onChange={(e) => handleSettingChange(setting.key, e.target.checked.toString())}
                           className="sr-only peer"
                         />
-                        <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
-                        <span className="ml-3 text-sm text-gray-600">
+                        <div className="w-14 h-7 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-600/50 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                        <span className="ml-3 text-sm text-slate-300">
                           {settings[setting.key] === 'true' || settings[setting.key] === true ? 'Activado' : 'Desactivado'}
                         </span>
                       </label>
@@ -367,12 +367,12 @@ export default function AdminSettings() {
                           value={settings[setting.key] || ''}
                           onChange={(e) => handleSettingChange(setting.key, e.target.value)}
                           placeholder={`Ingresa ${setting.label}`}
-                          className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+                          className="w-full px-4 py-3 pr-12 bg-slate-700/30 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
                         />
                         <button
                           type="button"
                           onClick={() => toggleShowSecret(setting.key)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
                         >
                           {showSecrets[setting.key] ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
@@ -383,7 +383,7 @@ export default function AdminSettings() {
                         value={settings[setting.key] || ''}
                         onChange={(e) => handleSettingChange(setting.key, e.target.value)}
                         placeholder={`Ingresa ${setting.label}`}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full px-4 py-3 bg-slate-700/30 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       />
                     )}
                   </div>
@@ -392,8 +392,8 @@ export default function AdminSettings() {
               
               {/* Special Actions */}
               {activeCategory === 'email' && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="font-semibold text-gray-900 mb-4">Acciones</h3>
+                <div className="mt-6 pt-6 border-t border-slate-700/50">
+                  <h3 className="font-semibold text-white mb-4">Acciones</h3>
                   <button
                     onClick={testEmailConnection}
                     disabled={testingEmail}
@@ -406,7 +406,7 @@ export default function AdminSettings() {
                     )}
                     Enviar Email de Prueba
                   </button>
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-sm text-slate-400 mt-2">
                     Se enviará un email de prueba a {settings['ADMIN_NOTIFICATION_EMAIL'] || user?.email || 'tu email'}
                   </p>
                 </div>
@@ -416,13 +416,13 @@ export default function AdminSettings() {
 
           {/* Info Cards */}
           <div className="grid md:grid-cols-2 gap-4 mt-6">
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-amber-100 rounded-lg">
+                <div className="p-2 bg-amber-500/20 rounded-lg">
                   <AlertCircle className="text-amber-600" size={20} />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-800">Importante</h4>
+                  <h4 className="font-semibold text-amber-400">Importante</h4>
                   <p className="text-sm text-amber-700 mt-1">
                     Las API keys se encriptan antes de guardarse. Los cambios en algunas configuraciones 
                     pueden requerir reiniciar el servidor.
@@ -431,14 +431,14 @@ export default function AdminSettings() {
               </div>
             </div>
             
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="bg-sky-500/10 border border-sky-500/30 rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Zap className="text-blue-600" size={20} />
+                <div className="p-2 bg-sky-500/20 rounded-lg">
+                  <Zap className="text-sky-400" size={20} />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-blue-800">Tip</h4>
-                  <p className="text-sm text-blue-700 mt-1">
+                  <h4 className="font-semibold text-sky-400">Tip</h4>
+                  <p className="text-sm text-sky-400 mt-1">
                     Para Gmail, usa una "App Password" en lugar de tu contraseña normal.
                     Activa 2FA y genera una en tu cuenta de Google.
                   </p>

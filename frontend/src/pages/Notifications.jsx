@@ -23,9 +23,9 @@ const notificationTypes = {
 };
 
 const priorityColors = {
-  high: 'bg-red-100 text-red-800 border-red-200',
-  medium: 'bg-amber-100 text-amber-800 border-amber-200',
-  low: 'bg-blue-100 text-blue-800 border-blue-200',
+  high: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+  medium: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  low: 'bg-sky-500/20 text-sky-400 border-sky-500/30',
 };
 
 export default function Notifications() {
@@ -161,8 +161,8 @@ export default function Notifications() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Cargando notificaciones...</p>
+          <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mx-auto mb-4" />
+          <p className="text-slate-300">Cargando notificaciones...</p>
         </div>
       </div>
     );
@@ -176,14 +176,14 @@ export default function Notifications() {
           <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl text-white relative">
             <Bell size={24} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
                 {unreadCount}
               </span>
             )}
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Notificaciones</h1>
-            <p className="text-gray-500">
+            <h1 className="text-3xl font-bold text-white">Notificaciones</h1>
+            <p className="text-slate-400">
               {unreadCount > 0 ? `${unreadCount} sin leer` : 'Todas leídas'}
             </p>
           </div>
@@ -192,22 +192,22 @@ export default function Notifications() {
         <div className="flex items-center gap-2">
           <button
             onClick={loadNotifications}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
             title="Refrescar"
           >
-            <RefreshCw size={20} className="text-gray-500" />
+            <RefreshCw size={20} className="text-slate-400" />
           </button>
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
             title="Configuración"
           >
-            <Settings size={20} className="text-gray-500" />
+            <Settings size={20} className="text-slate-400" />
           </button>
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-500/15 hover:bg-indigo-500/20 text-indigo-400 rounded-lg transition-colors"
             >
               <CheckCheck size={18} />
               Marcar todas como leídas
@@ -218,8 +218,8 @@ export default function Notifications() {
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Preferencias de Notificaciones</h3>
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
+          <h3 className="font-semibold text-white mb-4">Preferencias de Notificaciones</h3>
           <div className="grid md:grid-cols-2 gap-4">
             {Object.entries({
               emailNotifications: 'Recibir notificaciones por email',
@@ -229,8 +229,8 @@ export default function Notifications() {
               creditAlerts: 'Alertas de cambios en crédito',
               systemMessages: 'Mensajes del sistema',
             }).map(([key, label]) => (
-              <label key={key} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
-                <span className="text-gray-700">{label}</span>
+              <label key={key} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors">
+                <span className="text-slate-300">{label}</span>
                 <div className="relative">
                   <input
                     type="checkbox"
@@ -238,7 +238,7 @@ export default function Notifications() {
                     onChange={(e) => setSettings(prev => ({ ...prev, [key]: e.target.checked }))}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-indigo-600 transition-colors"></div>
+                  <div className="w-11 h-6 bg-slate-600 rounded-full peer peer-checked:bg-indigo-600 transition-colors"></div>
                   <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow peer-checked:translate-x-5 transition-transform"></div>
                 </div>
               </label>
@@ -249,7 +249,7 @@ export default function Notifications() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
-        <div className="flex bg-gray-100 rounded-xl p-1">
+        <div className="flex bg-slate-700/50 rounded-xl p-1">
           {[
             { value: 'all', label: 'Todas' },
             { value: 'unread', label: 'Sin leer' },
@@ -260,8 +260,8 @@ export default function Notifications() {
               onClick={() => setFilter(value)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === value
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-slate-800/50 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               {label}
@@ -272,7 +272,7 @@ export default function Notifications() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         >
           <option value="all">Todos los tipos</option>
           {Object.entries(notificationTypes).map(([key, { label }]) => (
@@ -284,10 +284,10 @@ export default function Notifications() {
       {/* Notifications List */}
       <div className="space-y-3">
         {filteredNotifications.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-            <BellOff className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No hay notificaciones</h3>
-            <p className="text-gray-500">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-12 text-center">
+            <BellOff className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">No hay notificaciones</h3>
+            <p className="text-slate-400">
               {filter === 'unread' ? 'No tienes notificaciones sin leer' : 'No hay notificaciones para mostrar'}
             </p>
           </div>
@@ -299,8 +299,8 @@ export default function Notifications() {
             return (
               <div
                 key={notification.id}
-                className={`bg-white rounded-2xl shadow-sm border overflow-hidden transition-all hover:shadow-md ${
-                  notification.read ? 'border-gray-100' : 'border-indigo-200 bg-indigo-50/30'
+                className={`bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border overflow-hidden transition-all hover:shadow-md ${
+                  notification.read ? 'border-slate-700/30' : 'border-indigo-500/30 bg-indigo-500/10'
                 }`}
               >
                 <div className="p-5">
@@ -315,7 +315,7 @@ export default function Notifications() {
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className={`font-semibold ${notification.read ? 'text-gray-700' : 'text-gray-900'}`}>
+                            <h3 className={`font-semibold ${notification.read ? 'text-slate-300' : 'text-white'}`}>
                               {notification.title}
                             </h3>
                             {!notification.read && (
@@ -327,10 +327,10 @@ export default function Notifications() {
                               </span>
                             )}
                           </div>
-                          <p className={`text-sm ${notification.read ? 'text-gray-500' : 'text-gray-600'}`}>
+                          <p className={`text-sm ${notification.read ? 'text-slate-400' : 'text-slate-300'}`}>
                             {notification.message}
                           </p>
-                          <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                          <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
                             <Clock size={12} />
                             {formatDate(notification.created_at)}
                           </p>
@@ -341,7 +341,7 @@ export default function Notifications() {
                           {!notification.read && (
                             <button
                               onClick={() => markAsRead(notification.id)}
-                              className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-green-600"
+                              className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors text-slate-500 hover:text-emerald-400"
                               title="Marcar como leída"
                             >
                               <Check size={18} />
@@ -349,7 +349,7 @@ export default function Notifications() {
                           )}
                           <button
                             onClick={() => deleteNotification(notification.id)}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-red-600"
+                            className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors text-slate-500 hover:text-rose-400"
                             title="Eliminar"
                           >
                             <Trash2 size={18} />

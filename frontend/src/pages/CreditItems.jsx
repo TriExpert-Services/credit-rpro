@@ -94,25 +94,25 @@ export default function CreditItems() {
 
   const getStatusConfig = (status) => {
     const configs = {
-      identified: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: Clock, label: 'Identified' },
-      pending: { color: 'bg-gray-100 text-gray-800 border-gray-200', icon: Clock, label: 'Pending' },
-      disputing: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: AlertCircle, label: 'In Dispute' },
-      in_dispute: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: AlertCircle, label: 'In Dispute' },
-      deleted: { color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle2, label: 'Removed' },
-      resolved: { color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle2, label: 'Resolved' },
-      verified: { color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle, label: 'Verified' }
+      identified: { color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', icon: Clock, label: 'Identified' },
+      pending: { color: 'bg-slate-700/50 text-slate-300 border-slate-700/50', icon: Clock, label: 'Pending' },
+      disputing: { color: 'bg-sky-500/20 text-sky-400 border-sky-500/30', icon: AlertCircle, label: 'In Dispute' },
+      in_dispute: { color: 'bg-sky-500/20 text-sky-400 border-sky-500/30', icon: AlertCircle, label: 'In Dispute' },
+      deleted: { color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', icon: CheckCircle2, label: 'Removed' },
+      resolved: { color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', icon: CheckCircle2, label: 'Resolved' },
+      verified: { color: 'bg-rose-500/20 text-rose-400 border-rose-500/30', icon: XCircle, label: 'Verified' }
     };
     return configs[status] || configs.pending;
   };
 
   const getBureauColor = (bureau) => {
     const colors = {
-      equifax: 'bg-red-500',
-      experian: 'bg-blue-500',
-      transunion: 'bg-green-500',
+      equifax: 'bg-rose-500',
+      experian: 'bg-sky-500',
+      transunion: 'bg-emerald-500',
       all: 'bg-purple-500'
     };
-    return colors[bureau] || 'bg-gray-500';
+    return colors[bureau] || 'bg-slate-500';
   };
 
   const itemTypeLabels = {
@@ -128,8 +128,8 @@ export default function CreditItems() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading credit items...</p>
+          <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-300 font-medium">Loading credit items...</p>
         </div>
       </div>
     );
@@ -145,14 +145,14 @@ export default function CreditItems() {
               <AlertCircle size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Credit Items</h1>
-              <p className="text-gray-500">Manage and track negative items on your credit report</p>
+              <h1 className="text-3xl font-bold text-white">Credit Items</h1>
+              <p className="text-slate-400">Manage and track negative items on your credit report</p>
             </div>
           </div>
         </div>
         <button 
           onClick={() => setShowForm(true)} 
-          className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200"
+          className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/25"
         >
           <Plus size={20} />
           Add New Item
@@ -201,8 +201,8 @@ export default function CreditItems() {
       {/* Charts and Filters Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Distribution Chart */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Distribution by Bureau</h3>
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
+          <h3 className="font-semibold text-white mb-4">Distribution by Bureau</h3>
           {pieData.length > 0 ? (
             <div className="flex items-center gap-4">
               <ResponsiveContainer width="50%" height={150}>
@@ -220,32 +220,32 @@ export default function CreditItems() {
                   <div key={item.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }}></div>
-                      <span className="text-sm text-gray-600">{item.name}</span>
+                      <span className="text-sm text-slate-300">{item.name}</span>
                     </div>
-                    <span className="font-semibold text-gray-900">{item.value}</span>
+                    <span className="font-semibold text-white">{item.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="h-[150px] flex items-center justify-center text-gray-400">
+            <div className="h-[150px] flex items-center justify-center text-slate-500">
               <p>No items to display</p>
             </div>
           )}
         </div>
 
         {/* Filters */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Filter Items</h3>
+        <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-6">
+          <h3 className="font-semibold text-white mb-4">Filter Items</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
               <input
                 type="text"
                 placeholder="Search creditor or account..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-3 border border-slate-700/50 bg-slate-800/60 text-slate-200 placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               />
             </div>
             <select
@@ -274,38 +274,38 @@ export default function CreditItems() {
       </div>
 
       {/* Items Grid */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+        <div className="p-6 border-b border-slate-700/50">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Credit Items ({filteredItems.length})</h3>
+            <h3 className="font-semibold text-white">Credit Items ({filteredItems.length})</h3>
           </div>
         </div>
 
         {filteredItems.length === 0 ? (
           <div className="text-center py-16">
-            <AlertCircle size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-gray-500 font-medium">No items found</p>
-            <p className="text-gray-400 text-sm mt-1">Try adjusting your filters or add a new item</p>
+            <AlertCircle size={48} className="mx-auto mb-4 text-slate-600" />
+            <p className="text-slate-400 font-medium">No items found</p>
+            <p className="text-slate-500 text-sm mt-1">Try adjusting your filters or add a new item</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-slate-700/50">
             {filteredItems.map((item) => {
               const statusConfig = getStatusConfig(item.status);
               const StatusIcon = statusConfig.icon;
               return (
-                <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors">
+                <div key={item.id} className="p-4 hover:bg-slate-700/30 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className={`p-3 ${getBureauColor(item.bureau)} rounded-xl text-white`}>
                       <Building2 size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold text-gray-900 truncate">{item.creditor_name}</h4>
+                        <h4 className="font-semibold text-white truncate">{item.creditor_name}</h4>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${statusConfig.color}`}>
                           {statusConfig.label}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-4 text-sm text-slate-400">
                         <span className="uppercase font-medium">{item.bureau}</span>
                         <span>•</span>
                         <span>{itemTypeLabels[item.item_type] || item.item_type}</span>
@@ -318,19 +318,19 @@ export default function CreditItems() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold text-gray-900">${parseFloat(item.balance || 0).toLocaleString()}</p>
-                      <p className="text-sm text-gray-500">Balance</p>
+                      <p className="text-xl font-bold text-white">${parseFloat(item.balance || 0).toLocaleString()}</p>
+                      <p className="text-sm text-slate-400">Balance</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => setSelectedItem(item)}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/20 rounded-lg transition-colors"
                       >
                         <Eye size={18} />
                       </button>
                       <button 
                         onClick={() => handleDelete(item.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-500 hover:text-red-400 hover:bg-rose-500/20 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -346,10 +346,10 @@ export default function CreditItems() {
       {/* Add Item Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowForm(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Add New Credit Item</h2>
-              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <h2 className="text-xl font-bold text-white">Add New Credit Item</h2>
+              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -384,44 +384,44 @@ export default function CreditItems() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Creditor Name</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Creditor Name</label>
                 <input 
                   type="text" 
                   value={formData.creditorName} 
                   onChange={(e) => setFormData({...formData, creditorName: e.target.value})} 
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                  className="w-full px-4 py-3 border border-slate-700/50 bg-slate-800/60 text-slate-200 placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
                   placeholder="Enter creditor name"
                   required 
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Account Number</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
                   <input 
                     type="text" 
                     value={formData.accountNumber} 
                     onChange={(e) => setFormData({...formData, accountNumber: e.target.value})} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                    className="w-full px-4 py-3 border border-slate-700/50 bg-slate-800/60 text-slate-200 placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
                     placeholder="****1234"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Balance</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Balance</label>
                   <input 
                     type="number" 
                     value={formData.balance} 
                     onChange={(e) => setFormData({...formData, balance: e.target.value})} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                    className="w-full px-4 py-3 border border-slate-700/50 bg-slate-800/60 text-slate-200 placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
                     placeholder="0.00"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Description</label>
                 <textarea 
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                  className="w-full px-4 py-3 border border-slate-700/50 bg-slate-800/60 text-slate-200 placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
                   rows="3"
                   placeholder="Add any notes about this item..."
                 ></textarea>
@@ -436,7 +436,7 @@ export default function CreditItems() {
                 <button 
                   type="button" 
                   onClick={() => setShowForm(false)} 
-                  className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+                  className="px-6 py-3 border border-slate-700/50 text-slate-300 rounded-xl font-medium hover:bg-slate-700/30 transition-colors"
                 >
                   Cancel
                 </button>
@@ -449,48 +449,48 @@ export default function CreditItems() {
       {/* View Item Modal */}
       {selectedItem && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setSelectedItem(null)}>
-          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Item Details</h2>
-              <button onClick={() => setSelectedItem(null)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <h2 className="text-xl font-bold text-white">Item Details</h2>
+              <button onClick={() => setSelectedItem(null)} className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors">
                 <X size={20} />
               </button>
             </div>
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-4 p-4 bg-slate-700/30 rounded-xl">
                 <div className={`p-3 ${getBureauColor(selectedItem.bureau)} rounded-xl text-white`}>
                   <Building2 size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">{selectedItem.creditor_name}</h3>
-                  <p className="text-sm text-gray-500 uppercase">{selectedItem.bureau}</p>
+                  <h3 className="font-bold text-white">{selectedItem.creditor_name}</h3>
+                  <p className="text-sm text-slate-400 uppercase">{selectedItem.bureau}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500 mb-1">Item Type</p>
-                  <p className="font-medium text-gray-900">{itemTypeLabels[selectedItem.item_type] || selectedItem.item_type}</p>
+                <div className="p-4 bg-slate-700/30 rounded-xl">
+                  <p className="text-sm text-slate-400 mb-1">Item Type</p>
+                  <p className="font-medium text-white">{itemTypeLabels[selectedItem.item_type] || selectedItem.item_type}</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500 mb-1">Balance</p>
-                  <p className="font-bold text-xl text-gray-900">${parseFloat(selectedItem.balance || 0).toLocaleString()}</p>
+                <div className="p-4 bg-slate-700/30 rounded-xl">
+                  <p className="text-sm text-slate-400 mb-1">Balance</p>
+                  <p className="font-bold text-xl text-white">${parseFloat(selectedItem.balance || 0).toLocaleString()}</p>
                 </div>
               </div>
               {selectedItem.account_number && (
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500 mb-1">Account Number</p>
-                  <p className="font-medium text-gray-900">{selectedItem.account_number}</p>
+                <div className="p-4 bg-slate-700/30 rounded-xl">
+                  <p className="text-sm text-slate-400 mb-1">Account Number</p>
+                  <p className="font-medium text-white">{selectedItem.account_number}</p>
                 </div>
               )}
               {selectedItem.description && (
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-500 mb-1">Notes</p>
-                  <p className="text-gray-900">{selectedItem.description}</p>
+                <div className="p-4 bg-slate-700/30 rounded-xl">
+                  <p className="text-sm text-slate-400 mb-1">Notes</p>
+                  <p className="text-white">{selectedItem.description}</p>
                 </div>
               )}
               <button 
                 onClick={() => setSelectedItem(null)}
-                className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                className="w-full py-3 bg-slate-700/50 text-slate-300 rounded-xl font-medium hover:bg-slate-600/50 transition-colors"
               >
                 Close
               </button>

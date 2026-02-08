@@ -46,18 +46,18 @@ export default function CancellationForm() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+              <CheckCircle className="w-8 h-8 text-emerald-400" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-white mb-4">
               Solicitud de Cancelación Recibida
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-slate-300 mb-6">
               Su solicitud de cancelación ha sido recibida y será procesada dentro de las próximas 24 horas.
               Recibirá un email de confirmación en <strong>{user?.email}</strong>.
             </p>
-            <p className="text-gray-500 text-sm mb-8">
+            <p className="text-slate-400 text-sm mb-8">
               Si tiene alguna pregunta, contacte a nuestro equipo de soporte.
             </p>
             <Link 
@@ -80,23 +80,23 @@ export default function CancellationForm() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl mb-6 shadow-lg">
             <FileText className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             AVISO DE CANCELACIÓN
           </h1>
-          <p className="text-gray-600">
+          <p className="text-slate-300">
             Formulario de Derecho a Cancelar (3 Días Hábiles) - CROA
           </p>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border-2 border-gray-200">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-8 md:p-12 border-2 border-slate-700/50">
           {/* Legal Notice */}
-          <div className="bg-amber-50 rounded-xl p-6 border border-amber-200 mb-8">
+          <div className="bg-amber-500/10 rounded-xl p-6 border border-amber-500/30 mb-8">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-amber-900 mb-2">AVISO IMPORTANTE</h3>
-                <p className="text-amber-800 text-sm">
+                <h3 className="font-semibold text-amber-400 mb-2">AVISO IMPORTANTE</h3>
+                <p className="text-amber-400 text-sm">
                   Usted puede cancelar este contrato sin ningún cargo o penalidad dentro de los 
                   <strong> TRES (3) DÍAS HÁBILES</strong> siguientes a la fecha en que firmó el 
                   contrato o recibió este formulario de cancelación, lo que ocurra después.
@@ -106,12 +106,12 @@ export default function CancellationForm() {
           </div>
 
           {/* Printable Form Section */}
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 mb-8 print:border-solid">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 text-center border-b pb-4">
+          <div className="border-2 border-dashed border-slate-600/50 rounded-xl p-6 mb-8 print:border-solid">
+            <h2 className="text-xl font-bold text-white mb-6 text-center border-b pb-4">
               FORMULARIO DE CANCELACIÓN
             </h2>
 
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-4 text-slate-300">
               <p>
                 <strong>Fecha:</strong> {formattedDate}
               </p>
@@ -128,7 +128,7 @@ export default function CancellationForm() {
                 <strong>Email:</strong> {user?.email}
               </p>
 
-              <div className="my-6 py-4 border-t border-b border-gray-200">
+              <div className="my-6 py-4 border-t border-b border-slate-700/50">
                 <p className="mb-4">
                   Por medio de la presente, notifico que deseo CANCELAR mi contrato de servicios 
                   de reparación de crédito con TriExpert Credit Repair.
@@ -142,35 +142,35 @@ export default function CancellationForm() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
                     Razón de cancelación (opcional):
                   </label>
                   <textarea
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Por favor indique el motivo de su cancelación..."
                   />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 pt-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Firma del Consumidor:
                     </label>
-                    <div className="h-20 border-b-2 border-gray-400 flex items-end justify-center pb-2">
-                      <span className="text-gray-400 italic print:hidden">
+                    <div className="h-20 border-b-2 border-slate-500 flex items-end justify-center pb-2">
+                      <span className="text-slate-500 italic print:hidden">
                         (Firma digital al enviar)
                       </span>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Fecha:
                     </label>
-                    <div className="h-20 border-b-2 border-gray-400 flex items-end justify-center pb-2">
-                      <span className="text-gray-700">{formattedDate}</span>
+                    <div className="h-20 border-b-2 border-slate-500 flex items-end justify-center pb-2">
+                      <span className="text-slate-300">{formattedDate}</span>
                     </div>
                   </div>
                 </div>
@@ -180,20 +180,20 @@ export default function CancellationForm() {
 
           {/* Submission Options */}
           <div className="space-y-6">
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-white">
               Opciones para Enviar su Cancelación:
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4">
-                <h4 className="font-medium text-gray-900 mb-2">📧 Por Email</h4>
-                <p className="text-sm text-gray-600">
+              <div className="bg-slate-700/30 rounded-xl p-4">
+                <h4 className="font-medium text-white mb-2">📧 Por Email</h4>
+                <p className="text-sm text-slate-300">
                   cancellations@triexpertservice.com
                 </p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <h4 className="font-medium text-gray-900 mb-2">📬 Por Correo</h4>
-                <p className="text-sm text-gray-600">
+              <div className="bg-slate-700/30 rounded-xl p-4">
+                <h4 className="font-medium text-white mb-2">📬 Por Correo</h4>
+                <p className="text-sm text-slate-300">
                   TriExpert Credit Repair<br />
                   2800 E 113th Ave<br />
                   Tampa, FL 33617
@@ -202,7 +202,7 @@ export default function CancellationForm() {
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-800 rounded-xl p-4 border border-red-200">
+              <div className="bg-rose-500/10 text-rose-400 rounded-xl p-4 border border-rose-500/30">
                 {error}
               </div>
             )}
@@ -225,7 +225,7 @@ export default function CancellationForm() {
               
               <button
                 onClick={() => window.print()}
-                className="flex items-center justify-center gap-2 px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-700/50 text-slate-300 rounded-xl font-semibold hover:bg-slate-700 transition-colors"
               >
                 <Printer className="w-5 h-5" />
                 Imprimir Formulario
@@ -234,8 +234,8 @@ export default function CancellationForm() {
           </div>
 
           {/* Legal Footer */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
+          <div className="mt-8 pt-6 border-t border-slate-700/50">
+            <p className="text-xs text-slate-400 text-center">
               Este formulario se proporciona de conformidad con la Ley de Organizaciones de 
               Reparación de Crédito (CROA), 15 U.S.C. § 1679e. Guarde una copia de este 
               formulario para sus registros.
@@ -247,7 +247,7 @@ export default function CancellationForm() {
         <div className="text-center mt-8">
           <Link 
             to="/consumer-rights" 
-            className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+            className="text-indigo-400 hover:text-indigo-400 font-medium transition-colors"
           >
             ← Ver Derechos del Consumidor
           </Link>

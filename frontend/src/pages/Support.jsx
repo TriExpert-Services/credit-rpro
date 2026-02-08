@@ -100,18 +100,18 @@ export default function Support() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
             <HelpCircle className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Centro de Ayuda</h1>
-          <p className="text-gray-600 text-lg">¿Cómo podemos ayudarte hoy?</p>
+          <h1 className="text-4xl font-bold text-white mb-4">Centro de Ayuda</h1>
+          <p className="text-slate-300 text-lg">¿Cómo podemos ayudarte hoy?</p>
         </div>
 
         {/* Quick Contact Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-600 rounded-xl mb-4">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-sky-500/20 text-sky-400 rounded-xl mb-4">
               <MessageCircle className="w-6 h-6" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Chat en Vivo</h3>
-            <p className="text-gray-600 text-sm mb-4">Respuestas instantáneas de nuestro equipo</p>
+            <h3 className="font-semibold text-white mb-2">Chat en Vivo</h3>
+            <p className="text-slate-300 text-sm mb-4">Respuestas instantáneas de nuestro equipo</p>
             <button 
               onClick={() => window.Tawk_API && window.Tawk_API.toggle()}
               className="w-full py-2 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
@@ -120,23 +120,23 @@ export default function Support() {
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 text-green-600 rounded-xl mb-4">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl mb-4">
               <Mail className="w-6 h-6" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
-            <p className="text-gray-600 text-sm mb-4">support@triexpertservice.com</p>
+            <h3 className="font-semibold text-white mb-2">Email</h3>
+            <p className="text-slate-300 text-sm mb-4">support@triexpertservice.com</p>
             <a href="mailto:support@triexpertservice.com" className="block w-full py-2 px-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors">
               Enviar Email
             </a>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 text-purple-600 rounded-xl mb-4">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 text-purple-600 rounded-xl mb-4">
               <Phone className="w-6 h-6" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Teléfono</h3>
-            <p className="text-gray-600 text-sm mb-4">(813) 369-3340</p>
+            <h3 className="font-semibold text-white mb-2">Teléfono</h3>
+            <p className="text-slate-300 text-sm mb-4">(813) 369-3340</p>
             <a href="tel:+18133693340" className="block w-full py-2 px-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors">
               Llamar Ahora
             </a>
@@ -155,14 +155,14 @@ export default function Support() {
         </div>
 
         {/* FAQ Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Preguntas Frecuentes</h2>
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">Preguntas Frecuentes</h2>
           
           {faqs.map((category, catIndex) => (
             <div key={catIndex} className="mb-8 last:mb-0">
               <div className="flex items-center gap-3 mb-4">
-                <category.icon className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
+                <category.icon className="w-5 h-5 text-indigo-400" />
+                <h3 className="text-lg font-semibold text-white">{category.category}</h3>
               </div>
               
               <div className="space-y-3">
@@ -174,26 +174,26 @@ export default function Support() {
                     <div 
                       key={faqIndex}
                       className={`border rounded-xl overflow-hidden transition-all ${
-                        isOpen ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'
+                        isOpen ? 'border-indigo-500/30 bg-indigo-500/15' : 'border-slate-700/50 hover:border-slate-600/50'
                       }`}
                     >
                       <button
                         onClick={() => toggleFaq(index)}
                         className="w-full flex items-center justify-between p-4 text-left"
                       >
-                        <span className={`font-medium ${isOpen ? 'text-indigo-900' : 'text-gray-900'}`}>
+                        <span className={`font-medium ${isOpen ? 'text-indigo-400' : 'text-white'}`}>
                           {faq.q}
                         </span>
                         {isOpen ? (
-                          <ChevronUp className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                          <ChevronUp className="w-5 h-5 text-indigo-400 flex-shrink-0" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                          <ChevronDown className="w-5 h-5 text-slate-500 flex-shrink-0" />
                         )}
                       </button>
                       
                       {isOpen && (
                         <div className="px-4 pb-4">
-                          <p className="text-gray-600 leading-relaxed">{faq.a}</p>
+                          <p className="text-slate-300 leading-relaxed">{faq.a}</p>
                         </div>
                       )}
                     </div>
@@ -206,22 +206,22 @@ export default function Support() {
 
         {/* Additional Resources */}
         <div className="mt-12 grid md:grid-cols-2 gap-6">
-          <a href="/privacy-policy" className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow flex items-center gap-4">
-            <Shield className="w-10 h-10 text-indigo-600" />
+          <a href="/privacy-policy" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow flex items-center gap-4">
+            <Shield className="w-10 h-10 text-indigo-400" />
             <div>
-              <h3 className="font-semibold text-gray-900">Política de Privacidad</h3>
-              <p className="text-gray-600 text-sm">Cómo protegemos su información</p>
+              <h3 className="font-semibold text-white">Política de Privacidad</h3>
+              <p className="text-slate-300 text-sm">Cómo protegemos su información</p>
             </div>
-            <ExternalLink className="w-5 h-5 text-gray-400 ml-auto" />
+            <ExternalLink className="w-5 h-5 text-slate-500 ml-auto" />
           </a>
           
-          <a href="/terms" className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow flex items-center gap-4">
-            <FileText className="w-10 h-10 text-indigo-600" />
+          <a href="/terms" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow flex items-center gap-4">
+            <FileText className="w-10 h-10 text-indigo-400" />
             <div>
-              <h3 className="font-semibold text-gray-900">Términos de Servicio</h3>
-              <p className="text-gray-600 text-sm">Nuestros términos y condiciones</p>
+              <h3 className="font-semibold text-white">Términos de Servicio</h3>
+              <p className="text-slate-300 text-sm">Nuestros términos y condiciones</p>
             </div>
-            <ExternalLink className="w-5 h-5 text-gray-400 ml-auto" />
+            <ExternalLink className="w-5 h-5 text-slate-500 ml-auto" />
           </a>
         </div>
 
@@ -229,7 +229,7 @@ export default function Support() {
         <div className="text-center mt-8">
           <a 
             href="/dashboard" 
-            className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+            className="text-indigo-400 hover:text-indigo-400 font-medium transition-colors"
           >
             ← Volver al Dashboard
           </a>

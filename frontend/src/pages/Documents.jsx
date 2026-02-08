@@ -109,10 +109,10 @@ export default function Documents() {
 
   const getFileColor = (filename) => {
     const ext = filename?.split('.').pop()?.toLowerCase();
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'bg-green-500';
-    if (['pdf'].includes(ext)) return 'bg-red-500';
-    if (['doc', 'docx'].includes(ext)) return 'bg-blue-500';
-    return 'bg-gray-500';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'bg-emerald-500';
+    if (['pdf'].includes(ext)) return 'bg-rose-500';
+    if (['doc', 'docx'].includes(ext)) return 'bg-sky-500';
+    return 'bg-slate-700/300';
   };
 
   const formatFileSize = (bytes) => {
@@ -125,8 +125,8 @@ export default function Documents() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading documents...</p>
+          <div className="w-16 h-16 border-4 border-sky-500/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-300 font-medium">Loading documents...</p>
         </div>
       </div>
     );
@@ -142,8 +142,8 @@ export default function Documents() {
               <FolderOpen size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Documents</h1>
-              <p className="text-gray-500">Upload and manage your credit repair documents</p>
+              <h1 className="text-3xl font-bold text-white">Documents</h1>
+              <p className="text-slate-400">Upload and manage your credit repair documents</p>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function Documents() {
         <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-5 text-white">
           <div className="flex items-center justify-between mb-3">
             <File size={24} className="text-blue-200" />
-            <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Total</span>
+            <span className="text-xs bg-slate-800/50/20 px-2 py-1 rounded-full">Total</span>
           </div>
           <p className="text-4xl font-bold">{stats.total}</p>
           <p className="text-blue-100 text-sm mt-1">Documents Uploaded</p>
@@ -163,7 +163,7 @@ export default function Documents() {
         <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-5 text-white">
           <div className="flex items-center justify-between mb-3">
             <HardDrive size={24} className="text-purple-200" />
-            <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Storage</span>
+            <span className="text-xs bg-slate-800/50/20 px-2 py-1 rounded-full">Storage</span>
           </div>
           <p className="text-4xl font-bold">{formatFileSize(stats.totalSize)}</p>
           <p className="text-purple-100 text-sm mt-1">Total Size</p>
@@ -172,7 +172,7 @@ export default function Documents() {
         <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white">
           <div className="flex items-center justify-between mb-3">
             <CheckCircle size={24} className="text-emerald-200" />
-            <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Types</span>
+            <span className="text-xs bg-slate-800/50/20 px-2 py-1 rounded-full">Types</span>
           </div>
           <p className="text-4xl font-bold">{Object.keys(stats.byType).length}</p>
           <p className="text-emerald-100 text-sm mt-1">File Types</p>
@@ -181,10 +181,10 @@ export default function Documents() {
 
       {/* Upload Zone */}
       <div 
-        className={`relative bg-white rounded-2xl shadow-sm border-2 border-dashed transition-all ${
+        className={`relative bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border-2 border-dashed transition-all ${
           dragActive 
-            ? 'border-indigo-500 bg-indigo-50' 
-            : 'border-gray-200 hover:border-indigo-300'
+            ? 'border-indigo-500 bg-indigo-500/15' 
+            : 'border-slate-700/50 hover:border-indigo-300'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -192,16 +192,16 @@ export default function Documents() {
         onDrop={handleDrop}
       >
         <label className="flex flex-col items-center justify-center p-12 cursor-pointer">
-          <div className={`p-4 rounded-2xl mb-4 transition-all ${dragActive ? 'bg-indigo-500 text-white' : 'bg-indigo-100 text-indigo-600'}`}>
+          <div className={`p-4 rounded-2xl mb-4 transition-all ${dragActive ? 'bg-indigo-500 text-white' : 'bg-indigo-500/20 text-indigo-400'}`}>
             <Upload size={40} />
           </div>
-          <span className="text-xl font-semibold text-gray-900 mb-2">
+          <span className="text-xl font-semibold text-white mb-2">
             {dragActive ? 'Drop files here' : 'Upload Documents'}
           </span>
-          <span className="text-gray-500 mb-4">Drag and drop files or click to browse</span>
+          <span className="text-slate-400 mb-4">Drag and drop files or click to browse</span>
           <div className="flex gap-2">
             {['PDF', 'JPG', 'PNG', 'DOC'].map((type) => (
-              <span key={type} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">{type}</span>
+              <span key={type} className="px-3 py-1 bg-slate-700/50 text-slate-300 rounded-full text-sm">{type}</span>
             ))}
           </div>
           <input 
@@ -216,11 +216,11 @@ export default function Documents() {
 
         {/* Upload Progress */}
         {uploading && (
-          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+          <div className="absolute inset-0 bg-slate-800/50/90 backdrop-blur-sm flex items-center justify-center rounded-2xl">
             <div className="text-center">
-              <div className="w-20 h-20 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-900 font-medium">Uploading...</p>
-              <div className="w-48 h-2 bg-gray-200 rounded-full mt-3 overflow-hidden">
+              <div className="w-20 h-20 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-white font-medium">Uploading...</p>
+              <div className="w-48 h-2 bg-slate-700 rounded-full mt-3 overflow-hidden">
                 <div 
                   className="h-full bg-indigo-600 rounded-full transition-all"
                   style={{ width: `${uploadProgress}%` }}
@@ -232,46 +232,46 @@ export default function Documents() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-4">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
           <input
             type="text"
             placeholder="Search documents..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            className="w-full pl-12 pr-4 py-3 border border-slate-700/50 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
         </div>
       </div>
 
       {/* Documents Grid */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h3 className="font-semibold text-gray-900">My Documents ({filteredDocs.length})</h3>
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 overflow-hidden">
+        <div className="p-6 border-b border-slate-700/30">
+          <h3 className="font-semibold text-white">My Documents ({filteredDocs.length})</h3>
         </div>
 
         {filteredDocs.length === 0 ? (
           <div className="text-center py-16">
-            <FolderOpen size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-gray-500 font-medium">No documents found</p>
-            <p className="text-gray-400 text-sm mt-1">Upload your first document to get started</p>
+            <FolderOpen size={48} className="mx-auto mb-4 text-slate-500" />
+            <p className="text-slate-400 font-medium">No documents found</p>
+            <p className="text-slate-500 text-sm mt-1">Upload your first document to get started</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
             {filteredDocs.map((doc) => {
               const FileIcon = getFileIcon(doc.file_name);
               return (
-                <div key={doc.id} className="group bg-gray-50 rounded-xl p-4 hover:bg-indigo-50 transition-all border border-transparent hover:border-indigo-200">
+                <div key={doc.id} className="group bg-slate-700/30 rounded-xl p-4 hover:bg-indigo-500/20 transition-all border border-transparent hover:border-indigo-500/30">
                   <div className="flex items-start gap-4">
                     <div className={`p-3 ${getFileColor(doc.file_name)} rounded-xl text-white flex-shrink-0`}>
                       <FileIcon size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 truncate" title={doc.file_name}>
+                      <h4 className="font-medium text-white truncate" title={doc.file_name}>
                         {doc.file_name}
                       </h4>
-                      <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                      <div className="flex items-center gap-3 mt-1 text-sm text-slate-400">
                         <span>{formatFileSize(doc.file_size)}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
@@ -282,17 +282,17 @@ export default function Documents() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors text-sm">
+                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-800/50 text-slate-300 rounded-lg border border-slate-700/50 hover:bg-slate-700/50 transition-colors text-sm">
                       <Eye size={14} />
                       View
                     </button>
-                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors text-sm">
+                    <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-800/50 text-slate-300 rounded-lg border border-slate-700/50 hover:bg-slate-700/50 transition-colors text-sm">
                       <Download size={14} />
                       Download
                     </button>
                     <button 
                       onClick={() => handleDelete(doc.id)}
-                      className="p-2 text-red-600 bg-white rounded-lg border border-gray-200 hover:bg-red-50 transition-colors"
+                      className="p-2 text-rose-400 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:bg-rose-500/20 transition-colors"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -305,8 +305,8 @@ export default function Documents() {
       </div>
 
       {/* Tips */}
-      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-2xl p-6">
-        <h3 className="font-semibold text-indigo-900 mb-3">💡 Tips for Document Management</h3>
+      <div className="bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 border border-indigo-500/30 rounded-2xl p-6">
+        <h3 className="font-semibold text-indigo-400 mb-3">💡 Tips for Document Management</h3>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             'Upload credit reports from all three bureaus',

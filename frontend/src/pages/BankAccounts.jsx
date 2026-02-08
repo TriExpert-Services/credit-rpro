@@ -106,54 +106,54 @@ export default function BankAccounts() {
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Cuentas Bancarias</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-3xl font-bold text-white">Cuentas Bancarias</h1>
+        <p className="mt-2 text-slate-300">
           Conecte sus cuentas bancarias para verificación de identidad y análisis financiero
         </p>
       </div>
 
       {/* Messages */}
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+        <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-green-500" />
-          <p className="text-green-700">{success}</p>
+          <p className="text-emerald-400">{success}</p>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+        <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 rounded-lg flex items-center gap-3">
           <AlertCircle className="h-5 w-5 text-red-500" />
-          <p className="text-red-700">{error}</p>
-          <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-red-600">×</button>
+          <p className="text-rose-400">{error}</p>
+          <button onClick={() => setError('')} className="ml-auto text-red-400 hover:text-rose-400">×</button>
         </div>
       )}
 
       {/* Verification Status Card */}
       <div className={`mb-8 p-6 rounded-xl border-2 ${
         verificationStatus?.isVerified 
-          ? 'bg-green-50 border-green-200' 
-          : 'bg-yellow-50 border-yellow-200'
+          ? 'bg-emerald-500/10 border-emerald-500/30' 
+          : 'bg-amber-500/10 border-amber-500/30'
       }`}>
         <div className="flex items-start gap-4">
           <div className={`p-3 rounded-full ${
-            verificationStatus?.isVerified ? 'bg-green-100' : 'bg-yellow-100'
+            verificationStatus?.isVerified ? 'bg-emerald-500/20' : 'bg-amber-500/20'
           }`}>
             {verificationStatus?.isVerified ? (
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+              <CheckCircle2 className="h-8 w-8 text-emerald-400" />
             ) : (
-              <Shield className="h-8 w-8 text-yellow-600" />
+              <Shield className="h-8 w-8 text-amber-400" />
             )}
           </div>
           <div className="flex-1">
             <h2 className={`text-xl font-semibold ${
-              verificationStatus?.isVerified ? 'text-green-800' : 'text-yellow-800'
+              verificationStatus?.isVerified ? 'text-emerald-400' : 'text-amber-400'
             }`}>
               {verificationStatus?.isVerified 
                 ? 'Identidad Verificada' 
                 : 'Verificación de Identidad Pendiente'}
             </h2>
             {verificationStatus?.isVerified ? (
-              <div className="mt-2 space-y-1 text-green-700">
+              <div className="mt-2 space-y-1 text-emerald-400">
                 {verificationStatus.verifiedName && (
                   <p>✓ Nombre: {verificationStatus.verifiedName}</p>
                 )}
@@ -170,7 +170,7 @@ export default function BankAccounts() {
                 )}
               </div>
             ) : (
-              <p className="mt-2 text-yellow-700">
+              <p className="mt-2 text-amber-400">
                 Conecte una cuenta bancaria para verificar su identidad automáticamente
               </p>
             )}
@@ -179,20 +179,20 @@ export default function BankAccounts() {
       </div>
 
       {/* Connected Accounts */}
-      <div className="bg-white rounded-xl shadow-sm border p-6 mb-8">
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Cuentas Conectadas</h2>
+          <h2 className="text-xl font-semibold text-white">Cuentas Conectadas</h2>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowBalances(!showBalances)}
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+              className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-300"
             >
               {showBalances ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               {showBalances ? 'Ocultar saldos' : 'Mostrar saldos'}
             </button>
             <button
               onClick={fetchData}
-              className="p-2 text-gray-400 hover:text-gray-600"
+              className="p-2 text-slate-500 hover:text-slate-300"
               title="Actualizar"
             >
               <RefreshCw className="h-5 w-5" />
@@ -202,9 +202,9 @@ export default function BankAccounts() {
 
         {accounts.length === 0 ? (
           <div className="text-center py-8">
-            <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No hay cuentas bancarias conectadas</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <Building2 className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-400">No hay cuentas bancarias conectadas</p>
+            <p className="text-sm text-slate-500 mt-1">
               Conecte una cuenta para verificar su identidad
             </p>
           </div>
@@ -213,21 +213,21 @@ export default function BankAccounts() {
             {accounts.map((account) => (
               <div
                 key={account.account_id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div className={`p-3 rounded-lg ${
-                    account.type === 'depository' ? 'bg-blue-100 text-blue-600' :
-                    account.type === 'credit' ? 'bg-purple-100 text-purple-600' :
-                    'bg-gray-100 text-gray-600'
+                    account.type === 'depository' ? 'bg-sky-500/20 text-sky-400' :
+                    account.type === 'credit' ? 'bg-purple-500/20 text-purple-600' :
+                    'bg-slate-700/50 text-slate-300'
                   }`}>
                     {getAccountIcon(account.type)}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-white">
                       {account.official_name || account.name}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-slate-400">
                       {account.institution_name || 'Banco'} • {account.subtype} • ****{account.mask}
                     </p>
                   </div>
@@ -235,12 +235,12 @@ export default function BankAccounts() {
                 
                 {showBalances && (
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">Saldo disponible</p>
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p className="text-sm text-slate-400">Saldo disponible</p>
+                    <p className="text-lg font-semibold text-white">
                       {formatCurrency(account.available_balance)}
                     </p>
                     {account.current_balance !== account.available_balance && (
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-slate-500">
                         Actual: {formatCurrency(account.current_balance)}
                       </p>
                     )}
@@ -263,18 +263,18 @@ export default function BankAccounts() {
 
       {/* Income Analysis */}
       {accounts.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border p-6">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Análisis de Ingresos</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-xl font-semibold text-white">Análisis de Ingresos</h2>
+              <p className="text-sm text-slate-400">
                 Analiza tus transacciones para estimar tus ingresos mensuales
               </p>
             </div>
             <button
               onClick={analyzeIncome}
               disabled={analyzingIncome}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-slate-600 transition-colors"
             >
               {analyzingIncome ? (
                 <>
@@ -292,22 +292,22 @@ export default function BankAccounts() {
 
           {incomeAnalysis && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div className="p-4 bg-green-50 rounded-lg">
-                <div className="flex items-center gap-2 text-green-600 mb-2">
+              <div className="p-4 bg-emerald-500/10 rounded-lg">
+                <div className="flex items-center gap-2 text-emerald-400 mb-2">
                   <DollarSign className="h-5 w-5" />
                   <span className="text-sm font-medium">Ingreso Mensual Est.</span>
                 </div>
-                <p className="text-2xl font-bold text-green-700">
+                <p className="text-2xl font-bold text-emerald-400">
                   {formatCurrency(incomeAnalysis.estimatedMonthlyIncome)}
                 </p>
               </div>
               
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <div className="flex items-center gap-2 text-blue-600 mb-2">
+              <div className="p-4 bg-sky-500/10 rounded-lg">
+                <div className="flex items-center gap-2 text-sky-400 mb-2">
                   <FileText className="h-5 w-5" />
                   <span className="text-sm font-medium">Depósitos Totales</span>
                 </div>
-                <p className="text-2xl font-bold text-blue-700">
+                <p className="text-2xl font-bold text-sky-400">
                   {formatCurrency(incomeAnalysis.totalIncome)}
                 </p>
                 <p className="text-xs text-blue-500">
@@ -315,7 +315,7 @@ export default function BankAccounts() {
                 </p>
               </div>
               
-              <div className="p-4 bg-purple-50 rounded-lg">
+              <div className="p-4 bg-purple-500/10 rounded-lg">
                 <div className="flex items-center gap-2 text-purple-600 mb-2">
                   <Calendar className="h-5 w-5" />
                   <span className="text-sm font-medium">Total Transacciones</span>
@@ -329,8 +329,8 @@ export default function BankAccounts() {
           )}
 
           {!incomeAnalysis && (
-            <div className="text-center py-8 text-gray-500">
-              <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <div className="text-center py-8 text-slate-400">
+              <TrendingUp className="h-12 w-12 text-slate-500 mx-auto mb-4" />
               <p>Haz clic en "Analizar Ingresos" para ver tu análisis financiero</p>
             </div>
           )}
@@ -338,11 +338,11 @@ export default function BankAccounts() {
       )}
 
       {/* Security Notice */}
-      <div className="mt-8 p-4 bg-gray-50 rounded-lg border">
+      <div className="mt-8 p-4 bg-slate-700/30 rounded-lg border">
         <div className="flex items-start gap-3">
-          <Shield className="h-5 w-5 text-gray-400 mt-0.5" />
-          <div className="text-sm text-gray-600">
-            <p className="font-medium text-gray-700">Conexión Segura</p>
+          <Shield className="h-5 w-5 text-slate-500 mt-0.5" />
+          <div className="text-sm text-slate-300">
+            <p className="font-medium text-slate-300">Conexión Segura</p>
             <p>
               Usamos Plaid para conectar de forma segura con tu banco. 
               Nunca almacenamos tus credenciales bancarias y toda la información 
