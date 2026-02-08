@@ -52,20 +52,33 @@ export default function PaymentHistory() {
   const fetchSubscription = async () => {
     try {
       const response = await api.get('/subscriptions/current');
-      setSubscription(response.data);
+      const data = response.data;
+      if (data?.hasSubscription && data?.subscription) {
+        setSubscription(data.subscription);
+      } else {
+        setSubscription(null);
+      }
     } catch (err) {
       // No subscription
+      setSubscription(null);
     }
   };
 
   const handleManageSubscription = async () => {
+    if (!subscription) {
+      setError('No tiene una suscripción activa para gestionar');
+      return;
+    }
     try {
       const response = await api.post('/subscriptions/portal');
-      if (response.data.portalUrl) {
-        window.location.href = response.data.portalUrl;
+      const portalUrl = response.data?.url || response.data?.portalUrl;
+      if (portalUrl) {
+        window.location.href = portalUrl;
+      } else {
+        setError('No se pudo obtener el enlace del portal de pagos');
       }
     } catch (err) {
-      setError('Error al abrir el portal de pagos');
+      setError('Error al abrir el portal de pagos. Verifique que tenga una suscripción activa.');
     }
   };
 
@@ -154,11 +167,13 @@ export default function PaymentHistory() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Suscripción: {subscription.plan_name}
+                    Suscripción: {subscription.planName || subscription.plan_name || 'N/A'}
                   </h2>
                   <p className="text-gray-600">
-                    ${subscription.amount}/mes • 
-                    Próximo cargo: {new Date(subscription.current_period_end).toLocaleDateString('es-ES')}
+                    ${subscription.amount || '—'}/mes • 
+                    Próximo cargo: {subscription.currentPeriodEnd || subscription.current_period_end
+                      ? new Date(subscription.currentPeriodEnd || subscription.current_period_end).toLocaleDateString('es-ES')
+                      : 'N/A'}
                   </p>
                 </div>
               </div>
