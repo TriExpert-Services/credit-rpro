@@ -39,11 +39,14 @@ export default function AdminCompliance() {
     try {
       const [eventsRes, statsRes] = await Promise.all([
         api.get('/compliance/events?limit=100'),
-        api.get('/admin/compliance-stats').catch(() => ({ data: { data: {} } }))
+        api.get('/admin/compliance-stats').catch(() => ({ data: {} }))
       ]);
 
-      setEvents(eventsRes.data?.data || eventsRes.data || []);
-      setStats(statsRes.data?.data || statsRes.data || stats);
+      const eventsData = eventsRes.data;
+      setEvents(Array.isArray(eventsData) ? eventsData : eventsData?.data || []);
+      
+      const statsData = statsRes.data;
+      setStats(prev => ({ ...prev, ...(statsData?.data || statsData || {}) }));
     } catch (error) {
       console.error('Error loading compliance data:', error);
     } finally {

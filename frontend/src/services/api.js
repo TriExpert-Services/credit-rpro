@@ -51,7 +51,14 @@ api.interceptors.response.use(
       'data' in response.data &&
       !response.config?.responseType // don't unwrap blob/arraybuffer
     ) {
-      response.data = { ...response.data.data, ...(response.data.message ? { message: response.data.message } : {}) };
+      const innerData = response.data.data;
+      const message = response.data.message;
+      // Keep arrays as-is (don't spread into object)
+      if (Array.isArray(innerData)) {
+        response.data = innerData;
+      } else {
+        response.data = { ...innerData, ...(message ? { message } : {}) };
+      }
     }
     return response;
   },

@@ -272,4 +272,52 @@ router.post('/test-email', authMiddleware, async (req, res) => {
   }
 });
 
+// =====================================================
+// COMPLIANCE STATS
+// Admin dashboard compliance statistics
+// =====================================================
+router.get('/compliance-stats', authMiddleware, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Admin access required' });
+  }
+
+  const pool = require('../config/database');
+
+  try {
+    const [contractsRes, activeRes, cancellationsRes, pendingRes] = await Promise.all([
+      // Total contracts
+      pool.query('SELECT COUNT(*) as count FROM client_contracts'),
+      // Active contracts
+      pool.query("SELECT COUNT(*) as count FROM client_contracts WHERE status = 'active'"),
+      // Cancellations
+      pool.query('SELECT COUNT(*) as count FROM cancellation_requests'),
+      // Users without a signed contract (pending compliance)
+      pool.query(`
+        SELECT COUNT(*) as count FROM users u
+        WHERE u.role = 'client' AND u.deleted_at IS NULL
+        AND NOT EXISTS (
+          SELECT 1 FROM client_contracts cc
+          WHERE cc.client_id = u.id AND cc.status = 'active'
+        )
+      `)
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        totalContracts: parseInt(contractsRes.rows[0].count),
+        activeContracts: parseInt(activeRes.rows[0].count),
+        cancellations: parseInt(cancellationsRes.rows[0].count),
+        pendingCompliance: parseInt(pendingRes.rows[0].count)
+      }
+    });
+  } catch (error) {
+    console.error('Compliance stats error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener estadísticas de compliance'
+    });
+  }
+});
+
 module.exports = router;

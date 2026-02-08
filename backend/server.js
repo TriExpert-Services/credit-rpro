@@ -80,7 +80,7 @@ app.use(helmet({
         'https://js.stripe.com',
       ],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://*.tawk.to', 'data:'],
       imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
       connectSrc: [
         "'self'",
