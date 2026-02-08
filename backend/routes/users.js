@@ -14,6 +14,7 @@ const {
   handleValidationErrors,
   asyncHandler,
 } = require('../utils/responseHelpers');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // @route   GET /api/users/profile
 // @desc    Get current user profile (safe columns only)
@@ -180,6 +181,16 @@ router.delete(
 
     // Delete user — CASCADE will remove all related data
     await query('DELETE FROM users WHERE id = $1', [userId]);
+
+    // Explicit audit log for user deletion
+    await auditFromRequest(
+      req,
+      AUDIT_ACTIONS.USER_DELETED,
+      'user',
+      targetUser.id,
+      `Admin deleted user: ${targetUser.email} (${targetUser.first_name} ${targetUser.last_name})`,
+      { deletedEmail: targetUser.email, deletedRole: targetUser.role }
+    );
 
     sendSuccess(res, {
       deletedUser: {

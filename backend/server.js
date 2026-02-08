@@ -9,6 +9,9 @@ const { pool } = require('./config/database');
 const { authenticateToken } = require('./middleware/auth');
 const { xssSanitize } = require('./middleware/sanitize');
 const { logger, requestLogger } = require('./utils/logger');
+const { initSentry, sentryErrorHandler } = require('./utils/sentry');
+const { apmMiddleware } = require('./middleware/apm');
+const { auditMiddleware } = require('./utils/auditLogger');
 const {
   generalLimiter,
   authLimiter,
@@ -49,10 +52,19 @@ const plaidRoutes = require('./routes/plaid');
 // Compliance routes (CROA, FCRA, GLBA)
 const complianceRoutes = require('./routes/compliance');
 
+// Monitoring routes (health checks, APM, audit logs)
+const monitoringRoutes = require('./routes/monitoring');
+
 const app = express();
+
+// Initialize Sentry — MUST be before any other middleware
+initSentry(app);
 
 // Trust proxy (needed for rate limiting behind reverse proxy/Cloudflare)
 app.set('trust proxy', 1);
+
+// APM — track all request performance metrics
+app.use(apmMiddleware);
 
 // Security middleware - Helmet with Content Security Policy
 app.use(helmet({
@@ -147,35 +159,38 @@ app.use('/uploads', authenticateToken, (req, res, next) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/clients', clientRoutes);
-app.use('/api/credit-scores', creditScoreRoutes);
-app.use('/api/credit-items', creditItemRoutes);
-app.use('/api/disputes', disputeRoutes);
-app.use('/api/documents', documentRoutes);
+app.use('/api/users', auditMiddleware('user'), userRoutes);
+app.use('/api/clients', auditMiddleware('client'), clientRoutes);
+app.use('/api/credit-scores', auditMiddleware('credit_score'), creditScoreRoutes);
+app.use('/api/credit-items', auditMiddleware('credit_item'), creditItemRoutes);
+app.use('/api/disputes', auditMiddleware('dispute'), disputeRoutes);
+app.use('/api/documents', auditMiddleware('document'), documentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/ai-disputes', aiDisputeRoutes);
+app.use('/api/payments', auditMiddleware('payment'), paymentRoutes);
+app.use('/api/ai-disputes', auditMiddleware('ai_dispute'), aiDisputeRoutes);
 
 // Advanced feature routes
-app.use('/api/admin', adminSettingsRoutes);
-app.use('/api/contracts', contractsRoutes);
-app.use('/api/invoices', invoicesRoutes);
-app.use('/api/notifications', notificationsRoutes);
-app.use('/api/notes', processNotesRoutes);
+app.use('/api/admin', auditMiddleware('admin_settings'), adminSettingsRoutes);
+app.use('/api/contracts', auditMiddleware('contract'), contractsRoutes);
+app.use('/api/invoices', auditMiddleware('invoice'), invoicesRoutes);
+app.use('/api/notifications', auditMiddleware('notification'), notificationsRoutes);
+app.use('/api/notes', auditMiddleware('process_note'), processNotesRoutes);
 app.use('/api/onboarding', onboardingRoutes);
-app.use('/api/credit-reports', creditReportAnalysisRoutes);
+app.use('/api/credit-reports', auditMiddleware('credit_report'), creditReportAnalysisRoutes);
 
 // Subscription routes
-app.use('/api/subscriptions', subscriptionsRoutes);
+app.use('/api/subscriptions', auditMiddleware('subscription'), subscriptionsRoutes);
 
 // Plaid bank verification routes
 app.use('/api/plaid', plaidRoutes);
 
 // Compliance routes (CROA, FCRA, GLBA)
-app.use('/api/compliance', complianceRoutes);
+app.use('/api/compliance', auditMiddleware('compliance'), complianceRoutes);
 
-// Health check endpoint
+// Monitoring routes (probes, health, metrics, audit logs)
+app.use('/api/monitoring', monitoringRoutes);
+
+// Health check endpoint (simple — for basic monitoring)
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
@@ -185,7 +200,8 @@ app.get('/', (req, res) => {
     res.json({ 
         message: 'Credit Repair SaaS API',
         version: '1.0.0',
-        status: 'running'
+        status: 'running',
+        monitoring: '/api/monitoring/health',
     });
 });
 
@@ -193,6 +209,9 @@ app.get('/', (req, res) => {
 app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
+
+// Sentry error handler — MUST be before custom error handler
+app.use(sentryErrorHandler());
 
 // Global error handler - never leak stack traces in production
 app.use((err, req, res, next) => {

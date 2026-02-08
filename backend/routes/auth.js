@@ -30,6 +30,7 @@ const {
   asyncHandler,
   sanitizeResponse,
 } = require('../utils/responseHelpers');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * Genera un token JWT
@@ -163,6 +164,7 @@ router.post(
     );
 
     if (result.rows.length === 0) {
+      await auditFromRequest(req, AUDIT_ACTIONS.LOGIN_FAILED, 'user', null, `Failed login attempt for: ${email}`, { email });
       return sendUnauthorized(res, 'Invalid credentials');
     }
 
@@ -176,6 +178,7 @@ router.post(
     // Verificar contraseña
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
+      await auditFromRequest(req, AUDIT_ACTIONS.LOGIN_FAILED, 'user', user.id, `Failed password for: ${email}`, { email });
       return sendUnauthorized(res, 'Invalid credentials');
     }
 
