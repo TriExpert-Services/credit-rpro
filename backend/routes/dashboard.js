@@ -6,6 +6,8 @@ const router = express.Router();
 const { authenticateToken, requireStaff } = require('../middleware/auth');
 const { query } = require('../config/database');
 const { sendSuccess, sendForbidden, asyncHandler } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Get dashboard stats for client (with ownership check)
 router.get(
@@ -13,6 +15,7 @@ router.get(
   authenticateToken,
   asyncHandler(async (req, res) => {
     const clientId = req.params.clientId;
+    logger.info({ userId: req.user?.id, clientId }, 'Fetching client dashboard');
 
     // Clients can only view their own dashboard
     if (req.user.role === 'client' && req.user.id !== clientId) {
@@ -95,6 +98,7 @@ router.get(
   authenticateToken,
   requireStaff,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Fetching admin dashboard stats');
     // Run all independent admin queries in parallel
     const [
       clientsResult,

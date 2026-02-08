@@ -8,12 +8,15 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const plaidService = require('../utils/plaidService');
 const { sendSuccess, sendError, sendInternalError } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // ============================================================================
 // POST /api/plaid/create-link-token - Create a link token for Plaid Link
 // ============================================================================
 router.post('/create-link-token', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Create Plaid link token');
     const { products } = req.body;
     
     const result = await plaidService.createLinkToken(
@@ -22,9 +25,10 @@ router.post('/create-link-token', auth, async (req, res) => {
       products || ['auth', 'identity']
     );
 
+    auditFromRequest(req, 'plaid.linked', 'plaid', null, 'Plaid link token created').catch(() => {});
     return sendSuccess(res, result);
   } catch (error) {
-    console.error('Error creating link token:', error);
+    logger.error({ err: error.message }, 'Error creating Plaid link token');
     return sendInternalError(res, 'Error al crear token de conexión bancaria');
   }
 });
@@ -34,6 +38,7 @@ router.post('/create-link-token', auth, async (req, res) => {
 // ============================================================================
 router.post('/exchange-token', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Exchange Plaid public token');
     const { publicToken, metadata } = req.body;
 
     if (!publicToken) {
@@ -60,16 +65,17 @@ router.post('/exchange-token', auth, async (req, res) => {
       await plaidService.getIdentity(result.accessToken, req.user.id);
       await plaidService.getAccounts(result.accessToken, req.user.id);
     } catch (e) {
-      console.log('Could not fetch identity/accounts immediately:', e.message);
+      logger.error({ err: e.message }, 'Could not fetch identity/accounts immediately');
     }
 
+    auditFromRequest(req, 'plaid.linked', 'plaid', result.itemId, 'Bank account linked via Plaid').catch(() => {});
     return sendSuccess(res, {
       success: true,
       itemId: result.itemId,
       message: 'Cuenta bancaria conectada exitosamente',
     });
   } catch (error) {
-    console.error('Error exchanging token:', error);
+    logger.error({ err: error.message }, 'Error exchanging Plaid token');
     return sendInternalError(res, 'Error al conectar cuenta bancaria');
   }
 });
@@ -79,11 +85,12 @@ router.post('/exchange-token', auth, async (req, res) => {
 // ============================================================================
 router.get('/accounts', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Get linked bank accounts');
     const accounts = await plaidService.getUserAccounts(req.user.id);
 
     return sendSuccess(res, { accounts });
   } catch (error) {
-    console.error('Error getting accounts:', error);
+    logger.error({ err: error.message }, 'Error getting bank accounts');
     return sendInternalError(res, 'Error al obtener cuentas bancarias');
   }
 });
@@ -93,6 +100,7 @@ router.get('/accounts', auth, async (req, res) => {
 // ============================================================================
 router.get('/verification-status', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Get identity verification status');
     const status = await plaidService.getVerificationStatus(req.user.id);
 
     return sendSuccess(res, {
@@ -103,7 +111,7 @@ router.get('/verification-status', auth, async (req, res) => {
       verifiedPhone: status?.verified_phone,
     });
   } catch (error) {
-    console.error('Error getting verification status:', error);
+    logger.error({ err: error.message }, 'Error getting verification status');
     return sendInternalError(res, 'Error al verificar estado');
   }
 });
@@ -113,6 +121,7 @@ router.get('/verification-status', auth, async (req, res) => {
 // ============================================================================
 router.post('/refresh-identity', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Refresh identity verification');
     const { query } = require('../config/database');
     
     // Get user's active item
@@ -132,13 +141,14 @@ router.post('/refresh-identity', auth, async (req, res) => {
       req.user.id
     );
 
+    auditFromRequest(req, 'plaid.refreshed', 'plaid', null, 'Identity refreshed via Plaid').catch(() => {});
     return sendSuccess(res, {
       success: true,
       identity,
       message: 'Identidad verificada exitosamente',
     });
   } catch (error) {
-    console.error('Error refreshing identity:', error);
+    logger.error({ err: error.message }, 'Error refreshing identity');
     return sendInternalError(res, 'Error al verificar identidad');
   }
 });
@@ -148,6 +158,7 @@ router.post('/refresh-identity', auth, async (req, res) => {
 // ============================================================================
 router.post('/get-transactions', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Get recent transactions');
     const { days = 30 } = req.body;
     const { query } = require('../config/database');
     
@@ -171,7 +182,7 @@ router.post('/get-transactions', auth, async (req, res) => {
 
     return sendSuccess(res, transactions);
   } catch (error) {
-    console.error('Error getting transactions:', error);
+    logger.error({ err: error.message }, 'Error getting transactions');
     return sendInternalError(res, 'Error al obtener transacciones');
   }
 });
@@ -181,16 +192,18 @@ router.post('/get-transactions', auth, async (req, res) => {
 // ============================================================================
 router.delete('/accounts/:itemId', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Remove linked bank account');
     const { itemId } = req.params;
 
     await plaidService.removeItem(itemId, req.user.id);
 
+    auditFromRequest(req, 'plaid.deleted', 'plaid', itemId, 'Bank account disconnected').catch(() => {});
     return sendSuccess(res, {
       success: true,
       message: 'Cuenta bancaria desconectada',
     });
   } catch (error) {
-    console.error('Error removing account:', error);
+    logger.error({ err: error.message }, 'Error removing bank account');
     return sendInternalError(res, 'Error al desconectar cuenta');
   }
 });
@@ -200,10 +213,11 @@ router.delete('/accounts/:itemId', auth, async (req, res) => {
 // ============================================================================
 router.post('/webhook', async (req, res) => {
   try {
+    logger.info('Plaid webhook received');
     await plaidService.handleWebhook(req.body);
     res.json({ received: true });
   } catch (error) {
-    console.error('Error handling webhook:', error);
+    logger.error({ err: error.message }, 'Error handling Plaid webhook');
     res.status(500).json({ error: 'Webhook processing failed' });
   }
 });

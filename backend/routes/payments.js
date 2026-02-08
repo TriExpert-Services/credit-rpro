@@ -15,12 +15,15 @@ const {
   handleValidationErrors,
   asyncHandler,
 } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Get payment history for client (with ownership check)
 router.get(
   '/client/:clientId',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, clientId: req.params.clientId }, 'Getting payment history for client');
     const { clientId } = req.params;
 
     // Clients can only view their own payments
@@ -61,6 +64,7 @@ router.post(
   requireStaff,
   createPaymentValidation,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Creating payment record');
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
 
@@ -73,6 +77,7 @@ router.post(
       [clientId, amount, paymentMethod, description]
     );
 
+    auditFromRequest(req, 'payment.created', 'payment', result.rows[0].id, 'Payment record created').catch(() => {});
     sendCreated(res, { payment: result.rows[0] }, 'Payment recorded successfully');
   })
 );

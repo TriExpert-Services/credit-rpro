@@ -15,6 +15,7 @@ const {
   asyncHandler,
 } = require('../utils/responseHelpers');
 const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
+const { logger } = require('../utils/logger');
 
 // @route   GET /api/users/profile
 // @desc    Get current user profile (safe columns only)
@@ -23,6 +24,7 @@ router.get(
   '/profile',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Get user profile');
     const result = await query(
       `SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.role, u.status, u.created_at,
               cp.date_of_birth, cp.address_line1, cp.address_line2, cp.city, cp.state, cp.zip_code,
@@ -49,6 +51,7 @@ router.put(
   authenticateToken,
   updateProfileValidation,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Update user profile');
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
 
@@ -93,6 +96,7 @@ router.get(
   authenticateToken,
   requireStaff,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'List all users');
     const { role, status, limit = 50, offset = 0 } = req.query;
     const safeLimit = Math.min(100, Math.max(1, parseInt(limit) || 50));
     const safeOffset = Math.max(0, parseInt(offset) || 0);
@@ -156,6 +160,7 @@ router.delete(
   authenticateToken,
   requireAdmin,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Delete user');
     const userId = req.params.id;
 
     // Prevent admin from deleting themselves

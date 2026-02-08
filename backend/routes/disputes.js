@@ -19,6 +19,8 @@ const {
   handleValidationErrors,
   asyncHandler,
 } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Real bureau addresses for dispute letters
 const BUREAU_ADDRESSES = {
@@ -100,6 +102,7 @@ router.get(
   authenticateToken,
   asyncHandler(async (req, res) => {
     const { clientId } = req.params;
+    logger.info({ userId: req.user?.id, clientId }, 'Fetching disputes for client');
 
     // Clients can only view their own disputes
     if (req.user.role === 'client' && req.user.id !== clientId) {
@@ -132,6 +135,7 @@ router.post(
   authenticateToken,
   createDisputeValidation,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Creating new dispute');
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
 
@@ -190,6 +194,8 @@ router.post(
       [creditItemId]
     );
 
+    auditFromRequest(req, 'dispute.created', 'dispute', result.rows[0]?.id, 'Dispute created').catch(() => {});
+
     sendCreated(res, { dispute: result.rows[0] }, 'Dispute created successfully');
   })
 );
@@ -199,6 +205,7 @@ router.put(
   '/:id/status',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, disputeId: req.params.id }, 'Updating dispute status');
     const { status, sentDate, responseDate, responseText, trackingNumber } = req.body;
 
     // Validate status if provided
@@ -223,6 +230,8 @@ router.put(
       [status?.toLowerCase(), sentDate, responseDate, responseText, trackingNumber, req.params.id]
     );
 
+    auditFromRequest(req, 'dispute.updated', 'dispute', req.params.id, 'Dispute status updated').catch(() => {});
+
     sendSuccess(res, {}, 'Dispute updated successfully');
   })
 );
@@ -232,6 +241,7 @@ router.get(
   '/:id',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, disputeId: req.params.id }, 'Fetching dispute by ID');
     // Verify ownership
     const ownership = await verifyDisputeOwnership(req.params.id, req.user.id, req.user.role);
     if (!ownership.found) return sendNotFound(res, 'Dispute');

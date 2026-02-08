@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 const contractService = require('../utils/contractService');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * GET /api/contracts/:contractType
@@ -14,6 +16,7 @@ const contractService = require('../utils/contractService');
  */
 router.get('/:contractType', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, contractType: req.params.contractType }, 'Fetching contract template');
     const clientData = {
       clientName: `${req.user.first_name} ${req.user.last_name}`,
       todayDate: new Date().toLocaleDateString()
@@ -30,6 +33,7 @@ router.get('/:contractType', authMiddleware, async (req, res) => {
       contract
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching contract template');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -40,6 +44,7 @@ router.get('/:contractType', authMiddleware, async (req, res) => {
  */
 router.post('/:contractType/sign', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, contractType: req.params.contractType }, 'Signing contract');
     const { signatureData, signatureMethod } = req.body;
     
     if (!signatureData) {
@@ -62,12 +67,14 @@ router.post('/:contractType/sign', authMiddleware, async (req, res) => {
       req.headers['user-agent']
     );
     
+    auditFromRequest(req, 'contract.signed', 'contract', signature?.id, `Contract ${req.params.contractType} signed`).catch(() => {});
     res.status(201).json({
       success: true,
       message: `Contract ${req.params.contractType} signed successfully`,
       signature
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error signing contract');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -78,6 +85,7 @@ router.post('/:contractType/sign', authMiddleware, async (req, res) => {
  */
 router.get('/signed', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching signed contracts');
     const contracts = await contractService.getClientSignedContracts(req.user.id);
     
     res.json({
@@ -86,6 +94,7 @@ router.get('/signed', authMiddleware, async (req, res) => {
       totalSigned: contracts.length
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching signed contracts');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -96,6 +105,7 @@ router.get('/signed', authMiddleware, async (req, res) => {
  */
 router.get('/verify/:contractType', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, contractType: req.params.contractType }, 'Verifying contract signature');
     const signed = await contractService.hasSignedContract(req.user.id, req.params.contractType);
     
     res.json({
@@ -105,6 +115,7 @@ router.get('/verify/:contractType', authMiddleware, async (req, res) => {
       signedAt: signed?.signed_date || null
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error verifying contract signature');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -119,6 +130,7 @@ router.get('/templates', authMiddleware, async (req, res) => {
     return res.status(403).json({ message: 'Admin access required' });
   }
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching contract templates');
     const templates = await contractService.getAllTemplates(req.query.includeInactive === 'true');
     
     res.json({
@@ -127,6 +139,7 @@ router.get('/templates', authMiddleware, async (req, res) => {
       totalTemplates: templates.length
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching contract templates');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -141,6 +154,7 @@ router.post('/templates', authMiddleware, async (req, res) => {
     return res.status(403).json({ message: 'Admin access required' });
   }
   try {
+    logger.info({ userId: req.user?.id }, 'Creating contract template');
     const { contractType, templateContent, effectiveDate } = req.body;
     
     if (!contractType || !templateContent || !effectiveDate) {
@@ -156,12 +170,14 @@ router.post('/templates', authMiddleware, async (req, res) => {
       req.user.id
     );
     
+    auditFromRequest(req, 'contract.created', 'contract', template?.id, 'Contract template created').catch(() => {});
     res.status(201).json({
       success: true,
       message: 'Contract template created successfully',
       template
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error creating contract template');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -176,6 +192,7 @@ router.get('/compliance/:contractType', authMiddleware, async (req, res) => {
     return res.status(403).json({ message: 'Admin access required' });
   }
   try {
+    logger.info({ userId: req.user?.id, contractType: req.params.contractType }, 'Fetching contract compliance info');
     const complianceInfo = await contractService.getComplianceInfo(req.params.contractType);
     
     res.json({
@@ -183,6 +200,7 @@ router.get('/compliance/:contractType', authMiddleware, async (req, res) => {
       compliance: complianceInfo
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching contract compliance info');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -195,6 +213,7 @@ router.post('/cancel', authMiddleware, async (req, res) => {
   const { query } = require('../config/database');
   
   try {
+    logger.info({ userId: req.user?.id }, 'Processing contract cancellation');
     const { reason, submittedAt } = req.body;
     const userId = req.user.id;
     
@@ -264,6 +283,7 @@ router.post('/cancel', authMiddleware, async (req, res) => {
       })]
     );
     
+    auditFromRequest(req, 'contract.cancelled', 'contract', contractCheck.rows[0]?.id, 'Contract cancellation requested').catch(() => {});
     res.json({
       success: true,
       message: withinCancellationPeriod 
@@ -273,7 +293,7 @@ router.post('/cancel', authMiddleware, async (req, res) => {
       cancellationDeadline
     });
   } catch (error) {
-    console.error('Error processing cancellation:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error processing contract cancellation');
     res.status(500).json({ success: false, message: 'Error processing cancellation request' });
   }
 });

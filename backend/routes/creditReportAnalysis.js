@@ -12,6 +12,8 @@ const { query } = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
 const creditReportAnalyzer = require('../utils/creditReportAnalyzer');
 const { generateDisputeLetter } = require('../utils/openaiService');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Configure multer for credit report uploads
 const storage = multer.diskStorage({
@@ -47,6 +49,7 @@ const upload = multer({
  */
 router.post('/upload-and-analyze', authenticateToken, upload.array('reports', 3), async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Upload and analyze credit report');
     const { bureaus } = req.body; // JSON array: ["experian", "equifax", "transunion"]
     const clientId = req.user.role === 'admin' ? req.body.clientId : req.user.id;
     
@@ -80,6 +83,7 @@ router.post('/upload-and-analyze', authenticateToken, upload.array('reports', 3)
     // Analyze all reports
     const analysisResult = await creditReportAnalyzer.analyzeMultipleReports(clientId, reports);
 
+    auditFromRequest(req, 'credit_report.analyzed', 'credit_report', clientId, 'Credit report uploaded and analyzed').catch(() => {});
     res.json({
       success: analysisResult.success,
       message: analysisResult.success 
@@ -95,7 +99,7 @@ router.post('/upload-and-analyze', authenticateToken, upload.array('reports', 3)
     });
 
   } catch (error) {
-    console.error('Upload and analyze error:', error);
+    logger.error({ err: error.message }, 'Upload and analyze error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -106,6 +110,7 @@ router.post('/upload-and-analyze', authenticateToken, upload.array('reports', 3)
  */
 router.post('/analyze/:documentId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Analyze existing document');
     const { documentId } = req.params;
     const { bureau } = req.body;
 
@@ -137,10 +142,11 @@ router.post('/analyze/:documentId', authenticateToken, async (req, res) => {
       documentId
     );
 
+    auditFromRequest(req, 'credit_report.analyzed', 'credit_report', documentId, 'Document analyzed').catch(() => {});
     res.json(result);
 
   } catch (error) {
-    console.error('Analyze document error:', error);
+    logger.error({ err: error.message }, 'Analyze document error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -151,6 +157,7 @@ router.post('/analyze/:documentId', authenticateToken, async (req, res) => {
  */
 router.get('/items/:clientId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Get credit items for client');
     const { clientId } = req.params;
     
     // Check permissions
@@ -173,7 +180,7 @@ router.get('/items/:clientId', authenticateToken, async (req, res) => {
     res.json({ items: result.rows });
 
   } catch (error) {
-    console.error('Get items error:', error);
+    logger.error({ err: error.message }, 'Get credit items error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -184,6 +191,7 @@ router.get('/items/:clientId', authenticateToken, async (req, res) => {
  */
 router.get('/scores/:clientId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Get credit scores for client');
     const { clientId } = req.params;
     
     // Check permissions
@@ -237,7 +245,7 @@ router.get('/scores/:clientId', authenticateToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get scores error:', error);
+    logger.error({ err: error.message }, 'Get credit scores error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -248,6 +256,7 @@ router.get('/scores/:clientId', authenticateToken, async (req, res) => {
  */
 router.get('/summary/:clientId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Get analysis summary for client');
     const { clientId } = req.params;
     
     // Check permissions
@@ -283,7 +292,7 @@ router.get('/summary/:clientId', authenticateToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get summary error:', error);
+    logger.error({ err: error.message }, 'Get analysis summary error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -294,6 +303,7 @@ router.get('/summary/:clientId', authenticateToken, async (req, res) => {
  */
 router.post('/generate-disputes/:clientId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Generate dispute letters for client');
     const { clientId } = req.params;
     const { itemIds, disputeType = 'inaccurate_info' } = req.body;
     
@@ -392,7 +402,7 @@ router.post('/generate-disputes/:clientId', authenticateToken, async (req, res) 
         });
 
       } catch (letterError) {
-        console.error(`Error generating letter for item ${item.id}:`, letterError);
+        logger.error({ err: letterError.message, itemId: item.id }, 'Error generating dispute letter');
         errors.push({ itemId: item.id, error: letterError.message });
       }
     }
@@ -404,6 +414,7 @@ router.post('/generate-disputes/:clientId', authenticateToken, async (req, res) 
       [req.user.id, clientId, `Generated ${generatedDisputes.length} dispute letters for client`]
     );
 
+    auditFromRequest(req, 'credit_report.generated', 'credit_report', clientId, `Generated ${generatedDisputes.length} dispute letters`).catch(() => {});
     res.json({
       success: true,
       message: `Generated ${generatedDisputes.length} dispute letters`,
@@ -413,7 +424,7 @@ router.post('/generate-disputes/:clientId', authenticateToken, async (req, res) 
     });
 
   } catch (error) {
-    console.error('Generate disputes error:', error);
+    logger.error({ err: error.message }, 'Generate disputes error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -424,6 +435,7 @@ router.post('/generate-disputes/:clientId', authenticateToken, async (req, res) 
  */
 router.post('/add-score', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Add credit score manually');
     const { clientId, bureau, score, scoreDate, notes } = req.body;
     
     // Check permissions
@@ -449,13 +461,14 @@ router.post('/add-score', authenticateToken, async (req, res) => {
       [clientId, bureau.toLowerCase(), score]
     );
 
+    auditFromRequest(req, 'credit_report.created', 'credit_report', clientId, 'Credit score added manually').catch(() => {});
     res.json({ 
       success: true, 
       score: result.rows[0] 
     });
 
   } catch (error) {
-    console.error('Add score error:', error);
+    logger.error({ err: error.message }, 'Add credit score error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -466,6 +479,7 @@ router.post('/add-score', authenticateToken, async (req, res) => {
  */
 router.put('/items/:itemId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Update credit item');
     const { itemId } = req.params;
     const { status, description } = req.body;
     
@@ -514,10 +528,11 @@ router.put('/items/:itemId', authenticateToken, async (req, res) => {
       params
     );
 
+    auditFromRequest(req, 'credit_report.updated', 'credit_report', itemId, 'Credit item updated').catch(() => {});
     res.json({ success: true, item: result.rows[0] });
 
   } catch (error) {
-    console.error('Update item error:', error);
+    logger.error({ err: error.message }, 'Update credit item error');
     res.status(500).json({ error: error.message });
   }
 });
@@ -528,6 +543,7 @@ router.put('/items/:itemId', authenticateToken, async (req, res) => {
  */
 router.delete('/items/:itemId', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Delete credit item');
     const { itemId } = req.params;
     
     // Verify ownership
@@ -557,10 +573,11 @@ router.delete('/items/:itemId', authenticateToken, async (req, res) => {
       [itemId]
     );
 
+    auditFromRequest(req, 'credit_report.deleted', 'credit_report', itemId, 'Credit item deleted').catch(() => {});
     res.json({ success: true, message: 'Item deleted' });
 
   } catch (error) {
-    console.error('Delete item error:', error);
+    logger.error({ err: error.message }, 'Delete credit item error');
     res.status(500).json({ error: error.message });
   }
 });

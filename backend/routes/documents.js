@@ -18,6 +18,8 @@ const {
   sendForbidden,
   asyncHandler,
 } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Configure multer for secure file uploads
 const storage = multer.diskStorage({
@@ -58,6 +60,7 @@ router.post(
   authenticateToken,
   upload.single('document'),
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Uploading document');
     if (!req.file) {
       return sendError(res, 'No file uploaded');
     }
@@ -84,6 +87,8 @@ router.post(
       [clientId, disputeId || null, req.file.originalname, req.file.path, req.file.mimetype, req.file.size, documentCategory || 'other']
     );
 
+    auditFromRequest(req, 'document.uploaded', 'document', result.rows[0]?.id, 'Document uploaded').catch(() => {});
+
     sendCreated(res, { document: result.rows[0] }, 'File uploaded successfully');
   })
 );
@@ -94,6 +99,7 @@ router.get(
   authenticateToken,
   asyncHandler(async (req, res) => {
     const { clientId } = req.params;
+    logger.info({ userId: req.user?.id, clientId }, 'Fetching documents for client');
 
     // Clients can only view their own documents
     if (req.user.role === 'client' && req.user.id !== clientId) {
@@ -117,6 +123,7 @@ router.get(
   '/:id/download',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, documentId: req.params.id }, 'Downloading document');
     const result = await query(
       'SELECT id, client_id, file_name, file_path, file_type FROM documents WHERE id = $1',
       [req.params.id]
@@ -153,6 +160,7 @@ router.delete(
   '/:id',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, documentId: req.params.id }, 'Deleting document');
     const result = await query(
       'SELECT id, client_id, file_path FROM documents WHERE id = $1 AND deleted_at IS NULL',
       [req.params.id]
@@ -182,6 +190,7 @@ router.delete(
       `UPDATE documents SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [req.params.id]
     );
+    auditFromRequest(req, 'document.deleted', 'document', req.params.id, 'Document deleted').catch(() => {});
     sendSuccess(res, {}, 'Document deleted successfully');
   })
 );

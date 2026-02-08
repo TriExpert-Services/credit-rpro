@@ -6,9 +6,12 @@
 const express = require('express');
 const router = express.Router();
 const stripeService = require('../utils/stripeService');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Raw body parser for Stripe webhooks
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
+  logger.info('Stripe webhook received');
   const sig = req.headers['stripe-signature'];
   let event;
 
@@ -19,14 +22,14 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
       stripeService.WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
+    logger.error({ err: err.message }, 'Webhook signature verification failed');
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Log webhook event
   await stripeService.logWebhookEvent(event);
 
-  console.log('Received Stripe webhook:', event.type);
+  logger.info({ eventType: event.type }, 'Processing Stripe webhook event');
 
   try {
     switch (event.type) {
@@ -56,40 +59,40 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 
       case 'invoice.payment_failed':
         const failedInvoice = event.data.object;
-        console.log('Invoice payment failed:', failedInvoice.id);
+        logger.info({ invoiceId: failedInvoice.id }, 'Invoice payment failed');
         // Handle failed payment - could send notification
         break;
 
       // Payment intent events
       case 'payment_intent.succeeded':
-        console.log('Payment intent succeeded:', event.data.object.id);
+        logger.info({ paymentIntentId: event.data.object.id }, 'Payment intent succeeded');
         break;
 
       case 'payment_intent.payment_failed':
-        console.log('Payment intent failed:', event.data.object.id);
+        logger.info({ paymentIntentId: event.data.object.id }, 'Payment intent failed');
         break;
 
       // Checkout session events
       case 'checkout.session.completed':
         const session = event.data.object;
-        console.log('Checkout session completed:', session.id);
+        logger.info({ sessionId: session.id }, 'Checkout session completed');
         // Subscription is handled by subscription.created event
         break;
 
       // Charge events (for refunds)
       case 'charge.refunded':
-        console.log('Charge refunded:', event.data.object.id);
+        logger.info({ chargeId: event.data.object.id }, 'Charge refunded');
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.info({ eventType: event.type }, 'Unhandled Stripe event type');
     }
 
     // Mark as processed
     await stripeService.logWebhookEvent(event, true);
 
   } catch (err) {
-    console.error('Error processing webhook:', err);
+    logger.error({ err: err.message, eventType: event.type }, 'Error processing Stripe webhook');
     await stripeService.logWebhookEvent(event, false, err.message);
     // Still return 200 to prevent Stripe from retrying
   }

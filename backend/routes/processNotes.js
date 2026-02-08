@@ -7,12 +7,15 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 const processNotesService = require('../utils/processNotesService');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * GET /api/notes/client/:clientId
  * Get all notes for a client
  */
 router.get('/client/:clientId', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get client notes');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -41,6 +44,7 @@ router.get('/client/:clientId', authMiddleware, async (req, res) => {
  * Get important notes for a client
  */
 router.get('/client/:clientId/important', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get important notes for client');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -62,6 +66,7 @@ router.get('/client/:clientId/important', authMiddleware, async (req, res) => {
  * Get timeline view of notes
  */
 router.get('/client/:clientId/timeline', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get timeline for client');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -82,6 +87,7 @@ router.get('/client/:clientId/timeline', authMiddleware, async (req, res) => {
  * Get process stage summary
  */
 router.get('/client/:clientId/summary', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get process stage summary for client');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -102,6 +108,7 @@ router.get('/client/:clientId/summary', authMiddleware, async (req, res) => {
  * Create a note
  */
 router.post('/', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Create process note');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -124,6 +131,7 @@ router.post('/', authMiddleware, async (req, res) => {
       relatedEntity
     );
     
+    auditFromRequest(req, 'process_note.created', 'process_note', note?.id, 'Process note created').catch(() => {});
     res.status(201).json({
       success: true,
       message: 'Note created successfully',
@@ -139,6 +147,7 @@ router.post('/', authMiddleware, async (req, res) => {
  * Update a note
  */
 router.patch('/:id', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Update process note');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -155,6 +164,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
       isImportant
     );
     
+    auditFromRequest(req, 'process_note.updated', 'process_note', req.params.id, 'Process note updated').catch(() => {});
     res.json({
       success: true,
       message: 'Note updated successfully',
@@ -170,12 +180,14 @@ router.patch('/:id', authMiddleware, async (req, res) => {
  * Delete a note
  */
 router.delete('/:id', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Delete process note');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
   try {
     await processNotesService.deleteNote(req.params.id);
     
+    auditFromRequest(req, 'process_note.deleted', 'process_note', req.params.id, 'Process note deleted').catch(() => {});
     res.json({
       success: true,
       message: 'Note deleted successfully'
@@ -190,6 +202,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
  * Add a follow-up action note
  */
 router.post('/follow-up', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Create follow-up note');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -209,6 +222,7 @@ router.post('/follow-up', authMiddleware, async (req, res) => {
       dueDate
     );
     
+    auditFromRequest(req, 'process_note.created', 'process_note', note?.id, 'Follow-up note created').catch(() => {});
     res.status(201).json({
       success: true,
       message: 'Follow-up note created successfully',
@@ -224,6 +238,7 @@ router.post('/follow-up', authMiddleware, async (req, res) => {
  * Export notes as document
  */
 router.get('/client/:clientId/export', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Export client notes');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }
@@ -246,6 +261,7 @@ router.get('/client/:clientId/export', authMiddleware, async (req, res) => {
  * Get activity report for date range
  */
 router.get('/client/:clientId/activity-report', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get activity report for client');
   if (!['admin', 'staff'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Staff access required' });
   }

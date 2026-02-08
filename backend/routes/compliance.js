@@ -8,6 +8,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
 const authenticateToken = require('../middleware/auth');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // =====================================================
 // SIGN CONTRACT
@@ -17,6 +19,7 @@ router.post('/sign-contract', authenticateToken, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id }, 'Signing contract (compliance)');
     const userId = req.user.id;
     const {
       contractType,
@@ -142,6 +145,7 @@ router.post('/sign-contract', authenticateToken, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'compliance.signed', 'compliance', contractId, 'Contract signed via compliance').catch(() => {});
     res.json({
       success: true,
       data: {
@@ -154,7 +158,7 @@ router.post('/sign-contract', authenticateToken, async (req, res) => {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Contract sign error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error signing contract (compliance)');
     res.status(500).json({
       success: false,
       error: 'Error al procesar la firma del contrato'
@@ -172,6 +176,7 @@ router.post('/acknowledge-rights', authenticateToken, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id }, 'Acknowledging consumer rights');
     const userId = req.user.id;
     const { 
       acknowledgedAt, 
@@ -227,6 +232,7 @@ router.post('/acknowledge-rights', authenticateToken, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'compliance.acknowledged', 'compliance', result.rows[0].id, 'Consumer rights acknowledged').catch(() => {});
     res.json({
       success: true,
       data: {
@@ -238,7 +244,7 @@ router.post('/acknowledge-rights', authenticateToken, async (req, res) => {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Rights acknowledgment error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error acknowledging consumer rights');
     res.status(500).json({
       success: false,
       error: 'Error al procesar el reconocimiento'
@@ -256,6 +262,7 @@ router.post('/acknowledge-fees', authenticateToken, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id }, 'Acknowledging fees');
     const userId = req.user.id;
     const {
       planType,
@@ -320,6 +327,7 @@ router.post('/acknowledge-fees', authenticateToken, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'compliance.acknowledged', 'compliance', result.rows[0].id, 'Fee disclosure acknowledged').catch(() => {});
     res.json({
       success: true,
       data: {
@@ -331,7 +339,7 @@ router.post('/acknowledge-fees', authenticateToken, async (req, res) => {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Fee acknowledgment error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error acknowledging fees');
     res.status(500).json({
       success: false,
       error: 'Error al procesar la divulgación de tarifas'
@@ -347,6 +355,7 @@ router.post('/acknowledge-fees', authenticateToken, async (req, res) => {
 // =====================================================
 router.get('/status', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching compliance status');
     const userId = req.user.id;
 
     // Get latest contract
@@ -415,7 +424,7 @@ router.get('/status', authenticateToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Compliance status error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching compliance status');
     res.status(500).json({
       success: false,
       error: 'Error al obtener estado de cumplimiento'
@@ -429,6 +438,7 @@ router.get('/status', authenticateToken, async (req, res) => {
 // =====================================================
 router.get('/events', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching compliance events');
     const userId = req.user.id;
     const { limit = 50, offset = 0 } = req.query;
 
@@ -464,7 +474,7 @@ router.get('/events', authenticateToken, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Compliance events error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching compliance events');
     res.status(500).json({
       success: false,
       error: 'Error al obtener eventos de cumplimiento'
@@ -480,6 +490,7 @@ router.post('/cancel-contract', authenticateToken, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id }, 'Cancelling contract (compliance)');
     const userId = req.user.id;
     const { contractId, reason, cancelledAt } = req.body;
 
@@ -564,6 +575,7 @@ router.post('/cancel-contract', authenticateToken, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'compliance.cancelled', 'compliance', contractId, 'Contract cancelled via compliance').catch(() => {});
     res.json({
       success: true,
       data: {
@@ -579,7 +591,7 @@ router.post('/cancel-contract', authenticateToken, async (req, res) => {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Contract cancellation error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error cancelling contract (compliance)');
     res.status(500).json({
       success: false,
       error: 'Error al procesar la cancelación'
@@ -595,6 +607,7 @@ router.post('/cancel-contract', authenticateToken, async (req, res) => {
 // =====================================================
 router.get('/contract/:contractId/download', authenticateToken, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, contractId: req.params.contractId }, 'Downloading contract');
     const userId = req.user.id;
     const { contractId } = req.params;
 
@@ -632,7 +645,7 @@ router.get('/contract/:contractId/download', authenticateToken, async (req, res)
     });
 
   } catch (error) {
-    console.error('Contract download error:', error);
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error downloading contract');
     res.status(500).json({
       success: false,
       error: 'Error al descargar contrato'

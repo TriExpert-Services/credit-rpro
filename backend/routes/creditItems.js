@@ -19,6 +19,8 @@ const {
   handleValidationErrors,
   asyncHandler,
 } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * Verify ownership of a credit item
@@ -36,6 +38,7 @@ router.get(
   '/',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Fetching credit items for current user');
     const userId = req.user.id;
     const { page = 1, limit = 50 } = req.query;
     const offset = (Math.max(1, parseInt(page)) - 1) * parseInt(limit);
@@ -59,6 +62,7 @@ router.get(
       [userId]
     );
 
+    logger.info({ userId: req.user?.id, count: result.rows.length }, 'Credit items fetched successfully');
     sendSuccess(res, {
       items: result.rows,
       total: parseInt(countResult.rows[0].count),
@@ -73,6 +77,7 @@ router.get(
   '/client/:clientId',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, clientId: req.params.clientId }, 'Fetching credit items for client');
     const { clientId } = req.params;
 
     // Clients can only view their own items
@@ -93,6 +98,8 @@ router.get(
       [clientId]
     );
 
+    logger.info({ userId: req.user?.id, clientId, count: result.rows.length }, 'Client credit items fetched successfully');
+    auditFromRequest(req, 'credit_item.viewed', 'credit_item', clientId, `Viewed credit items for client ${clientId}`).catch(() => {});
     sendSuccess(res, { items: result.rows });
   })
 );
@@ -103,6 +110,7 @@ router.post(
   authenticateToken,
   addCreditItemValidation,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Creating new credit item');
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
 
@@ -120,6 +128,8 @@ router.post(
       [clientId, itemType, creditorName, accountNumber, bureau, balance, dateOpened, description]
     );
 
+    logger.info({ userId: req.user?.id, creditItemId: result.rows[0].id }, 'Credit item created successfully');
+    auditFromRequest(req, 'credit_item.created', 'credit_item', result.rows[0].id, `Created credit item for client ${clientId}`).catch(() => {});
     sendCreated(res, { item: result.rows[0] }, 'Credit item added');
   })
 );
@@ -129,6 +139,7 @@ router.put(
   '/:id/status',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, creditItemId: req.params.id }, 'Updating credit item status');
     const { status } = req.body;
 
     // Validate status
@@ -146,6 +157,8 @@ router.put(
       [status.toLowerCase(), req.params.id]
     );
 
+    logger.info({ userId: req.user?.id, creditItemId: req.params.id, status }, 'Credit item status updated successfully');
+    auditFromRequest(req, 'credit_item.updated', 'credit_item', req.params.id, `Updated credit item status to ${status}`).catch(() => {});
     sendSuccess(res, {}, 'Status updated successfully');
   })
 );
@@ -155,6 +168,7 @@ router.delete(
   '/:id',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, creditItemId: req.params.id }, 'Deleting credit item');
     // Verify ownership
     const ownership = await verifyItemOwnership(req.params.id, req.user.id, req.user.role);
     if (!ownership.found) return sendNotFound(res, 'Credit item');
@@ -164,6 +178,8 @@ router.delete(
       `UPDATE credit_items SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [req.params.id]
     );
+    logger.info({ userId: req.user?.id, creditItemId: req.params.id }, 'Credit item deleted successfully');
+    auditFromRequest(req, 'credit_item.deleted', 'credit_item', req.params.id, `Deleted credit item ${req.params.id}`).catch(() => {});
     sendSuccess(res, {}, 'Credit item deleted');
   })
 );

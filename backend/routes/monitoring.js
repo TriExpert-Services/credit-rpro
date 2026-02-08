@@ -12,6 +12,7 @@ const { runHealthChecks, livenessProbe, readinessProbe } = require('../utils/hea
 const { getMetrics, resetMetrics } = require('../middleware/apm');
 const { getAuditLogs, auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 const { asyncHandler } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
 
 // ============================================
 // Public probes (no auth — used by orchestrators)

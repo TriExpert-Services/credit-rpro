@@ -9,6 +9,8 @@ const { pool, query, transaction } = require('../config/database');
 const auth = require('../middleware/auth');
 const crypto = require('crypto');
 const { sendSuccess, sendError, sendInternalError } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Encryption configuration (use environment variables in production)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex').slice(0, 32);
@@ -76,6 +78,7 @@ function getStepBoolColumn(step) {
 // ============================================================================
 router.get('/data', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching onboarding data');
     // Get user data as fallback
     const userResult = await pool.query(
       `SELECT 
@@ -210,7 +213,7 @@ router.get('/data', auth, async (req, res) => {
     return sendSuccess(res, data);
 
   } catch (err) {
-    console.error('Error getting onboarding data:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting onboarding data');
     return sendInternalError(res, 'Error al obtener datos');
   }
 });
@@ -222,6 +225,7 @@ router.post('/save-progress', auth, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id }, 'Saving onboarding progress');
     const { step, data } = req.body;
     const userId = req.user.id;
 
@@ -261,11 +265,12 @@ router.post('/save-progress', auth, async (req, res) => {
     }
 
     await client.query('COMMIT');
+    auditFromRequest(req, 'onboarding.completed', 'onboarding', req.user.id, 'Onboarding progress saved').catch(() => {});
     return sendSuccess(res, { message: 'Progress saved' });
 
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Error saving progress:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error saving onboarding progress');
     return sendInternalError(res, 'Error al guardar progreso');
   } finally {
     client.release();
@@ -277,6 +282,7 @@ router.post('/save-progress', auth, async (req, res) => {
 // ============================================================================
 router.get('/status', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching onboarding status');
     const result = await pool.query(
       `SELECT 
         op.current_step,
@@ -322,7 +328,7 @@ router.get('/status', auth, async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error getting onboarding status:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting onboarding status');
     return sendInternalError(res, 'Error al obtener estado');
   }
 });
@@ -334,6 +340,7 @@ router.post('/complete', auth, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id }, 'Completing onboarding');
     const userId = req.user.id;
     const {
       firstName, middleName, lastName, suffix,
@@ -547,6 +554,7 @@ router.post('/complete', auth, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'onboarding.completed', 'onboarding', userId, 'Onboarding completed').catch(() => {});
     return sendSuccess(res, { 
       message: 'Onboarding completed successfully',
       completed: true
@@ -554,7 +562,7 @@ router.post('/complete', auth, async (req, res) => {
 
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Onboarding error:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error completing onboarding');
     return sendError(res, err.message || 'Error completing onboarding', 400);
   } finally {
     client.release();
@@ -566,6 +574,7 @@ router.post('/complete', auth, async (req, res) => {
 // ============================================================================
 router.get('/legal-documents', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching legal documents');
     const result = await pool.query(
       `SELECT document_type, title, content, version, effective_date
        FROM legal_documents
@@ -577,7 +586,7 @@ router.get('/legal-documents', auth, async (req, res) => {
     return sendSuccess(res, result.rows);
 
   } catch (err) {
-    console.error('Error getting legal documents:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting legal documents');
     return sendInternalError(res, 'Error al obtener documentos legales');
   }
 });
@@ -587,6 +596,7 @@ router.get('/legal-documents', auth, async (req, res) => {
 // ============================================================================
 router.get('/legal-documents/:type', auth, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, documentType: req.params.type }, 'Fetching legal document by type');
     const result = await pool.query(
       `SELECT document_type, title, content, version, effective_date
        FROM legal_documents
@@ -601,7 +611,7 @@ router.get('/legal-documents/:type', auth, async (req, res) => {
     return sendSuccess(res, result.rows[0]);
 
   } catch (err) {
-    console.error('Error getting legal document:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting legal document');
     return sendInternalError(res, 'Error al obtener documento legal');
   }
 });
@@ -615,6 +625,7 @@ router.get('/pending', auth, async (req, res) => {
   }
   
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching pending onboardings');
     const result = await pool.query(
       `SELECT 
         u.id, u.email, u.first_name, u.last_name, u.created_at,
@@ -629,7 +640,7 @@ router.get('/pending', auth, async (req, res) => {
     return sendSuccess(res, result.rows);
 
   } catch (err) {
-    console.error('Error getting pending onboardings:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting pending onboardings');
     return sendInternalError(res, 'Error al obtener onboardings pendientes');
   }
 });
@@ -643,6 +654,7 @@ router.get('/client/:id', auth, async (req, res) => {
   }
   
   try {
+    logger.info({ userId: req.user?.id, clientId: req.params.id }, 'Fetching client onboarding details');
     const clientId = req.params.id;
     
     // Get profile
@@ -691,7 +703,7 @@ router.get('/client/:id', auth, async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error getting client details:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting client onboarding details');
     return sendInternalError(res, 'Error al obtener detalles del cliente');
   }
 });
@@ -707,6 +719,7 @@ router.post('/verify/:id', auth, async (req, res) => {
   const client = await pool.connect();
   
   try {
+    logger.info({ userId: req.user?.id, clientId: req.params.id }, 'Verifying client profile');
     const clientId = req.params.id;
     const { verified, notes } = req.body;
 
@@ -731,13 +744,14 @@ router.post('/verify/:id', auth, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'onboarding.verified', 'onboarding', clientId, verified ? 'Client profile verified' : 'Client profile verification removed').catch(() => {});
     return sendSuccess(res, { 
       message: verified ? 'Profile verified successfully' : 'Verification removed'
     });
 
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Error verifying profile:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error verifying client profile');
     return sendInternalError(res, 'Error al verificar perfil');
   } finally {
     client.release();

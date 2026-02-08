@@ -8,6 +8,8 @@ const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 const { requireAdmin: adminOnly } = require('../middleware/auth');
 const notificationService = require('../utils/notificationService');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * GET /api/notifications
@@ -15,6 +17,7 @@ const notificationService = require('../utils/notificationService');
  */
 router.get('/', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching notifications');
     const unreadOnly = req.query.unreadOnly === 'true';
     const notifications = await notificationService.getNotifications(req.user.id, unreadOnly);
     
@@ -24,6 +27,7 @@ router.get('/', authMiddleware, async (req, res) => {
       unreadCount: notifications.filter(n => !n.is_read).length
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching notifications');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -34,13 +38,16 @@ router.get('/', authMiddleware, async (req, res) => {
  */
 router.patch('/:id/read', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, notificationId: req.params.id }, 'Marking notification as read (PATCH)');
     await notificationService.markAsRead(req.params.id);
     
+    auditFromRequest(req, 'notification.read', 'notification', req.params.id, 'Notification marked as read').catch(() => {});
     res.json({
       success: true,
       message: 'Notification marked as read'
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error marking notification as read');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -51,13 +58,16 @@ router.patch('/:id/read', authMiddleware, async (req, res) => {
  */
 router.put('/:id/read', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, notificationId: req.params.id }, 'Marking notification as read (PUT)');
     await notificationService.markAsRead(req.params.id);
     
+    auditFromRequest(req, 'notification.read', 'notification', req.params.id, 'Notification marked as read').catch(() => {});
     res.json({
       success: true,
       message: 'Notification marked as read'
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error marking notification as read (PUT)');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -68,13 +78,16 @@ router.put('/:id/read', authMiddleware, async (req, res) => {
  */
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id, notificationId: req.params.id }, 'Deleting notification');
     await notificationService.deleteNotification(req.params.id, req.user.id);
     
+    auditFromRequest(req, 'notification.deleted', 'notification', req.params.id, 'Notification deleted').catch(() => {});
     res.json({
       success: true,
       message: 'Notification deleted'
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error deleting notification');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -85,13 +98,16 @@ router.delete('/:id', authMiddleware, async (req, res) => {
  */
 router.put('/read-all', authMiddleware, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Marking all notifications as read');
     await notificationService.markAllAsRead(req.user.id);
     
+    auditFromRequest(req, 'notification.read', 'notification', null, 'All notifications marked as read').catch(() => {});
     res.json({
       success: true,
       message: 'All notifications marked as read'
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error marking all notifications as read');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -102,6 +118,7 @@ router.put('/read-all', authMiddleware, async (req, res) => {
  */
 router.post('/send', authMiddleware, adminOnly, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Sending notification');
     const { recipientId, notificationType, subject, message, channels } = req.body;
     
     if (!recipientId || !subject || !message) {
@@ -118,12 +135,14 @@ router.post('/send', authMiddleware, adminOnly, async (req, res) => {
       channels || ['email', 'in_app']
     );
     
+    auditFromRequest(req, 'notification.sent', 'notification', result?.id, 'Notification sent').catch(() => {});
     res.status(201).json({
       success: true,
       message: 'Notification sent successfully',
       result
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error sending notification');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -134,6 +153,7 @@ router.post('/send', authMiddleware, adminOnly, async (req, res) => {
  */
 router.post('/send-template', authMiddleware, adminOnly, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Sending template notification');
     const { recipientId, templateName, variables, channels } = req.body;
     
     if (!recipientId || !templateName) {
@@ -149,12 +169,14 @@ router.post('/send-template', authMiddleware, adminOnly, async (req, res) => {
       channels || ['email', 'in_app']
     );
     
+    auditFromRequest(req, 'notification.sent', 'notification', result?.id, 'Template notification sent').catch(() => {});
     res.status(201).json({
       success: true,
       message: 'Template notification sent successfully',
       result
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error sending template notification');
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -165,6 +187,7 @@ router.post('/send-template', authMiddleware, adminOnly, async (req, res) => {
  */
 router.get('/stats', authMiddleware, adminOnly, async (req, res) => {
   try {
+    logger.info({ userId: req.user?.id }, 'Fetching notification stats');
     const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
     const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
     
@@ -179,6 +202,7 @@ router.get('/stats', authMiddleware, adminOnly, async (req, res) => {
       }
     });
   } catch (error) {
+    logger.error({ err: error.message, userId: req.user?.id }, 'Error fetching notification stats');
     res.status(500).json({ success: false, message: error.message });
   }
 });

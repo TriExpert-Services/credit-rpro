@@ -2,9 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken, requireStaff } = require('../middleware/auth');
 const { query } = require('../config/database');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // Get all clients
 router.get('/', authenticateToken, requireStaff, async (req, res) => {
+    logger.info({ userId: req.user?.id, method: 'GET', path: '/clients' }, 'Fetching all clients');
     try {
         const result = await query(`
             SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.created_at,
@@ -21,26 +24,31 @@ router.get('/', authenticateToken, requireStaff, async (req, res) => {
         `);
         res.json({ clients: result.rows });
     } catch (error) {
+        logger.error({ err: error.message, userId: req.user?.id }, 'Failed to fetch clients');
         res.status(500).json({ error: 'Failed to fetch clients' });
     }
 });
 
 // Get client details
 router.get('/:id', authenticateToken, async (req, res) => {
+    const clientId = req.params.id;
+    logger.info({ userId: req.user?.id, method: 'GET', path: `/clients/${clientId}` }, 'Fetching client details');
     try {
         const result = await query(`
             SELECT u.*, cp.*
             FROM users u
             LEFT JOIN client_profiles cp ON u.id = cp.user_id
             WHERE u.id = $1
-        `, [req.params.id]);
+        `, [clientId]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Client not found' });
         }
 
+        auditFromRequest(req, 'client.viewed', 'client', clientId, 'Viewed client details').catch(() => {});
         res.json({ client: result.rows[0] });
     } catch (error) {
+        logger.error({ err: error.message, userId: req.user?.id, clientId }, 'Failed to fetch client');
         res.status(500).json({ error: 'Failed to fetch client' });
     }
 });

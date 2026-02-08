@@ -8,12 +8,15 @@ const router = express.Router();
 const { query } = require('express-validator');
 const authMiddleware = require('../middleware/auth');
 const settingsService = require('../utils/settingsService');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * GET /api/admin/settings
  * Get all settings (with masked sensitive values)
  */
 router.get('/settings', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get all admin settings');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -35,6 +38,7 @@ router.get('/settings', authMiddleware, async (req, res) => {
  * Get specific setting
  */
 router.get('/settings/:key', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get admin setting by key');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -62,6 +66,7 @@ router.get('/settings/:key', authMiddleware, async (req, res) => {
  * Create or update a setting
  */
 router.post('/settings', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Create or update admin setting');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -93,6 +98,7 @@ router.post('/settings', authMiddleware, async (req, res) => {
       settingType === 'api_key' ? '***ENCRYPTED***' : settingValue
     );
     
+    auditFromRequest(req, 'admin_setting.updated', 'admin_setting', settingKey, 'Admin setting created or updated').catch(() => {});
     res.status(201).json({
       success: true,
       message: `Setting ${settingKey} saved successfully`,
@@ -108,6 +114,7 @@ router.post('/settings', authMiddleware, async (req, res) => {
  * Test an API key
  */
 router.post('/settings/test', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Test API key');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -139,6 +146,7 @@ router.post('/settings/test', authMiddleware, async (req, res) => {
  * Delete a setting
  */
 router.delete('/settings/:key', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Delete admin setting');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -155,6 +163,7 @@ router.delete('/settings/:key', authMiddleware, async (req, res) => {
       null
     );
     
+    auditFromRequest(req, 'admin_setting.deleted', 'admin_setting', req.params.key, 'Admin setting deleted').catch(() => {});
     res.json({
       success: true,
       message: `Setting ${req.params.key} deleted successfully`
@@ -169,6 +178,7 @@ router.delete('/settings/:key', authMiddleware, async (req, res) => {
  * Get status of all integrations
  */
 router.get('/integrations/status', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get integrations status');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -192,6 +202,7 @@ router.get('/integrations/status', authMiddleware, async (req, res) => {
  * Send a test email to verify SMTP configuration
  */
 router.post('/test-email', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Send test email');
   // Verify admin role
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -258,13 +269,14 @@ router.post('/test-email', authMiddleware, async (req, res) => {
       `
     });
     
+    auditFromRequest(req, 'admin_setting.tested', 'admin_setting', null, 'Test email sent').catch(() => {});
     res.json({
       success: true,
       message: `Email de prueba enviado a ${recipientEmail}`
     });
     
   } catch (error) {
-    console.error('Test email error:', error);
+    logger.error({ err: error.message }, 'Test email error');
     res.status(500).json({
       success: false,
       message: `Error enviando email: ${error.message}`
@@ -277,6 +289,7 @@ router.post('/test-email', authMiddleware, async (req, res) => {
 // Admin dashboard compliance statistics
 // =====================================================
 router.get('/compliance-stats', authMiddleware, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Get compliance stats');
   if (req.user.role !== 'admin') {
     return res.status(403).json({ success: false, message: 'Admin access required' });
   }
@@ -312,7 +325,7 @@ router.get('/compliance-stats', authMiddleware, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Compliance stats error:', error);
+    logger.error({ err: error.message }, 'Compliance stats error');
     res.status(500).json({
       success: false,
       error: 'Error al obtener estadísticas de compliance'

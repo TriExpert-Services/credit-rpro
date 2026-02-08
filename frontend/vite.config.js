@@ -7,6 +7,19 @@ export default defineConfig({
     port: 3000,
     host: true
   },
+  // ── Vitest configuration ────────────────────────────────────────────────
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/__tests__/setup.js'],
+    include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'lcov'],
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/__tests__/**', 'src/main.jsx'],
+    },
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,

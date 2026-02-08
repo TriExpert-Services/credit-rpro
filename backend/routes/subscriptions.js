@@ -9,16 +9,19 @@ const auth = require('../middleware/auth');
 const { pool, query, transaction } = require('../config/database');
 const stripeService = require('../utils/stripeService');
 const { sendSuccess, sendError, sendInternalError } = require('../utils/responseHelpers');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 // ============================================================================
 // GET /api/subscriptions/plans - Get available subscription plans
 // ============================================================================
 router.get('/plans', async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Getting subscription plans');
   try {
     const plans = await stripeService.getPlans();
     return sendSuccess(res, plans);
   } catch (err) {
-    console.error('Error getting plans:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting subscription plans');
     return sendInternalError(res, 'Error al obtener planes');
   }
 });
@@ -27,6 +30,7 @@ router.get('/plans', async (req, res) => {
 // GET /api/subscriptions/current - Get current user's subscription
 // ============================================================================
 router.get('/current', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Getting current subscription');
   try {
     const subscription = await stripeService.getClientSubscription(req.user.id);
     
@@ -56,7 +60,7 @@ router.get('/current', auth, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Error getting subscription:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting current subscription');
     return sendInternalError(res, 'Error al obtener suscripción');
   }
 });
@@ -65,6 +69,7 @@ router.get('/current', auth, async (req, res) => {
 // GET /api/subscriptions/access-status - Check access status
 // ============================================================================
 router.get('/access-status', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Checking subscription access status');
   try {
     console.log('Access-status check for user:', req.user.email, 'role:', req.user.role);
     
@@ -87,7 +92,7 @@ router.get('/access-status', auth, async (req, res) => {
       isAdmin: false,
     });
   } catch (err) {
-    console.error('Error getting access status:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error checking access status');
     return sendInternalError(res, 'Error al verificar estado de acceso');
   }
 });
@@ -96,6 +101,7 @@ router.get('/access-status', auth, async (req, res) => {
 // POST /api/subscriptions/checkout - Create checkout session
 // ============================================================================
 router.post('/checkout', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Creating checkout session');
   try {
     const { planId, billingCycle = 'monthly' } = req.body;
 
@@ -127,12 +133,13 @@ router.post('/checkout', auth, async (req, res) => {
       billingCycle
     );
 
+    auditFromRequest(req, 'subscription.created', 'subscription', session.id, 'Checkout session created').catch(() => {});
     return sendSuccess(res, { 
       sessionId: session.id,
       checkoutUrl: session.url,
     });
   } catch (err) {
-    console.error('Error creating checkout:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error creating checkout session');
     return sendInternalError(res, 'Error al crear sesión de pago');
   }
 });
@@ -141,11 +148,12 @@ router.post('/checkout', auth, async (req, res) => {
 // POST /api/subscriptions/portal - Create customer portal session
 // ============================================================================
 router.post('/portal', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Creating customer portal session');
   try {
     const session = await stripeService.createPortalSession(req.user.id);
     return sendSuccess(res, { url: session.url });
   } catch (err) {
-    console.error('Error creating portal session:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error creating portal session');
     return sendInternalError(res, 'Error al crear sesión del portal');
   }
 });
@@ -154,6 +162,7 @@ router.post('/portal', auth, async (req, res) => {
 // POST /api/subscriptions/cancel - Cancel subscription
 // ============================================================================
 router.post('/cancel', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Cancelling subscription');
   try {
     const { reason, immediately = false } = req.body;
 
@@ -167,6 +176,7 @@ router.post('/cancel', auth, async (req, res) => {
       immediately
     );
 
+    auditFromRequest(req, 'subscription.cancelled', 'subscription', req.user.id, 'Subscription cancelled').catch(() => {});
     return sendSuccess(res, {
       message: immediately 
         ? 'Subscription canceled immediately'
@@ -174,7 +184,7 @@ router.post('/cancel', auth, async (req, res) => {
       ...result,
     });
   } catch (err) {
-    console.error('Error canceling subscription:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error cancelling subscription');
     return sendInternalError(res, 'Error al cancelar suscripción');
   }
 });
@@ -183,6 +193,7 @@ router.post('/cancel', auth, async (req, res) => {
 // GET /api/subscriptions/payments - Get payment history
 // ============================================================================
 router.get('/payments', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Getting payment history');
   try {
     const { limit = 20, offset = 0 } = req.query;
     const history = await stripeService.getPaymentHistory(
@@ -192,7 +203,7 @@ router.get('/payments', auth, async (req, res) => {
     );
     return sendSuccess(res, history);
   } catch (err) {
-    console.error('Error getting payment history:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting payment history');
     return sendInternalError(res, 'Error al obtener historial de pagos');
   }
 });
@@ -201,6 +212,7 @@ router.get('/payments', auth, async (req, res) => {
 // POST /api/subscriptions/guarantee-claim - Request guarantee refund
 // ============================================================================
 router.post('/guarantee-claim', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Submitting guarantee claim');
   const client = await pool.connect();
   
   try {
@@ -322,6 +334,7 @@ router.post('/guarantee-claim', auth, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'subscription.created', 'subscription', subscription.id, 'Guarantee claim submitted').catch(() => {});
     return sendSuccess(res, {
       message: 'Guarantee claim submitted successfully. Our team will review it within 48 hours.',
       claim: {
@@ -332,7 +345,7 @@ router.post('/guarantee-claim', auth, async (req, res) => {
     });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Error submitting guarantee claim:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error submitting guarantee claim');
     return sendInternalError(res, 'Error al procesar solicitud de garantía');
   } finally {
     client.release();
@@ -343,6 +356,7 @@ router.post('/guarantee-claim', auth, async (req, res) => {
 // ADMIN: GET /api/subscriptions/admin/stats - Revenue statistics
 // ============================================================================
 router.get('/admin/stats', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Getting admin subscription stats');
   if (req.user.role !== 'admin') {
     return sendError(res, 'Admin access required', 403);
   }
@@ -403,7 +417,7 @@ router.get('/admin/stats', auth, async (req, res) => {
       planDistribution: planDistResult.rows,
     });
   } catch (err) {
-    console.error('Error getting admin stats:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting admin subscription stats');
     return sendInternalError(res, 'Error al obtener estadísticas');
   }
 });
@@ -412,6 +426,7 @@ router.get('/admin/stats', auth, async (req, res) => {
 // ADMIN: GET /api/subscriptions/admin/guarantee-claims - Get guarantee claims
 // ============================================================================
 router.get('/admin/guarantee-claims', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Getting admin guarantee claims');
   if (req.user.role !== 'admin') {
     return sendError(res, 'Admin access required', 403);
   }
@@ -430,7 +445,7 @@ router.get('/admin/guarantee-claims', auth, async (req, res) => {
 
     return sendSuccess(res, result.rows);
   } catch (err) {
-    console.error('Error getting guarantee claims:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting guarantee claims');
     return sendInternalError(res, 'Error al obtener solicitudes de garantía');
   }
 });
@@ -439,6 +454,7 @@ router.get('/admin/guarantee-claims', auth, async (req, res) => {
 // ADMIN: POST /api/subscriptions/admin/process-claim - Process guarantee claim
 // ============================================================================
 router.post('/admin/process-claim/:claimId', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id, claimId: req.params.claimId }, 'Processing guarantee claim');
   if (req.user.role !== 'admin') {
     return sendError(res, 'Admin access required', 403);
   }
@@ -520,12 +536,13 @@ router.post('/admin/process-claim/:claimId', auth, async (req, res) => {
 
     await client.query('COMMIT');
 
+    auditFromRequest(req, 'subscription.updated', 'subscription', claimId, `Guarantee claim ${action === 'deny' ? 'denied' : 'refunded'}`).catch(() => {});
     return sendSuccess(res, {
       message: action === 'deny' ? 'Claim denied' : 'Refund processed successfully',
     });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Error processing claim:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error processing guarantee claim');
     return sendInternalError(res, 'Error al procesar solicitud');
   } finally {
     client.release();
@@ -536,6 +553,7 @@ router.post('/admin/process-claim/:claimId', auth, async (req, res) => {
 // ADMIN: GET /api/subscriptions/admin/transactions - All transactions
 // ============================================================================
 router.get('/admin/transactions', auth, async (req, res) => {
+  logger.info({ userId: req.user?.id }, 'Getting admin transactions');
   if (req.user.role !== 'admin') {
     return sendError(res, 'Admin access required', 403);
   }
@@ -573,7 +591,7 @@ router.get('/admin/transactions', auth, async (req, res) => {
 
     return sendSuccess(res, result.rows);
   } catch (err) {
-    console.error('Error getting transactions:', err);
+    logger.error({ err: err.message, userId: req.user?.id }, 'Error getting admin transactions');
     return sendInternalError(res, 'Error al obtener transacciones');
   }
 });

@@ -31,6 +31,7 @@ const {
   sanitizeResponse,
 } = require('../utils/responseHelpers');
 const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
+const { logger } = require('../utils/logger');
 
 /**
  * Genera un token JWT
@@ -81,6 +82,7 @@ router.post(
   '/register',
   registerValidation,
   asyncHandler(async (req, res) => {
+    logger.info('User registration attempt');
     // Validar entrada
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
@@ -149,6 +151,7 @@ router.post(
   '/login',
   loginValidation,
   asyncHandler(async (req, res) => {
+    logger.info('User login attempt');
     // Validar entrada
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
@@ -260,6 +263,7 @@ router.post(
   '/2fa/setup',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, '2FA setup initiated');
     const userId = req.user.id;
 
     // Verificar si ya tiene 2FA habilitado
@@ -315,6 +319,7 @@ router.post(
   '/2fa/verify',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, '2FA verify code');
     const { code } = req.body;
     const userId = req.user.id;
 
@@ -394,6 +399,7 @@ router.post(
   '/2fa/disable',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, '2FA disable request');
     const { code, password } = req.body;
     const userId = req.user.id;
 
@@ -472,6 +478,7 @@ router.get(
   '/2fa/status',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Get 2FA status');
     const userId = req.user.id;
 
     const result = await query(
@@ -504,6 +511,7 @@ router.post(
   '/2fa/regenerate-backup',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Regenerate 2FA backup codes');
     const { code, password } = req.body;
     const userId = req.user.id;
 
@@ -579,6 +587,7 @@ router.post(
   authenticateToken,
   changePasswordValidation,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Change password request');
     // Validar entrada
     const errors = validationResult(req);
     if (handleValidationErrors(errors, res)) return;
@@ -638,6 +647,7 @@ router.post(
   '/logout',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'User logout');
     // Registrar actividad de logout
     await query(
       `INSERT INTO activity_log (user_id, action, description)
@@ -658,6 +668,7 @@ router.post(
   '/auth0/sync',
   authenticateToken,  // SECURED: Require valid Auth0 or local token
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Auth0 sync request');
     const { email, firstName, lastName, auth0Id, picture, emailVerified } = req.body;
 
     if (!email || !auth0Id) {

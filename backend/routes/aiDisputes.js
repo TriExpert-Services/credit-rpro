@@ -30,6 +30,8 @@ const {
   asyncHandler,
 } = require('../utils/responseHelpers');
 const { validate, generateAIDisputeSchema, saveAIDisputeSchema, idParam } = require('../middleware/zodValidation');
+const { logger } = require('../utils/logger');
+const { auditFromRequest, AUDIT_ACTIONS } = require('../utils/auditLogger');
 
 /**
  * @route   GET /api/ai-disputes/strategy/:creditItemId
@@ -40,6 +42,7 @@ router.get(
   '/strategy/:creditItemId',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, creditItemId: req.params.creditItemId }, 'Getting dispute strategy for credit item');
     const { creditItemId } = req.params;
     const { bureau } = req.query;
     const userId = req.user.id;
@@ -99,7 +102,7 @@ router.get(
         allRounds: STRATEGY_ROUNDS
       }, 'Strategy recommendation retrieved');
     } catch (error) {
-      console.error('Error getting strategy:', error);
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error getting dispute strategy');
       sendError(res, error.message || 'Failed to get strategy', 500);
     }
   })
@@ -114,6 +117,7 @@ router.get(
   '/strategies/overview',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Getting strategies overview');
     sendSuccess(res, {
       rounds: STRATEGY_ROUNDS,
       bureaus: BUREAU_STRATEGIES,
@@ -139,6 +143,7 @@ router.post(
   authenticateToken,
   validate({ body: generateAIDisputeSchema }),
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, creditItemId: req.body.creditItemId }, 'Generating AI dispute letter');
     const { creditItemId, disputeType, bureau, additionalDetails } = req.body;
     const userId = req.user.id;
 
@@ -146,6 +151,7 @@ router.post(
       // Generate the letter using OpenAI
       const result = await generateDispute(userId, creditItemId, disputeType, bureau, additionalDetails);
 
+      auditFromRequest(req, 'ai_dispute.generated', 'ai_dispute', creditItemId, 'AI dispute letter generated').catch(() => {});
       sendSuccess(
         res,
         {
@@ -163,6 +169,7 @@ router.post(
         'Dispute letter generated successfully with OpenAI'
       );
     } catch (error) {
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error generating AI dispute letter');
       sendError(res, error.message || 'Failed to generate dispute letter', 500);
     }
   })
@@ -177,6 +184,7 @@ router.post(
   '/save',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Saving AI dispute letter');
     const { creditItemId, content, disputeType, bureau } = req.body;
     const userId = req.user.id;
 
@@ -189,6 +197,7 @@ router.post(
       // Save the dispute
       const result = await saveDispute(userId, creditItemId, content, disputeType, bureau);
 
+      auditFromRequest(req, 'ai_dispute.saved', 'ai_dispute', result.id, 'AI dispute letter saved as draft').catch(() => {});
       sendCreated(
         res,
         {
@@ -199,7 +208,7 @@ router.post(
         'Dispute letter saved successfully as draft'
       );
     } catch (error) {
-      console.error('Error saving dispute:', error);
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error saving AI dispute letter');
       sendError(res, error.message || 'Failed to save dispute', 500);
     }
   })
@@ -214,6 +223,7 @@ router.get(
   '/drafts',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id }, 'Retrieving user dispute drafts');
     const userId = req.user.id;
 
     try {
@@ -221,7 +231,7 @@ router.get(
 
       sendSuccess(res, result, 'User disputes retrieved successfully');
     } catch (error) {
-      console.error('Error retrieving disputes:', error);
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error retrieving dispute drafts');
       sendError(res, error.message || 'Failed to retrieve disputes', 500);
     }
   })
@@ -236,6 +246,7 @@ router.get(
   '/:id',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, disputeId: req.params.id }, 'Retrieving dispute letter');
     const { id } = req.params;
     const userId = req.user.id;
 
@@ -244,7 +255,7 @@ router.get(
 
       sendSuccess(res, result, 'Dispute retrieved successfully');
     } catch (error) {
-      console.error('Error retrieving dispute:', error);
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error retrieving dispute letter');
       if (error.message === 'Dispute not found') {
         return sendError(res, 'Dispute not found', 404);
       }
@@ -262,15 +273,17 @@ router.patch(
   '/:id/send',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, disputeId: req.params.id }, 'Marking dispute as sent');
     const { id } = req.params;
     const userId = req.user.id;
 
     try {
       const result = await sendDispute(id, userId);
 
+      auditFromRequest(req, 'ai_dispute.sent', 'ai_dispute', id, 'AI dispute letter marked as sent').catch(() => {});
       sendSuccess(res, result, 'Dispute marked as sent with tracking number');
     } catch (error) {
-      console.error('Error sending dispute:', error);
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error sending dispute');
       if (error.message.includes('not found')) {
         return sendError(res, error.message, 404);
       }
@@ -288,15 +301,17 @@ router.delete(
   '/:id',
   authenticateToken,
   asyncHandler(async (req, res) => {
+    logger.info({ userId: req.user?.id, disputeId: req.params.id }, 'Deleting dispute');
     const { id } = req.params;
     const userId = req.user.id;
 
     try {
       const result = await deleteDispute(id, userId);
 
+      auditFromRequest(req, 'ai_dispute.deleted', 'ai_dispute', id, 'AI dispute letter deleted').catch(() => {});
       sendSuccess(res, result, 'Dispute deleted successfully');
     } catch (error) {
-      console.error('Error deleting dispute:', error);
+      logger.error({ err: error.message, userId: req.user?.id }, 'Error deleting dispute');
       if (error.message.includes('cannot be deleted')) {
         return sendError(res, error.message, 400);
       }

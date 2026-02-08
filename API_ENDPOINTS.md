@@ -1,6 +1,6 @@
 # Credit Repair Pro — API Endpoints Reference
 
-> **Total Endpoints: 148** | Last updated: 2026-02-08  
+> **Total Endpoints: 149** | Last updated: 2026-02-08  
 > Base URL: `https://triexpertservice.com/api`
 
 ---
@@ -816,7 +816,7 @@ Fields: reports[] (files, max 3), bureaus (JSON array), clientId? (admin only)
 
 ## Admin Settings (`/api/admin`)
 
-> 7 endpoints | Audit: `admin_settings` | Rate limited: `sensitiveLimiter`
+> 8 endpoints | Audit: `admin_settings` | Rate limited: `sensitiveLimiter`
 
 | # | Method | Path | Auth | Description |
 |---|---|---|---|---|
@@ -826,7 +826,8 @@ Fields: reports[] (files, max 3), bureaus (JSON array), clientId? (admin only)
 | 4 | `POST` | `/api/admin/settings/test` | Admin | Test an API key |
 | 5 | `DELETE` | `/api/admin/settings/:key` | Admin | Delete a setting |
 | 6 | `GET` | `/api/admin/integrations/status` | Admin | Get integration statuses |
-| 7 | `POST` | `/api/admin/test-email` | Admin | Send test email via SMTP |
+| 7 | `GET` | `/api/admin/compliance-stats` | Admin | Get compliance statistics |
+| 8 | `POST` | `/api/admin/test-email` | Admin | Send test email via SMTP |
 
 <details>
 <summary>Request/Response Details</summary>
@@ -1013,10 +1014,10 @@ Fields: reports[] (files, max 3), bureaus (JSON array), clientId? (admin only)
 | Contracts | 8 |
 | Compliance | 7 |
 | Credit Reports | 9 |
-| Admin Settings | 7 |
+| Admin Settings | 8 |
 | Process Notes | 10 |
 | Plaid | 8 |
 | Stripe Webhook | 1 |
 | Monitoring | 6 |
 | Server (inline) | 3 |
-| **TOTAL** | **148** |
+| **TOTAL** | **149** |

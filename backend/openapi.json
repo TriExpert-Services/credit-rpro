@@ -1,0 +1,672 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Credit Repair Pro API",
+    "description": "Complete API for Credit Repair SaaS — client management, credit tracking, dispute generation, payments, compliance (CROA/FCRA/GLBA), and AI-powered analysis.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TriExpert Services",
+      "url": "https://triexpertservice.com"
+    }
+  },
+  "servers": [
+    { "url": "https://triexpertservice.com/api", "description": "Production" },
+    { "url": "http://localhost:5000/api", "description": "Development" }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "Authentication, registration, 2FA, and session management" },
+    { "name": "Users", "description": "User profile management" },
+    { "name": "Clients", "description": "Client listing and details (staff)" },
+    { "name": "Credit Items", "description": "Negative items on credit reports" },
+    { "name": "Credit Scores", "description": "FCRA-compliant credit score tracking" },
+    { "name": "Dashboard", "description": "Client and admin dashboard statistics" },
+    { "name": "Disputes", "description": "Dispute creation and status management" },
+    { "name": "AI Disputes", "description": "AI-powered dispute letter generation (OpenAI)" },
+    { "name": "Documents", "description": "Document upload and management" },
+    { "name": "Payments", "description": "Payment history and recording" },
+    { "name": "Subscriptions", "description": "Stripe subscription management" },
+    { "name": "Invoices", "description": "Billing and invoicing" },
+    { "name": "Notifications", "description": "Multi-channel notification system" },
+    { "name": "Onboarding", "description": "Client onboarding wizard" },
+    { "name": "Contracts", "description": "Contract templates and signing" },
+    { "name": "Compliance", "description": "CROA, FCRA, GLBA compliance" },
+    { "name": "Credit Reports", "description": "AI credit report analysis" },
+    { "name": "Admin Settings", "description": "System configuration (admin only)" },
+    { "name": "Process Notes", "description": "Internal case notes (staff)" },
+    { "name": "Plaid", "description": "Bank account verification via Plaid" },
+    { "name": "Webhooks", "description": "Stripe and Plaid webhook handlers" },
+    { "name": "Monitoring", "description": "Health checks, APM, audit logs" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Local JWT or Auth0 token"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "details": { "type": "object" }
+        },
+        "required": ["error"]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "data": { "type": "object" },
+          "message": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "role": { "type": "string", "enum": ["client", "admin", "staff"] },
+          "twoFactorEnabled": { "type": "boolean" }
+        }
+      },
+      "CreditScore": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "clientId": { "type": "string", "format": "uuid" },
+          "bureau": { "type": "string", "enum": ["experian", "equifax", "transunion"] },
+          "score": { "type": "integer", "minimum": 300, "maximum": 850 },
+          "recordedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreditItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "clientId": { "type": "string", "format": "uuid" },
+          "itemType": { "type": "string", "enum": ["late_payment", "collection", "charge_off", "bankruptcy", "repossession", "foreclosure", "inquiry", "other"] },
+          "creditorName": { "type": "string" },
+          "accountNumber": { "type": "string" },
+          "bureau": { "type": "string" },
+          "balance": { "type": "number" },
+          "status": { "type": "string", "enum": ["identified", "disputing", "in_progress", "resolved", "deleted"] }
+        }
+      },
+      "Dispute": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "clientId": { "type": "string", "format": "uuid" },
+          "creditItemId": { "type": "string", "format": "uuid" },
+          "disputeType": { "type": "string", "enum": ["not_mine", "inaccurate_info", "too_old", "paid_but_showing", "duplicate", "other"] },
+          "bureau": { "type": "string" },
+          "status": { "type": "string", "enum": ["draft", "pending", "sent", "in_review", "responded", "resolved"] }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "clientId": { "type": "string", "format": "uuid" },
+          "amount": { "type": "number" },
+          "status": { "type": "string", "enum": ["pending", "completed", "failed", "refunded"] },
+          "description": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register new client user",
+        "operationId": "registerUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "firstName", "lastName"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 6 },
+                  "firstName": { "type": "string" },
+                  "lastName": { "type": "string" },
+                  "phone": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": { "type": "string" },
+                        "user": { "$ref": "#/components/schemas/User" }
+                      }
+                    },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": { "description": "Email already registered" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User login with optional 2FA",
+        "operationId": "loginUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" },
+                  "totpCode": { "type": "string", "description": "TOTP code for 2FA" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful or 2FA required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": { "type": "string" },
+                        "user": { "$ref": "#/components/schemas/User" },
+                        "requires2FA": { "type": "boolean" },
+                        "tempToken": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" },
+          "403": { "description": "Account inactive" }
+        }
+      }
+    },
+    "/auth/2fa/setup": {
+      "post": {
+        "tags": ["Auth"], "summary": "Generate 2FA secret & QR code", "operationId": "setup2FA",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "QR code and secret returned" } }
+      }
+    },
+    "/auth/2fa/verify": {
+      "post": {
+        "tags": ["Auth"], "summary": "Verify TOTP code & enable 2FA", "operationId": "verify2FA",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "code": { "type": "string" } }, "required": ["code"] } } } },
+        "responses": { "200": { "description": "2FA enabled with backup codes" } }
+      }
+    },
+    "/auth/2fa/disable": {
+      "post": {
+        "tags": ["Auth"], "summary": "Disable 2FA", "operationId": "disable2FA",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "password": { "type": "string" }, "code": { "type": "string" } }, "required": ["password"] } } } },
+        "responses": { "200": { "description": "2FA disabled" } }
+      }
+    },
+    "/auth/2fa/status": {
+      "get": {
+        "tags": ["Auth"], "summary": "Get 2FA status", "operationId": "get2FAStatus",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "2FA status returned" } }
+      }
+    },
+    "/auth/2fa/regenerate-backup": {
+      "post": {
+        "tags": ["Auth"], "summary": "Regenerate backup codes", "operationId": "regenerateBackup",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "New backup codes generated" } }
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "tags": ["Auth"], "summary": "Change password", "operationId": "changePassword",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "currentPassword": { "type": "string" }, "newPassword": { "type": "string" } }, "required": ["currentPassword", "newPassword"] } } } },
+        "responses": { "200": { "description": "Password changed" } }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"], "summary": "Log out", "operationId": "logout",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Logged out" } }
+      }
+    },
+    "/auth/auth0/sync": {
+      "post": {
+        "tags": ["Auth"], "summary": "Sync Auth0 user with local DB", "operationId": "syncAuth0",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "email": { "type": "string" }, "firstName": { "type": "string" }, "lastName": { "type": "string" }, "auth0Id": { "type": "string" } }, "required": ["email", "firstName", "lastName", "auth0Id"] } } } },
+        "responses": { "200": { "description": "User synced" } }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "tags": ["Users"], "summary": "Get current user profile", "operationId": "getProfile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Profile data returned" } }
+      },
+      "put": {
+        "tags": ["Users"], "summary": "Update user profile", "operationId": "updateProfile",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "firstName": { "type": "string" }, "lastName": { "type": "string" }, "phone": { "type": "string" }, "dateOfBirth": { "type": "string", "format": "date" }, "addressLine1": { "type": "string" }, "city": { "type": "string" }, "state": { "type": "string", "pattern": "^[A-Z]{2}$" }, "zipCode": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Profile updated" } }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"], "summary": "List all users (paginated)", "operationId": "listUsers",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "role", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": { "200": { "description": "Paginated user list" } }
+      }
+    },
+    "/users/{id}": {
+      "delete": {
+        "tags": ["Users"], "summary": "Delete user and cascaded data", "operationId": "deleteUser",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "User deleted" }, "404": { "description": "User not found" } }
+      }
+    },
+    "/clients": {
+      "get": {
+        "tags": ["Clients"], "summary": "Get all clients with stats", "operationId": "listClients",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Client list with stats" } }
+      }
+    },
+    "/clients/{id}": {
+      "get": {
+        "tags": ["Clients"], "summary": "Get client details", "operationId": "getClient",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Client details" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/credit-items": {
+      "get": {
+        "tags": ["Credit Items"], "summary": "Get current user's credit items", "operationId": "getMyCreditItems",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }
+        ],
+        "responses": { "200": { "description": "Paginated credit items" } }
+      },
+      "post": {
+        "tags": ["Credit Items"], "summary": "Add new credit item", "operationId": "addCreditItem",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreditItem" } } } },
+        "responses": { "201": { "description": "Credit item created" } }
+      }
+    },
+    "/credit-items/client/{clientId}": {
+      "get": {
+        "tags": ["Credit Items"], "summary": "Get credit items for specific client", "operationId": "getClientCreditItems",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Credit items for client" } }
+      }
+    },
+    "/credit-items/{id}/status": {
+      "put": {
+        "tags": ["Credit Items"], "summary": "Update credit item status", "operationId": "updateCreditItemStatus",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string" } }, "required": ["status"] } } } },
+        "responses": { "200": { "description": "Status updated" } }
+      }
+    },
+    "/credit-items/{id}": {
+      "delete": {
+        "tags": ["Credit Items"], "summary": "Delete credit item", "operationId": "deleteCreditItem",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Credit item deleted" } }
+      }
+    },
+    "/credit-scores": {
+      "post": {
+        "tags": ["Credit Scores"], "summary": "Record a new credit score", "operationId": "addCreditScore",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "bureau", "score"], "properties": { "clientId": { "type": "string", "format": "uuid" }, "bureau": { "type": "string", "enum": ["experian", "equifax", "transunion"] }, "score": { "type": "integer", "minimum": 300, "maximum": 850 }, "source": { "type": "string" }, "notes": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Score recorded" } }
+      }
+    },
+    "/credit-scores/{clientId}/latest": {
+      "get": {
+        "tags": ["Credit Scores"], "summary": "Get latest scores for all bureaus", "operationId": "getLatestScores",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Latest scores per bureau" } }
+      }
+    },
+    "/credit-scores/{clientId}/history/{bureau}": {
+      "get": {
+        "tags": ["Credit Scores"], "summary": "Score history for a bureau", "operationId": "getScoreHistory",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "bureau", "in": "path", "required": true, "schema": { "type": "string", "enum": ["experian", "equifax", "transunion"] } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 12 } }
+        ],
+        "responses": { "200": { "description": "Score history" } }
+      }
+    },
+    "/credit-scores/{clientId}/trend/{bureau}": {
+      "get": {
+        "tags": ["Credit Scores"], "summary": "Calculate score trend", "operationId": "getScoreTrend",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "bureau", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "months", "in": "query", "schema": { "type": "integer", "default": 6 } }
+        ],
+        "responses": { "200": { "description": "Score trend analysis" } }
+      }
+    },
+    "/credit-scores/{clientId}/factors": {
+      "get": { "tags": ["Credit Scores"], "summary": "Score factors analysis", "operationId": "getScoreFactors", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Score factors" } } }
+    },
+    "/credit-scores/{clientId}/comparison": {
+      "get": { "tags": ["Credit Scores"], "summary": "Bureau score comparison", "operationId": "getBureauComparison", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Cross-bureau comparison" } } }
+    },
+    "/credit-scores/{clientId}/report": {
+      "get": { "tags": ["Credit Scores"], "summary": "Generate credit report summary", "operationId": "getCreditReport", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Report summary" } } }
+    },
+    "/credit-scores/{clientId}/anomalies": {
+      "get": { "tags": ["Credit Scores"], "summary": "Detect score anomalies", "operationId": "detectAnomalies", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Anomaly detection results" } } }
+    },
+    "/credit-scores/{clientId}/projections": {
+      "get": { "tags": ["Credit Scores"], "summary": "Project score improvements", "operationId": "projectImprovements", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Score projections" } } }
+    },
+    "/credit-scores/{clientId}/detailed-factors": {
+      "get": { "tags": ["Credit Scores"], "summary": "Detailed FICO factor analysis", "operationId": "getDetailedFactors", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Detailed FICO factors" } } }
+    },
+    "/dashboard/client/{clientId}": {
+      "get": {
+        "tags": ["Dashboard"], "summary": "Client dashboard stats", "operationId": "getClientDashboard",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Dashboard stats with scores, items, disputes, activity, improvements" }, "403": { "description": "Access denied" } }
+      }
+    },
+    "/dashboard/admin/stats": {
+      "get": {
+        "tags": ["Dashboard"], "summary": "Admin dashboard stats", "operationId": "getAdminDashboard",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Admin stats: clients, subscriptions, revenue, disputes" } }
+      }
+    },
+    "/disputes/client/{clientId}": {
+      "get": {
+        "tags": ["Disputes"], "summary": "Get all disputes for client", "operationId": "getClientDisputes",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } }
+        ],
+        "responses": { "200": { "description": "Disputes list" } }
+      }
+    },
+    "/disputes": {
+      "post": {
+        "tags": ["Disputes"], "summary": "Create dispute with generated letter", "operationId": "createDispute",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "creditItemId", "disputeType", "bureau"], "properties": { "clientId": { "type": "string", "format": "uuid" }, "creditItemId": { "type": "string", "format": "uuid" }, "disputeType": { "type": "string" }, "bureau": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Dispute created" } }
+      }
+    },
+    "/disputes/{id}/status": {
+      "put": {
+        "tags": ["Disputes"], "summary": "Update dispute status/details", "operationId": "updateDisputeStatus",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string" }, "sentDate": { "type": "string", "format": "date" }, "responseDate": { "type": "string", "format": "date" }, "responseText": { "type": "string" }, "trackingNumber": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Status updated" } }
+      }
+    },
+    "/disputes/{id}": {
+      "get": {
+        "tags": ["Disputes"], "summary": "Get single dispute", "operationId": "getDispute",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Dispute details" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/ai-disputes/strategy/{creditItemId}": {
+      "get": { "tags": ["AI Disputes"], "summary": "Get recommended dispute strategy", "operationId": "getStrategy", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "creditItemId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }, { "name": "bureau", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "Strategy recommendation" } } }
+    },
+    "/ai-disputes/strategies/overview": {
+      "get": { "tags": ["AI Disputes"], "summary": "Get all available strategies", "operationId": "getStrategiesOverview", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "All strategies" } } }
+    },
+    "/ai-disputes/generate": {
+      "post": { "tags": ["AI Disputes"], "summary": "Generate dispute letter via OpenAI", "operationId": "generateAIDispute", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["creditItemId", "disputeType", "bureau"], "properties": { "creditItemId": { "type": "string", "format": "uuid" }, "disputeType": { "type": "string" }, "bureau": { "type": "string" }, "additionalDetails": { "type": "string" } } } } } }, "responses": { "200": { "description": "Generated letter" } } }
+    },
+    "/ai-disputes/save": {
+      "post": { "tags": ["AI Disputes"], "summary": "Save generated letter as draft", "operationId": "saveAIDispute", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["creditItemId", "content", "disputeType", "bureau"], "properties": { "creditItemId": { "type": "string" }, "content": { "type": "string" }, "disputeType": { "type": "string" }, "bureau": { "type": "string" } } } } } }, "responses": { "201": { "description": "Draft saved" } } }
+    },
+    "/ai-disputes/drafts": {
+      "get": { "tags": ["AI Disputes"], "summary": "Get user's dispute drafts & sent", "operationId": "getDrafts", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Drafts and sent letters" } } }
+    },
+    "/ai-disputes/{id}": {
+      "get": { "tags": ["AI Disputes"], "summary": "Get specific dispute letter", "operationId": "getAIDispute", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Dispute letter" } } },
+      "delete": { "tags": ["AI Disputes"], "summary": "Delete a dispute draft", "operationId": "deleteAIDispute", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Draft deleted" } } }
+    },
+    "/ai-disputes/{id}/send": {
+      "patch": { "tags": ["AI Disputes"], "summary": "Mark dispute as sent", "operationId": "markAIDisputeSent", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Marked as sent" } } }
+    },
+    "/documents/upload": {
+      "post": {
+        "tags": ["Documents"], "summary": "Upload document", "operationId": "uploadDocument",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "document": { "type": "string", "format": "binary" }, "clientId": { "type": "string" }, "disputeId": { "type": "string" }, "documentCategory": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Document uploaded" } }
+      }
+    },
+    "/documents/client/{clientId}": {
+      "get": { "tags": ["Documents"], "summary": "Get client's documents", "operationId": "getClientDocuments", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Document list" } } }
+    },
+    "/documents/{id}/download": {
+      "get": { "tags": ["Documents"], "summary": "Download/view a document", "operationId": "downloadDocument", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "File data" } } }
+    },
+    "/documents/{id}": {
+      "delete": { "tags": ["Documents"], "summary": "Delete document + file", "operationId": "deleteDocument", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Document deleted" } } }
+    },
+    "/payments/client/{clientId}": {
+      "get": { "tags": ["Payments"], "summary": "Get payment history", "operationId": "getPaymentHistory", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }, { "name": "page", "in": "query", "schema": { "type": "integer" } }, { "name": "limit", "in": "query", "schema": { "type": "integer" } }], "responses": { "200": { "description": "Payment list" } } }
+    },
+    "/payments": {
+      "post": { "tags": ["Payments"], "summary": "Record manual payment", "operationId": "createPayment", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "amount", "paymentMethod", "description"], "properties": { "clientId": { "type": "string" }, "amount": { "type": "number" }, "paymentMethod": { "type": "string" }, "description": { "type": "string" } } } } } }, "responses": { "201": { "description": "Payment recorded" } } }
+    },
+    "/subscriptions/plans": {
+      "get": { "tags": ["Subscriptions"], "summary": "Get available plans", "operationId": "getPlans", "responses": { "200": { "description": "Available subscription plans" } } }
+    },
+    "/subscriptions/current": {
+      "get": { "tags": ["Subscriptions"], "summary": "Get current subscription", "operationId": "getCurrentSubscription", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Current subscription details" } } }
+    },
+    "/subscriptions/access-status": {
+      "get": { "tags": ["Subscriptions"], "summary": "Check access status", "operationId": "getAccessStatus", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Access status" } } }
+    },
+    "/subscriptions/checkout": {
+      "post": { "tags": ["Subscriptions"], "summary": "Create Stripe checkout session", "operationId": "createCheckout", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["planId"], "properties": { "planId": { "type": "string" }, "billingCycle": { "type": "string", "enum": ["monthly", "annual"] } } } } } }, "responses": { "200": { "description": "Checkout session URL" } } }
+    },
+    "/subscriptions/portal": {
+      "post": { "tags": ["Subscriptions"], "summary": "Create Stripe customer portal", "operationId": "createPortal", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Portal URL" } } }
+    },
+    "/subscriptions/cancel": {
+      "post": { "tags": ["Subscriptions"], "summary": "Cancel subscription", "operationId": "cancelSubscription", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["reason"], "properties": { "reason": { "type": "string" }, "immediately": { "type": "boolean" } } } } } }, "responses": { "200": { "description": "Subscription cancelled" } } }
+    },
+    "/subscriptions/payments": {
+      "get": { "tags": ["Subscriptions"], "summary": "Get payment history", "operationId": "getSubscriptionPayments", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Payment history" } } }
+    },
+    "/subscriptions/guarantee-claim": {
+      "post": { "tags": ["Subscriptions"], "summary": "Submit 90-day guarantee refund", "operationId": "submitGuaranteeClaim", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["reason"], "properties": { "reason": { "type": "string", "minLength": 20 } } } } } }, "responses": { "201": { "description": "Claim submitted" } } }
+    },
+    "/subscriptions/admin/stats": {
+      "get": { "tags": ["Subscriptions"], "summary": "Revenue statistics", "operationId": "getRevenueStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Revenue stats" } } }
+    },
+    "/subscriptions/admin/guarantee-claims": {
+      "get": { "tags": ["Subscriptions"], "summary": "Get guarantee claims", "operationId": "getGuaranteeClaims", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Claims list" } } }
+    },
+    "/subscriptions/admin/process-claim/{claimId}": {
+      "post": { "tags": ["Subscriptions"], "summary": "Process guarantee claim", "operationId": "processGuaranteeClaim", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "claimId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["action"], "properties": { "action": { "type": "string", "enum": ["approve", "partial", "deny"] }, "refundAmount": { "type": "number" }, "notes": { "type": "string" } } } } } }, "responses": { "200": { "description": "Claim processed" } } }
+    },
+    "/subscriptions/admin/transactions": {
+      "get": { "tags": ["Subscriptions"], "summary": "Get all transactions", "operationId": "getTransactions", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "limit", "in": "query", "schema": { "type": "integer" } }, { "name": "offset", "in": "query", "schema": { "type": "integer" } }], "responses": { "200": { "description": "Transaction list" } } }
+    },
+    "/invoices": {
+      "get": { "tags": ["Invoices"], "summary": "Get invoices", "operationId": "getInvoices", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "query", "schema": { "type": "string" } }, { "name": "status", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "Invoice list" } } },
+      "post": { "tags": ["Invoices"], "summary": "Generate invoice", "operationId": "createInvoice", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "amount", "description"], "properties": { "clientId": { "type": "string" }, "amount": { "type": "number" }, "description": { "type": "string" }, "billingPeriodStart": { "type": "string", "format": "date" }, "billingPeriodEnd": { "type": "string", "format": "date" } } } } } }, "responses": { "201": { "description": "Invoice created" } } }
+    },
+    "/invoices/unpaid": {
+      "get": { "tags": ["Invoices"], "summary": "Get all unpaid invoices", "operationId": "getUnpaidInvoices", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Unpaid invoices" } } }
+    },
+    "/invoices/stats": {
+      "get": { "tags": ["Invoices"], "summary": "Get billing statistics", "operationId": "getInvoiceStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Billing stats" } } }
+    },
+    "/invoices/{id}": {
+      "get": { "tags": ["Invoices"], "summary": "Get specific invoice", "operationId": "getInvoice", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Invoice details" } } }
+    },
+    "/invoices/{id}/send": {
+      "post": { "tags": ["Invoices"], "summary": "Send invoice to client", "operationId": "sendInvoice", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Invoice sent" } } }
+    },
+    "/invoices/{id}/pay": {
+      "post": { "tags": ["Invoices"], "summary": "Record payment for invoice", "operationId": "payInvoice", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["paymentMethod"], "properties": { "paymentMethod": { "type": "string" }, "stripePaymentId": { "type": "string" } } } } } }, "responses": { "200": { "description": "Payment recorded" } } }
+    },
+    "/invoices/update-overdue": {
+      "post": { "tags": ["Invoices"], "summary": "Update overdue statuses", "operationId": "updateOverdueInvoices", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Overdue statuses updated" } } }
+    },
+    "/invoices/report/{year}/{month}": {
+      "get": { "tags": ["Invoices"], "summary": "Monthly billing report", "operationId": "getMonthlyReport", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "year", "in": "path", "required": true, "schema": { "type": "integer" } }, { "name": "month", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Monthly report" } } }
+    },
+    "/notifications": {
+      "get": { "tags": ["Notifications"], "summary": "Get user's notifications", "operationId": "getNotifications", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "unreadOnly", "in": "query", "schema": { "type": "boolean" } }], "responses": { "200": { "description": "Notification list with unread count" } } }
+    },
+    "/notifications/{id}/read": {
+      "patch": { "tags": ["Notifications"], "summary": "Mark notification as read", "operationId": "markNotificationRead", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Marked as read" } } },
+      "put": { "tags": ["Notifications"], "summary": "Mark notification as read (alt)", "operationId": "markNotificationReadAlt", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Marked as read" } } }
+    },
+    "/notifications/{id}": {
+      "delete": { "tags": ["Notifications"], "summary": "Delete a notification", "operationId": "deleteNotification", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Notification deleted" } } }
+    },
+    "/notifications/read-all": {
+      "put": { "tags": ["Notifications"], "summary": "Mark all as read", "operationId": "markAllRead", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "All marked as read" } } }
+    },
+    "/notifications/send": {
+      "post": { "tags": ["Notifications"], "summary": "Send notification to a user", "operationId": "sendNotification", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["recipientId", "subject", "message"], "properties": { "recipientId": { "type": "string" }, "subject": { "type": "string" }, "message": { "type": "string" }, "channels": { "type": "array", "items": { "type": "string" } } } } } } }, "responses": { "200": { "description": "Notification sent" } } }
+    },
+    "/notifications/send-template": {
+      "post": { "tags": ["Notifications"], "summary": "Send template notification", "operationId": "sendTemplateNotification", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["recipientId", "templateName"], "properties": { "recipientId": { "type": "string" }, "templateName": { "type": "string" }, "variables": { "type": "object" }, "channels": { "type": "array", "items": { "type": "string" } } } } } } }, "responses": { "200": { "description": "Template notification sent" } } }
+    },
+    "/notifications/stats": {
+      "get": { "tags": ["Notifications"], "summary": "Notification statistics", "operationId": "getNotificationStats", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Notification stats" } } }
+    },
+    "/onboarding/data": { "get": { "tags": ["Onboarding"], "summary": "Get existing onboarding data", "operationId": "getOnboardingData", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Onboarding data" } } } },
+    "/onboarding/save-progress": { "post": { "tags": ["Onboarding"], "summary": "Save form step progress", "operationId": "saveProgress", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["step", "data"], "properties": { "step": { "type": "integer", "minimum": 1, "maximum": 7 }, "data": { "type": "object" } } } } } }, "responses": { "200": { "description": "Progress saved" } } } },
+    "/onboarding/status": { "get": { "tags": ["Onboarding"], "summary": "Get onboarding status", "operationId": "getOnboardingStatus", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Onboarding status" } } } },
+    "/onboarding/complete": { "post": { "tags": ["Onboarding"], "summary": "Complete onboarding", "operationId": "completeOnboarding", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Onboarding completed" } } } },
+    "/onboarding/legal-documents": { "get": { "tags": ["Onboarding"], "summary": "Get active legal documents", "operationId": "getLegalDocuments", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Legal documents" } } } },
+    "/onboarding/legal-documents/{type}": { "get": { "tags": ["Onboarding"], "summary": "Get specific legal document", "operationId": "getLegalDocument", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "type", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Legal document content" } } } },
+    "/onboarding/pending": { "get": { "tags": ["Onboarding"], "summary": "Get all pending onboardings", "operationId": "getPendingOnboardings", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Pending onboardings" } } } },
+    "/onboarding/client/{id}": { "get": { "tags": ["Onboarding"], "summary": "Get client onboarding details", "operationId": "getClientOnboarding", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Client onboarding details" } } } },
+    "/onboarding/verify/{id}": { "post": { "tags": ["Onboarding"], "summary": "Verify client profile", "operationId": "verifyOnboarding", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["verified"], "properties": { "verified": { "type": "boolean" }, "notes": { "type": "string" } } } } } }, "responses": { "200": { "description": "Onboarding verified" } } } },
+    "/contracts/signed": { "get": { "tags": ["Contracts"], "summary": "Get user's signed contracts", "operationId": "getSignedContracts", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Signed contracts" } } } },
+    "/contracts/templates": { "get": { "tags": ["Contracts"], "summary": "Get all contract templates", "operationId": "getContractTemplates", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Templates" } } }, "post": { "tags": ["Contracts"], "summary": "Create contract template", "operationId": "createTemplate", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["contractType", "templateContent", "effectiveDate"], "properties": { "contractType": { "type": "string" }, "templateContent": { "type": "string" }, "effectiveDate": { "type": "string", "format": "date" } } } } } }, "responses": { "201": { "description": "Template created" } } } },
+    "/contracts/verify/{contractType}": { "get": { "tags": ["Contracts"], "summary": "Check if user signed a contract", "operationId": "verifyContract", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "contractType", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Verification result" } } } },
+    "/contracts/{contractType}": { "get": { "tags": ["Contracts"], "summary": "Get contract template for signing", "operationId": "getContractForSigning", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "contractType", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Contract template" } } } },
+    "/contracts/{contractType}/sign": { "post": { "tags": ["Contracts"], "summary": "Sign a contract", "operationId": "signContract", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "contractType", "in": "path", "required": true, "schema": { "type": "string" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["signatureData"], "properties": { "signatureData": { "type": "string" }, "signatureMethod": { "type": "string", "enum": ["typed", "drawn"] } } } } } }, "responses": { "200": { "description": "Contract signed" } } } },
+    "/contracts/compliance/{contractType}": { "get": { "tags": ["Contracts"], "summary": "Get compliance info", "operationId": "getComplianceInfo", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "contractType", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Compliance info" } } } },
+    "/contracts/cancel": { "post": { "tags": ["Contracts"], "summary": "Cancel contract (CROA 3-day right)", "operationId": "cancelContract", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "reason": { "type": "string" } } } } } }, "responses": { "200": { "description": "Contract cancelled" } } } },
+    "/compliance/sign-contract": { "post": { "tags": ["Compliance"], "summary": "Sign contract with audit trail", "operationId": "complianceSignContract", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Contract signed with compliance" } } } },
+    "/compliance/acknowledge-rights": { "post": { "tags": ["Compliance"], "summary": "Record CROA rights acknowledgment", "operationId": "acknowledgeRights", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Rights acknowledged" } } } },
+    "/compliance/acknowledge-fees": { "post": { "tags": ["Compliance"], "summary": "Record fee disclosure acknowledgment", "operationId": "acknowledgeFees", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Fees acknowledged" } } } },
+    "/compliance/status": { "get": { "tags": ["Compliance"], "summary": "Get compliance status", "operationId": "getComplianceStatus", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Compliance status" } } } },
+    "/compliance/events": { "get": { "tags": ["Compliance"], "summary": "Get compliance events", "operationId": "getComplianceEvents", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Compliance events" } } } },
+    "/compliance/cancel-contract": { "post": { "tags": ["Compliance"], "summary": "Cancel contract (CROA 3-day rule)", "operationId": "complianceCancelContract", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["contractId", "reason"], "properties": { "contractId": { "type": "string" }, "reason": { "type": "string" } } } } } }, "responses": { "200": { "description": "Contract cancelled" } } } },
+    "/compliance/contract/{contractId}/download": { "get": { "tags": ["Compliance"], "summary": "Download signed contract data", "operationId": "downloadContract", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "contractId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Contract data" } } } },
+    "/credit-reports/upload-and-analyze": { "post": { "tags": ["Credit Reports"], "summary": "Upload & AI-analyze credit reports", "operationId": "uploadAndAnalyze", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "reports": { "type": "array", "items": { "type": "string", "format": "binary" } }, "bureaus": { "type": "string" }, "clientId": { "type": "string" } } } } } }, "responses": { "200": { "description": "Analysis results" } } } },
+    "/credit-reports/analyze/{documentId}": { "post": { "tags": ["Credit Reports"], "summary": "Analyze existing document", "operationId": "analyzeDocument", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "documentId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Analysis results" } } } },
+    "/credit-reports/items/{clientId}": { "get": { "tags": ["Credit Reports"], "summary": "Get all credit items", "operationId": "getReportItems", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Credit items" } } } },
+    "/credit-reports/scores/{clientId}": { "get": { "tags": ["Credit Reports"], "summary": "Get credit score history", "operationId": "getReportScores", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Score history" } } } },
+    "/credit-reports/summary/{clientId}": { "get": { "tags": ["Credit Reports"], "summary": "Get complete analysis summary", "operationId": "getAnalysisSummary", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Complete summary" } } } },
+    "/credit-reports/generate-disputes/{clientId}": { "post": { "tags": ["Credit Reports"], "summary": "Bulk generate AI dispute letters", "operationId": "bulkGenerateDisputes", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Disputes generated" } } } },
+    "/credit-reports/add-score": { "post": { "tags": ["Credit Reports"], "summary": "Manually add credit score", "operationId": "manuallyAddScore", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "bureau", "score"], "properties": { "clientId": { "type": "string" }, "bureau": { "type": "string" }, "score": { "type": "number" }, "scoreDate": { "type": "string", "format": "date" }, "notes": { "type": "string" } } } } } }, "responses": { "200": { "description": "Score added" } } } },
+    "/credit-reports/items/{itemId}": { "put": { "tags": ["Credit Reports"], "summary": "Update a credit item", "operationId": "updateReportItem", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "itemId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Item updated" } } }, "delete": { "tags": ["Credit Reports"], "summary": "Delete credit item + disputes", "operationId": "deleteReportItem", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "itemId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Item deleted" } } } },
+    "/admin/settings": { "get": { "tags": ["Admin Settings"], "summary": "Get all settings (masked)", "operationId": "getSettings", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Settings list" } } }, "post": { "tags": ["Admin Settings"], "summary": "Create/update a setting", "operationId": "saveSetting", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["settingKey", "settingValue", "settingType"], "properties": { "settingKey": { "type": "string" }, "settingValue": { "type": "string" }, "settingType": { "type": "string" }, "description": { "type": "string" } } } } } }, "responses": { "200": { "description": "Setting saved" } } } },
+    "/admin/settings/{key}": { "get": { "tags": ["Admin Settings"], "summary": "Get specific setting", "operationId": "getSetting", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "key", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Setting value" } } }, "delete": { "tags": ["Admin Settings"], "summary": "Delete a setting", "operationId": "deleteSetting", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "key", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Setting deleted" } } } },
+    "/admin/settings/test": { "post": { "tags": ["Admin Settings"], "summary": "Test an API key", "operationId": "testApiKey", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["apiType", "apiKey"], "properties": { "apiType": { "type": "string", "enum": ["openai", "stripe", "plaid", "smtp"] }, "apiKey": { "type": "string" } } } } } }, "responses": { "200": { "description": "Test result" } } } },
+    "/admin/integrations/status": { "get": { "tags": ["Admin Settings"], "summary": "Get integration statuses", "operationId": "getIntegrationStatuses", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Integration statuses" } } } },
+    "/admin/test-email": { "post": { "tags": ["Admin Settings"], "summary": "Send test email via SMTP", "operationId": "sendTestEmail", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Test email sent" } } } },
+    "/notes/client/{clientId}": { "get": { "tags": ["Process Notes"], "summary": "Get all notes for client", "operationId": "getClientNotes", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }, { "name": "stage", "in": "query", "schema": { "type": "string" } }, { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }], "responses": { "200": { "description": "Notes list" } } } },
+    "/notes/client/{clientId}/important": { "get": { "tags": ["Process Notes"], "summary": "Get important notes", "operationId": "getImportantNotes", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Important notes" } } } },
+    "/notes/client/{clientId}/timeline": { "get": { "tags": ["Process Notes"], "summary": "Get timeline view", "operationId": "getNotesTimeline", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Timeline" } } } },
+    "/notes/client/{clientId}/summary": { "get": { "tags": ["Process Notes"], "summary": "Get process stage summary", "operationId": "getNotesSummary", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Stage summary" } } } },
+    "/notes": { "post": { "tags": ["Process Notes"], "summary": "Create note", "operationId": "createNote", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "processStage", "noteText"], "properties": { "clientId": { "type": "string" }, "processStage": { "type": "string" }, "noteText": { "type": "string" }, "noteCategory": { "type": "string" }, "isImportant": { "type": "boolean" } } } } } }, "responses": { "201": { "description": "Note created" } } } },
+    "/notes/{id}": { "patch": { "tags": ["Process Notes"], "summary": "Update note", "operationId": "updateNote", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Note updated" } } }, "delete": { "tags": ["Process Notes"], "summary": "Delete note", "operationId": "deleteNote", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Note deleted" } } } },
+    "/notes/follow-up": { "post": { "tags": ["Process Notes"], "summary": "Add follow-up action note", "operationId": "addFollowUp", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["clientId", "actionDescription"], "properties": { "clientId": { "type": "string" }, "actionDescription": { "type": "string" }, "dueDate": { "type": "string", "format": "date" } } } } } }, "responses": { "201": { "description": "Follow-up added" } } } },
+    "/notes/client/{clientId}/export": { "get": { "tags": ["Process Notes"], "summary": "Export notes", "operationId": "exportNotes", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Exported notes" } } } },
+    "/notes/client/{clientId}/activity-report": { "get": { "tags": ["Process Notes"], "summary": "Activity report for date range", "operationId": "getActivityReport", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "Activity report" } } } },
+    "/plaid/create-link-token": { "post": { "tags": ["Plaid"], "summary": "Create Plaid Link token", "operationId": "createLinkToken", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Link token" } } } },
+    "/plaid/exchange-token": { "post": { "tags": ["Plaid"], "summary": "Exchange public token for access", "operationId": "exchangeToken", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["publicToken"], "properties": { "publicToken": { "type": "string" }, "metadata": { "type": "object" } } } } } }, "responses": { "200": { "description": "Token exchanged" } } } },
+    "/plaid/accounts": { "get": { "tags": ["Plaid"], "summary": "Get linked bank accounts", "operationId": "getPlaidAccounts", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Account list" } } } },
+    "/plaid/verification-status": { "get": { "tags": ["Plaid"], "summary": "Get identity verification status", "operationId": "getVerificationStatus", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Verification status" } } } },
+    "/plaid/refresh-identity": { "post": { "tags": ["Plaid"], "summary": "Refresh identity verification", "operationId": "refreshIdentity", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Identity refreshed" } } } },
+    "/plaid/get-transactions": { "post": { "tags": ["Plaid"], "summary": "Get recent transactions", "operationId": "getTransactionsPlaid", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "days": { "type": "integer", "default": 30 } } } } } }, "responses": { "200": { "description": "Transactions" } } } },
+    "/plaid/accounts/{itemId}": { "delete": { "tags": ["Plaid"], "summary": "Remove linked bank account", "operationId": "removePlaidAccount", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "itemId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Account removed" } } } },
+    "/plaid/webhook": { "post": { "tags": ["Webhooks"], "summary": "Handle Plaid webhook events", "operationId": "plaidWebhook", "responses": { "200": { "description": "Webhook processed" } } } },
+    "/webhooks/stripe": { "post": { "tags": ["Webhooks"], "summary": "Handle Stripe webhook events", "operationId": "stripeWebhook", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } }, "responses": { "200": { "description": "Webhook received" } } } },
+    "/monitoring/liveness": { "get": { "tags": ["Monitoring"], "summary": "K8s liveness probe", "operationId": "livenessProbe", "responses": { "200": { "description": "Alive" } } } },
+    "/monitoring/readiness": { "get": { "tags": ["Monitoring"], "summary": "K8s readiness probe", "operationId": "readinessProbe", "responses": { "200": { "description": "Ready (DB connected)" } } } },
+    "/monitoring/health": { "get": { "tags": ["Monitoring"], "summary": "Comprehensive health check", "operationId": "healthCheck", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Detailed health status" } } } },
+    "/monitoring/metrics": { "get": { "tags": ["Monitoring"], "summary": "APM performance metrics", "operationId": "getAPMMetrics", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Performance metrics" } } } },
+    "/monitoring/metrics/reset": { "post": { "tags": ["Monitoring"], "summary": "Reset APM metrics", "operationId": "resetAPMMetrics", "security": [{ "bearerAuth": [] }], "responses": { "200": { "description": "Metrics reset" } } } },
+    "/monitoring/audit-logs": { "get": { "tags": ["Monitoring"], "summary": "Query audit logs", "operationId": "getAuditLogs", "security": [{ "bearerAuth": [] }], "parameters": [{ "name": "userId", "in": "query", "schema": { "type": "string" } }, { "name": "action", "in": "query", "schema": { "type": "string" } }, { "name": "entityType", "in": "query", "schema": { "type": "string" } }, { "name": "startDate", "in": "query", "schema": { "type": "string", "format": "date" } }, { "name": "endDate", "in": "query", "schema": { "type": "string", "format": "date" } }, { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }, { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }], "responses": { "200": { "description": "Audit log entries" } } } }
+  }
+}
