@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
   const lastUpdated = "5 de Febrero, 2026";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -111,11 +111,11 @@ export default function PrivacyPolicy() {
               </div>
               <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/20">
                 <h4 className="font-semibold text-purple-400 mb-2">🏦 PCI Compliance</h4>
-                <p className="text-purple-700 text-sm">Procesamiento de pagos compatible con PCI DSS a través de Stripe</p>
+                <p className="text-purple-300 text-sm">Procesamiento de pagos compatible con PCI DSS a través de Stripe</p>
               </div>
               <div className="bg-amber-500/10 rounded-xl p-4 border border-amber-500/20">
                 <h4 className="font-semibold text-amber-400 mb-2">📊 Auditorías</h4>
-                <p className="text-amber-700 text-sm">Monitoreo continuo y auditorías regulares de seguridad</p>
+                <p className="text-amber-300 text-sm">Monitoreo continuo y auditorías regulares de seguridad</p>
               </div>
             </div>
           </section>

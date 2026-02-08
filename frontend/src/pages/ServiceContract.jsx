@@ -80,7 +80,7 @@ export default function ServiceContract() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
+    <div className="min-h-screen bg-slate-950 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -213,14 +213,14 @@ export default function ServiceContract() {
                 {/* Section 5: Consumer Rights */}
                 <section className="mb-8">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
-                    <span className="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm font-bold">5</span>
+                    <span className="w-8 h-8 bg-purple-100 text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">5</span>
                     DERECHOS DEL CONSUMIDOR
                   </h3>
                   <div className="bg-purple-500/10 rounded-xl p-6 border border-purple-500/30">
                     <p className="text-purple-400 mb-4">
                       Bajo la Ley de Organizaciones de Reparación de Crédito (CROA), usted tiene derecho a:
                     </p>
-                    <ul className="list-disc list-inside text-purple-700 space-y-2">
+                    <ul className="list-disc list-inside text-purple-300 space-y-2">
                       <li><strong>Cancelar este contrato dentro de 3 días hábiles</strong> sin cargo alguno</li>
                       <li>Disputar información directamente con las agencias de crédito sin costo</li>
                       <li>Obtener un reporte de crédito gratuito anualmente de cada agencia</li>
@@ -232,7 +232,7 @@ export default function ServiceContract() {
                 {/* Section 6: Cancellation */}
                 <section className="mb-8">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
-                    <span className="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-sm font-bold">6</span>
+                    <span className="w-8 h-8 bg-amber-100 text-amber-500 rounded-lg flex items-center justify-center text-sm font-bold">6</span>
                     DERECHO A CANCELAR
                   </h3>
                   <div className="bg-amber-500/10 rounded-xl p-6 border-2 border-amber-300">

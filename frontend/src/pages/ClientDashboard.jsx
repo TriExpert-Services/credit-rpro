@@ -514,7 +514,7 @@ export default function ClientDashboard() {
                 icon: FileText,
                 color: 'bg-purple-500',
                 bgColor: 'bg-purple-100',
-                textColor: 'text-purple-600'
+                textColor: 'text-purple-400'
               },
               { 
                 label: 'Letters Sent', 

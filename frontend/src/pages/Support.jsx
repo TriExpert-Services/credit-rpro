@@ -93,7 +93,7 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -132,7 +132,7 @@ export default function Support() {
           </div>
 
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 text-purple-600 rounded-xl mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl mb-4">
               <Phone className="w-6 h-6" />
             </div>
             <h3 className="font-semibold text-white mb-2">Teléfono</h3>

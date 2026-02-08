@@ -71,7 +71,7 @@ export default function FeeDisclosure() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
+    <div className="min-h-screen bg-slate-950 py-12 px-4">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -187,7 +187,7 @@ export default function FeeDisclosure() {
             {/* Legal Acknowledgments */}
             <section className="mb-8">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-600" />
+                <Shield className="w-5 h-5 text-amber-500" />
                 Reconocimientos Legales Requeridos
               </h3>
               <div className="space-y-4">

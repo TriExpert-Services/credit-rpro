@@ -115,7 +115,7 @@ export default function AIDisputes() {
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-700/50 p-5 hover:shadow-md transition-all">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 bg-purple-500/20 rounded-xl">
-              <Sparkles size={20} className="text-purple-600" />
+              <Sparkles size={20} className="text-purple-400" />
             </div>
             <h4 className="font-semibold text-white">Personalized Letters</h4>
           </div>

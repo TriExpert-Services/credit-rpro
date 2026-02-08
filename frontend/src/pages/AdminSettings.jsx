@@ -419,11 +419,11 @@ export default function AdminSettings() {
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-amber-500/20 rounded-lg">
-                  <AlertCircle className="text-amber-600" size={20} />
+                  <AlertCircle className="text-amber-500" size={20} />
                 </div>
                 <div>
                   <h4 className="font-semibold text-amber-400">Importante</h4>
-                  <p className="text-sm text-amber-700 mt-1">
+                  <p className="text-sm text-amber-300 mt-1">
                     Las API keys se encriptan antes de guardarse. Los cambios en algunas configuraciones 
                     pueden requerir reiniciar el servidor.
                   </p>

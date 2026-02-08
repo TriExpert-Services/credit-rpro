@@ -218,7 +218,7 @@ export default function BankAccounts() {
                 <div className="flex items-center gap-4">
                   <div className={`p-3 rounded-lg ${
                     account.type === 'depository' ? 'bg-sky-500/20 text-sky-400' :
-                    account.type === 'credit' ? 'bg-purple-500/20 text-purple-600' :
+                    account.type === 'credit' ? 'bg-purple-500/20 text-purple-400' :
                     'bg-slate-700/50 text-slate-300'
                   }`}>
                     {getAccountIcon(account.type)}
@@ -316,11 +316,11 @@ export default function BankAccounts() {
               </div>
               
               <div className="p-4 bg-purple-500/10 rounded-lg">
-                <div className="flex items-center gap-2 text-purple-600 mb-2">
+                <div className="flex items-center gap-2 text-purple-400 mb-2">
                   <Calendar className="h-5 w-5" />
                   <span className="text-sm font-medium">Total Transacciones</span>
                 </div>
-                <p className="text-2xl font-bold text-purple-700">
+                <p className="text-2xl font-bold text-purple-300">
                   {incomeAnalysis.totalTransactions}
                 </p>
                 <p className="text-xs text-purple-500">Últimos 90 días</p>

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 export default function ConsumerRights() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Official Header */}
         <div className="text-center mb-8">
@@ -182,7 +182,7 @@ export default function ConsumerRights() {
           {/* Section 4: FTC Contact */}
           <section className="border-b border-slate-700/50 pb-8">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-              <AlertTriangle className="w-7 h-7 text-amber-600" />
+              <AlertTriangle className="w-7 h-7 text-amber-500" />
               COMISIÓN FEDERAL DE COMERCIO (FTC)
             </h2>
 

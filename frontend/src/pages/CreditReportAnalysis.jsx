@@ -167,7 +167,7 @@ export default function CreditReportAnalysis() {
 
   const getStatusConfig = (status) => {
     const configs = {
-      identified: { bg: 'bg-amber-500/20', text: 'text-amber-700', icon: AlertCircle, label: 'Identificado' },
+      identified: { bg: 'bg-amber-500/20', text: 'text-amber-300', icon: AlertCircle, label: 'Identificado' },
       in_dispute: { bg: 'bg-sky-500/20', text: 'text-sky-400', icon: FileText, label: 'En Disputa' },
       resolved: { bg: 'bg-emerald-100', text: 'text-emerald-700', icon: CheckCircle, label: 'Resuelto' },
       deleted: { bg: 'bg-slate-700/50', text: 'text-slate-300', icon: X, label: 'Eliminado' }
@@ -178,7 +178,7 @@ export default function CreditReportAnalysis() {
   const getScoreCategory = (score) => {
     if (score >= 750) return { label: 'Excelente', color: 'text-emerald-600', bg: 'bg-emerald-500' };
     if (score >= 700) return { label: 'Bueno', color: 'text-sky-400', bg: 'bg-sky-500' };
-    if (score >= 650) return { label: 'Regular', color: 'text-amber-600', bg: 'bg-amber-500' };
+    if (score >= 650) return { label: 'Regular', color: 'text-amber-500', bg: 'bg-amber-500' };
     if (score >= 600) return { label: 'Bajo', color: 'text-orange-600', bg: 'bg-orange-500' };
     return { label: 'Muy Bajo', color: 'text-rose-400', bg: 'bg-rose-500' };
   };
@@ -230,10 +230,10 @@ export default function CreditReportAnalysis() {
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 bg-amber-500/20 rounded-xl">
-                <AlertCircle size={20} className="text-amber-600" />
+                <AlertCircle size={20} className="text-amber-500" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-amber-600">{stats.identified}</p>
+            <p className="text-2xl font-bold text-amber-500">{stats.identified}</p>
             <p className="text-sm text-slate-400">Identificados</p>
           </div>
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-slate-700/30">
@@ -494,7 +494,7 @@ export default function CreditReportAnalysis() {
                 <p className="text-sm text-slate-400">
                   {anomalies.criticalCount > 0 && <span className="text-rose-400 font-medium">{anomalies.criticalCount} críticas</span>}
                   {anomalies.criticalCount > 0 && anomalies.warningCount > 0 && ' · '}
-                  {anomalies.warningCount > 0 && <span className="text-amber-600 font-medium">{anomalies.warningCount} advertencias</span>}
+                  {anomalies.warningCount > 0 && <span className="text-amber-500 font-medium">{anomalies.warningCount} advertencias</span>}
                   {(anomalies.criticalCount > 0 || anomalies.warningCount > 0) && anomalies.infoCount > 0 && ' · '}
                   {anomalies.infoCount > 0 && <span className="text-sky-400">{anomalies.infoCount} informativas</span>}
                 </p>
@@ -516,8 +516,8 @@ export default function CreditReportAnalysis() {
                     alert.severity === 'critical' ? 'bg-rose-500/20' :
                     alert.severity === 'warning' ? 'bg-amber-500/20' : 'bg-sky-500/20'
                   }`}>
-                    {alert.type === 'sudden_drop' && <TrendingDown size={16} className={alert.severity === 'critical' ? 'text-rose-400' : 'text-amber-600'} />}
-                    {alert.type === 'bureau_inconsistency' && <Activity size={16} className="text-amber-600" />}
+                    {alert.type === 'sudden_drop' && <TrendingDown size={16} className={alert.severity === 'critical' ? 'text-rose-400' : 'text-amber-500'} />}
+                    {alert.type === 'bureau_inconsistency' && <Activity size={16} className="text-amber-500" />}
                     {alert.type === 'stagnant_score' && <Minus size={16} className="text-sky-400" />}
                     {alert.type === 'approaching_expiration' && <AlertCircle size={16} className={alert.severity === 'critical' ? 'text-rose-400' : 'text-sky-400'} />}
                   </div>
@@ -635,7 +635,7 @@ export default function CreditReportAnalysis() {
               {(projections.topPriorityItems || projections.itemImpacts?.slice(0, 5) || []).map((item, idx) => {
                 const priorityColors = {
                   critical: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
-                  high: 'bg-amber-500/20 text-amber-700 border-amber-500/30',
+                  high: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
                   medium: 'bg-sky-500/20 text-sky-400 border-sky-500/30',
                 };
                 return (
@@ -871,11 +871,11 @@ export default function CreditReportAnalysis() {
               {analysisResult.data?.errors?.length > 0 && (
                 <div className="bg-amber-500/10 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle size={18} className="text-amber-600" />
+                    <AlertCircle size={18} className="text-amber-500" />
                     <p className="font-semibold text-amber-400">Advertencias</p>
                   </div>
                   {analysisResult.data.errors.map((err, idx) => (
-                    <p key={idx} className="text-sm text-amber-700">{err.bureau}: {err.error}</p>
+                    <p key={idx} className="text-sm text-amber-300">{err.bureau}: {err.error}</p>
                   ))}
                 </div>
               )}

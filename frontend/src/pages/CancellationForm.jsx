@@ -44,7 +44,7 @@ export default function CancellationForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
+      <div className="min-h-screen bg-slate-950 py-12 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
@@ -73,7 +73,7 @@ export default function CancellationForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -93,7 +93,7 @@ export default function CancellationForm() {
           {/* Legal Notice */}
           <div className="bg-amber-500/10 rounded-xl p-6 border border-amber-500/30 mb-8">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-amber-400 mb-2">AVISO IMPORTANTE</h3>
                 <p className="text-amber-400 text-sm">

@@ -263,7 +263,7 @@ const ContractStep = ({ onNext, onBack, user, onSign }) => {
         <p>La Compañía NO puede garantizar ningún resultado específico. La eliminación de elementos negativos depende de múltiples factores fuera de nuestro control.</p>
         
         <h5 className="font-semibold mt-4 mb-2">3. Derecho de Cancelación</h5>
-        <p className="font-bold text-amber-700">USTED TIENE 3 DÍAS HÁBILES PARA CANCELAR SIN CARGO después de firmar este contrato.</p>
+        <p className="font-bold text-amber-300">USTED TIENE 3 DÍAS HÁBILES PARA CANCELAR SIN CARGO después de firmar este contrato.</p>
         
         <h5 className="font-semibold mt-4 mb-2">4. Tarifas</h5>
         <p>Las tarifas han sido divulgadas por separado y están sujetas al período de 3 días antes de cobro.</p>
@@ -478,14 +478,14 @@ export default function LegalOnboarding() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
+    <div className="min-h-screen bg-slate-950 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

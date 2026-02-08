@@ -8,7 +8,7 @@ import { Home, ArrowLeft, Search, HelpCircle } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <div className="text-center max-w-lg">
         {/* 404 Illustration */}
         <div className="relative mb-8">
