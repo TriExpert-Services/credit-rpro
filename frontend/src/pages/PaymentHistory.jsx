@@ -40,7 +40,8 @@ export default function PaymentHistory() {
   const fetchPayments = async () => {
     try {
       const response = await api.get('/subscriptions/payments');
-      setPayments(response.data);
+      const data = response.data;
+      setPayments(Array.isArray(data) ? data : data?.transactions || []);
     } catch (err) {
       setError('Error al cargar el historial de pagos');
     } finally {

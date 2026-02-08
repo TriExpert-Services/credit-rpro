@@ -25,8 +25,9 @@ export default function DisputeLettersList() {
   const fetchDisputes = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/ai-disputes/drafts');
-      setDisputes(response.data);
+      const response = await api.get('/ai-disputes/drafts');
+      const data = response.data;
+      setDisputes(Array.isArray(data) ? data : data?.drafts || []);
     } catch (err) {
       setError('Failed to load disputes');
       console.error(err);
@@ -39,7 +40,7 @@ export default function DisputeLettersList() {
     setSendingId(disputeId);
     setError('');
     try {
-      await api.patch(`/api/ai-disputes/${disputeId}/send`);
+      await api.patch(`/ai-disputes/${disputeId}/send`);
       setSuccess('Dispute letter sent successfully!');
       fetchDisputes();
     } catch (err) {
@@ -55,7 +56,7 @@ export default function DisputeLettersList() {
     setDeletingId(disputeId);
     setError('');
     try {
-      await api.delete(`/api/ai-disputes/${disputeId}`);
+      await api.delete(`/ai-disputes/${disputeId}`);
       setSuccess('Draft deleted successfully');
       fetchDisputes();
     } catch (err) {

@@ -75,7 +75,8 @@ export default function AdminPayments() {
       });
       
       const response = await api.get(`/subscriptions/admin/transactions?${params}`);
-      setTransactions(response.data.transactions || []);
+      const data = response.data;
+      setTransactions(Array.isArray(data) ? data : data?.transactions || []);
     } catch (err) {
       setError('Error al cargar transacciones');
     } finally {
@@ -160,7 +161,7 @@ export default function AdminPayments() {
               <div>
                 <p className="text-sm text-gray-600">Ingresos del Mes</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${parseFloat(stats.monthlyRevenue || 0).toLocaleString()}
+                  ${parseFloat(stats.monthlyRevenue?.net || 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -172,9 +173,9 @@ export default function AdminPayments() {
                 <TrendingUp className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Ingresos Totales</p>
+                <p className="text-sm text-gray-600">Ingresos Brutos</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${parseFloat(stats.totalRevenue || 0).toLocaleString()}
+                  ${parseFloat(stats.monthlyRevenue?.gross || 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -187,7 +188,7 @@ export default function AdminPayments() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Suscripciones Activas</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeSubscriptions || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.subscriptions?.active || 0}</p>
               </div>
             </div>
           </div>
@@ -240,38 +241,44 @@ export default function AdminPayments() {
               <h3 className="text-lg font-semibold text-gray-900">Distribución por Plan</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {stats.planDistribution?.map(plan => (
-                  <div key={plan.plan_name} className="bg-gray-50 rounded-xl p-4">
-                    <h4 className="font-medium text-gray-900">{plan.plan_name}</h4>
-                    <p className="text-2xl font-bold text-primary-600">{plan.count}</p>
+                  <div key={plan.name} className="bg-gray-50 rounded-xl p-4">
+                    <h4 className="font-medium text-gray-900">{plan.name}</h4>
+                    <p className="text-2xl font-bold text-primary-600">{plan.subscribers}</p>
                     <p className="text-sm text-gray-500">suscriptores</p>
                   </div>
                 ))}
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-900 mt-8">Ingresos Recientes</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Período</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ingresos</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Transacciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {stats.recentRevenue?.map((period, idx) => (
-                      <tr key={idx}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{period.period}</td>
-                        <td className="px-4 py-3 text-sm text-right font-medium text-gray-900">
-                          ${parseFloat(period.revenue).toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-500">
-                          {period.transaction_count}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <h3 className="text-lg font-semibold text-gray-900 mt-8">Resumen del Mes</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+                  <p className="text-sm text-green-700">Ingresos Brutos</p>
+                  <p className="text-xl font-bold text-green-900">${parseFloat(stats.monthlyRevenue?.gross || 0).toLocaleString()}</p>
+                </div>
+                <div className="bg-red-50 rounded-xl p-4 border border-red-100">
+                  <p className="text-sm text-red-700">Reembolsos</p>
+                  <p className="text-xl font-bold text-red-900">${parseFloat(stats.monthlyRevenue?.refunds || 0).toLocaleString()}</p>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                  <p className="text-sm text-blue-700">Pagos del Mes</p>
+                  <p className="text-xl font-bold text-blue-900">{stats.monthlyRevenue?.paymentCount || 0}</p>
+                </div>
+              </div>
+
+              <h3 className="text-lg font-semibold text-gray-900 mt-6">Reclamos de Garantía</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-50 rounded-xl p-4 border">
+                  <p className="text-sm text-gray-600">Total Reclamos</p>
+                  <p className="text-xl font-bold text-gray-900">{stats.guaranteeClaims?.total || 0}</p>
+                </div>
+                <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
+                  <p className="text-sm text-yellow-700">Pendientes</p>
+                  <p className="text-xl font-bold text-yellow-900">{stats.guaranteeClaims?.pending || 0}</p>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                  <p className="text-sm text-blue-700">Total Reembolsado</p>
+                  <p className="text-xl font-bold text-blue-900">${parseFloat(stats.guaranteeClaims?.totalRefunded || 0).toLocaleString()}</p>
+                </div>
               </div>
             </div>
           )}
