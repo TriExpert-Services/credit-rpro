@@ -29,6 +29,7 @@ const {
   sendError,
   asyncHandler,
 } = require('../utils/responseHelpers');
+const { validate, generateAIDisputeSchema, saveAIDisputeSchema, idParam } = require('../middleware/zodValidation');
 
 /**
  * @route   GET /api/ai-disputes/strategy/:creditItemId
@@ -136,14 +137,10 @@ router.get(
 router.post(
   '/generate',
   authenticateToken,
+  validate({ body: generateAIDisputeSchema }),
   asyncHandler(async (req, res) => {
     const { creditItemId, disputeType, bureau, additionalDetails } = req.body;
     const userId = req.user.id;
-
-    // Validate required fields
-    if (!creditItemId || !disputeType || !bureau) {
-      return sendError(res, 'Missing required fields: creditItemId, disputeType, bureau', 400);
-    }
 
     try {
       // Generate the letter using OpenAI
@@ -166,7 +163,6 @@ router.post(
         'Dispute letter generated successfully with OpenAI'
       );
     } catch (error) {
-      console.error('Error generating dispute:', error);
       sendError(res, error.message || 'Failed to generate dispute letter', 500);
     }
   })

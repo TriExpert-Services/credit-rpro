@@ -225,6 +225,12 @@ router.post('/save-progress', auth, async (req, res) => {
     const { step, data } = req.body;
     const userId = req.user.id;
 
+    // Validate step is a safe integer 1-7 to prevent SQL injection
+    const stepNum = parseInt(step, 10);
+    if (isNaN(stepNum) || stepNum < 1 || stepNum > 7) {
+      return sendError(res, 'Step debe ser un número entre 1 y 7');
+    }
+
     await client.query('BEGIN');
 
     // Update or create onboarding progress
@@ -237,12 +243,12 @@ router.post('/save-progress', auth, async (req, res) => {
          form_data = $3,
          last_activity_at = CURRENT_TIMESTAMP,
          updated_at = CURRENT_TIMESTAMP`,
-      [userId, step, JSON.stringify(data)]
+      [userId, stepNum, JSON.stringify(data)]
     );
 
-    // Update step completion
-    const stepColumn = `step_${step}_completed_at`;
-    const stepBoolColumn = getStepBoolColumn(step);
+    // Update step completion — column names are safe (derived from validated integer)
+    const stepColumn = `step_${stepNum}_completed_at`;
+    const stepBoolColumn = getStepBoolColumn(stepNum);
     
     if (stepBoolColumn) {
       await client.query(

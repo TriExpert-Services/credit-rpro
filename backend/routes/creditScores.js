@@ -7,12 +7,13 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 const creditScoreService = require('../utils/creditScoreService');
+const { validate, addCreditScoreSchema, idParam, clientIdParam } = require('../middleware/zodValidation');
 
 /**
  * POST /api/credit-scores
  * Record a new credit score
  */
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validate({ body: addCreditScoreSchema }), async (req, res) => {
   try {
     // Check admin or staff role
     if (!['admin', 'staff'].includes(req.user.role)) {
@@ -20,12 +21,6 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     const { clientId, bureau, score, source, notes } = req.body;
-    
-    if (!clientId || !bureau || !score) {
-      return res.status(400).json({
-        message: 'Missing required fields: clientId, bureau, score'
-      });
-    }
     
     const result = await creditScoreService.recordScore(
       clientId,
