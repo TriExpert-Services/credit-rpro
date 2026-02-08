@@ -35,6 +35,7 @@ const ServiceContract = lazy(() => import('./pages/ServiceContract'));
 const FeeDisclosure = lazy(() => import('./pages/FeeDisclosure'));
 const LegalOnboarding = lazy(() => import('./pages/LegalOnboarding'));
 const AdminCompliance = lazy(() => import('./pages/AdminCompliance'));
+const BureauReports = lazy(() => import('./pages/BureauReports'));
 
 // Auth0 Configuration
 const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -120,6 +121,7 @@ function AppRoutes() {
             <Route path="documents" element={<Documents />} />
             <Route path="profile" element={<Profile />} />
             <Route path="credit-report-analysis" element={<CreditReportAnalysis />} />
+            <Route path="bureau-reports" element={<BureauReports />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="onboarding" element={<ClientOnboarding />} />
             <Route path="payment-history" element={<PaymentHistory />} />

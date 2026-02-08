@@ -55,6 +55,9 @@ const complianceRoutes = require('./routes/compliance');
 // Monitoring routes (health checks, APM, audit logs)
 const monitoringRoutes = require('./routes/monitoring');
 
+// Bureau integration routes (automated credit report pulling)
+const bureauIntegrationRoutes = require('./routes/bureauIntegration');
+
 const app = express();
 
 // Initialize Sentry — MUST be before any other middleware
@@ -189,6 +192,9 @@ app.use('/api/plaid', plaidRoutes);
 // Compliance routes (CROA, FCRA, GLBA)
 app.use('/api/compliance', auditMiddleware('compliance'), complianceRoutes);
 
+// Bureau integration routes (automated credit report pulling)
+app.use('/api/bureau', auditMiddleware('bureau'), bureauIntegrationRoutes);
+
 // Monitoring routes (probes, health, metrics, audit logs)
 app.use('/api/monitoring', monitoringRoutes);
 
@@ -265,5 +271,11 @@ const gracefulShutdown = (signal) => {
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Start the auto-pull scheduler (non-blocking)
+if (process.env.NODE_ENV !== 'test') {
+  const reportScheduler = require('./utils/reportScheduler');
+  reportScheduler.start();
+}
 
 module.exports = app;

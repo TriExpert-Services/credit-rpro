@@ -31,6 +31,7 @@ export default function Layout() {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Análisis IA', href: '/credit-report-analysis', icon: BarChart3 },
+    { name: 'Reportes Bureau', href: '/bureau-reports', icon: Building2 },
     { name: 'Credit Items', href: '/credit-items', icon: AlertCircle },
     { name: 'AI Dispute Letters', href: '/ai-disputes', icon: Zap },
     { name: 'Disputes', href: '/disputes', icon: FileText },

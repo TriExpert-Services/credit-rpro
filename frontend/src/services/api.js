@@ -208,6 +208,61 @@ export const creditScoreService = {
 };
 
 // ============================================
+// Bureau Integration Services
+// ============================================
+
+/**
+ * Servicios de integración con bureaus de crédito
+ * @namespace bureauService
+ */
+export const bureauIntegrationService = {
+  /** Estado de conexión de los 3 bureaus (admin) */
+  getStatus: () => api.get('/bureau/status'),
+
+  /** Importar reporte de un bureau para un cliente (admin/staff) */
+  pullReport: (clientId, bureau) => api.post(`/bureau/pull/${clientId}/${bureau}`),
+
+  /** Importar reportes de los 3 bureaus simultáneamente */
+  pullAllBureaus: (clientId) => api.post(`/bureau/pull-all/${clientId}`),
+
+  /** Importar reporte propio (cliente) */
+  pullOwnReport: (bureau) => api.post(`/bureau/pull-own/${bureau}`),
+
+  /** Obtener snapshots más recientes por bureau */
+  getSnapshots: (clientId) => api.get(`/bureau/snapshots/${clientId}`),
+
+  /** Obtener historial de snapshots de un bureau */
+  getSnapshotHistory: (clientId, bureau, limit = 10) =>
+    api.get(`/bureau/snapshots/${clientId}/${bureau}?limit=${limit}`),
+
+  /** Obtener detalle completo de un snapshot */
+  getSnapshotDetail: (snapshotId) => api.get(`/bureau/snapshot/${snapshotId}`),
+
+  /** Obtener historial de cambios detectados */
+  getChanges: (clientId, params = {}) => api.get(`/bureau/changes/${clientId}`, { params }),
+
+  /** Obtener timeline de cambios para visualización */
+  getTimeline: (clientId, months = 12) =>
+    api.get(`/bureau/changes/${clientId}/timeline?months=${months}`),
+
+  /** Comparación cross-bureau */
+  getComparison: (clientId) => api.get(`/bureau/compare/${clientId}`),
+
+  /** Historial de pulls */
+  getPullHistory: (clientId, limit = 20) =>
+    api.get(`/bureau/pull-history/${clientId}?limit=${limit}`),
+
+  /** Obtener configuración de auto-pull */
+  getAutoPullConfig: (clientId) => api.get(`/bureau/auto-pull/${clientId}`),
+
+  /** Actualizar configuración de auto-pull */
+  updateAutoPullConfig: (clientId, config) => api.put(`/bureau/auto-pull/${clientId}`, config),
+
+  /** Actualizar conexión de bureau (admin) */
+  updateConnection: (bureau, data) => api.put(`/bureau/connections/${bureau}`, data),
+};
+
+// ============================================
 // Credit Item Services
 // ============================================
 
