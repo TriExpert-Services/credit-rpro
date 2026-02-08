@@ -58,6 +58,9 @@ const monitoringRoutes = require('./routes/monitoring');
 // Bureau integration routes (automated credit report pulling)
 const bureauIntegrationRoutes = require('./routes/bureauIntegration');
 
+// Company settings routes
+const companySettingsRoutes = require('./routes/companySettings');
+
 const app = express();
 
 // Initialize Sentry — MUST be before any other middleware
@@ -194,6 +197,9 @@ app.use('/api/compliance', auditMiddleware('compliance'), complianceRoutes);
 
 // Bureau integration routes (automated credit report pulling)
 app.use('/api/bureau', auditMiddleware('bureau'), bureauIntegrationRoutes);
+
+// Company profile routes
+app.use('/api/company', auditMiddleware('company'), companySettingsRoutes);
 
 // Monitoring routes (probes, health, metrics, audit logs)
 app.use('/api/monitoring', monitoringRoutes);

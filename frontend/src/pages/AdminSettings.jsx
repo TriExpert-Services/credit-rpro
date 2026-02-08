@@ -9,7 +9,7 @@ import api from '../services/api';
 import {
   Settings, Key, Mail, Bell, Shield, Database, Cloud, Save,
   Eye, EyeOff, RefreshCw, CheckCircle, AlertCircle, Loader2,
-  Server, CreditCard, Zap, Lock, Unlock, TestTube, Send
+  Server, CreditCard, Zap, Lock, Unlock, TestTube, Send, Building2, Globe
 } from 'lucide-react';
 
 const settingCategories = {
@@ -18,6 +18,12 @@ const settingCategories = {
     icon: Key,
     description: 'Claves de API para servicios externos',
     color: 'from-purple-500 to-indigo-600'
+  },
+  bureau_apis: {
+    title: 'Bureau APIs',
+    icon: Building2,
+    description: 'Credenciales de Experian, Equifax, TransUnion',
+    color: 'from-teal-500 to-cyan-600'
   },
   email: {
     title: 'Email / SMTP',
@@ -55,6 +61,24 @@ const defaultSettings = [
   // API Keys
   { key: 'OPENAI_API_KEY', category: 'api_keys', label: 'OpenAI API Key', type: 'api_key', sensitive: true, description: 'Clave para GPT-4 y análisis de IA' },
   { key: 'OPENAI_MODEL', category: 'api_keys', label: 'Modelo OpenAI', type: 'string', sensitive: false, description: 'gpt-4-turbo, gpt-4, gpt-3.5-turbo', defaultValue: 'gpt-4-turbo' },
+  
+  // Bureau APIs - Experian
+  { key: 'EXPERIAN_CLIENT_ID', category: 'bureau_apis', label: 'Experian Client ID', type: 'string', sensitive: false, description: 'Client ID de Experian Connect API' },
+  { key: 'EXPERIAN_CLIENT_SECRET', category: 'bureau_apis', label: 'Experian Client Secret', type: 'api_key', sensitive: true, description: 'Client Secret de Experian' },
+  { key: 'EXPERIAN_SUBSCRIBER_CODE', category: 'bureau_apis', label: 'Experian Subscriber Code', type: 'string', sensitive: false, description: 'Código de suscriptor Experian' },
+  { key: 'EXPERIAN_API_URL', category: 'bureau_apis', label: 'Experian API URL', type: 'string', sensitive: false, description: 'URL del API (sandbox o producción)', defaultValue: 'https://sandbox-us-api.experian.com' },
+  
+  // Bureau APIs - Equifax
+  { key: 'EQUIFAX_CLIENT_ID', category: 'bureau_apis', label: 'Equifax Client ID', type: 'string', sensitive: false, description: 'Client ID de Equifax API' },
+  { key: 'EQUIFAX_CLIENT_SECRET', category: 'bureau_apis', label: 'Equifax Client Secret', type: 'api_key', sensitive: true, description: 'Client Secret de Equifax' },
+  { key: 'EQUIFAX_MEMBER_NUMBER', category: 'bureau_apis', label: 'Equifax Member Number', type: 'string', sensitive: false, description: 'Número de miembro Equifax' },
+  { key: 'EQUIFAX_API_URL', category: 'bureau_apis', label: 'Equifax API URL', type: 'string', sensitive: false, description: 'URL del API (sandbox o producción)', defaultValue: 'https://api.sandbox.equifax.com' },
+  
+  // Bureau APIs - TransUnion
+  { key: 'TRANSUNION_CLIENT_ID', category: 'bureau_apis', label: 'TransUnion Client ID', type: 'string', sensitive: false, description: 'Client ID de TransUnion API' },
+  { key: 'TRANSUNION_CLIENT_SECRET', category: 'bureau_apis', label: 'TransUnion Client Secret', type: 'api_key', sensitive: true, description: 'Client Secret de TransUnion' },
+  { key: 'TRANSUNION_SUBSCRIBER_CODE', category: 'bureau_apis', label: 'TransUnion Subscriber Code', type: 'string', sensitive: false, description: 'Código de suscriptor TransUnion' },
+  { key: 'TRANSUNION_API_URL', category: 'bureau_apis', label: 'TransUnion API URL', type: 'string', sensitive: false, description: 'URL del API (sandbox o producción)', defaultValue: 'https://api.sandbox.transunion.com' },
   
   // Auth0
   { key: 'AUTH0_DOMAIN', category: 'auth', label: 'Auth0 Domain', type: 'string', sensitive: false, description: 'tu-tenant.us.auth0.com' },
@@ -96,6 +120,7 @@ export default function AdminSettings() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [testingEmail, setTestingEmail] = useState(false);
+  const [testingBureau, setTestingBureau] = useState({});
 
   useEffect(() => {
     loadSettings();
@@ -186,6 +211,27 @@ export default function AdminSettings() {
       setError(`Error: ${err.response?.data?.message || err.message}`);
     } finally {
       setTestingEmail(false);
+      setTimeout(() => setSuccess(''), 5000);
+    }
+  };
+
+  const testBureauConnection = async (bureau) => {
+    setTestingBureau(prev => ({ ...prev, [bureau]: true }));
+    setError('');
+    
+    try {
+      const response = await api.get('/bureau/status');
+      const status = response.data?.[bureau] || response.data?.data?.[bureau];
+      
+      if (status?.configured || status?.mode === 'live') {
+        setSuccess(`${bureau.charAt(0).toUpperCase() + bureau.slice(1)}: Conexión verificada (modo ${status.mode || 'live'})`);
+      } else {
+        setSuccess(`${bureau.charAt(0).toUpperCase() + bureau.slice(1)}: Modo sandbox activo - configure las credenciales para modo producción`);
+      }
+    } catch (err) {
+      setError(`Error verificando ${bureau}: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setTestingBureau(prev => ({ ...prev, [bureau]: false }));
       setTimeout(() => setSuccess(''), 5000);
     }
   };
@@ -409,6 +455,37 @@ export default function AdminSettings() {
                   <p className="text-sm text-slate-400 mt-2">
                     Se enviará un email de prueba a {settings['ADMIN_NOTIFICATION_EMAIL'] || user?.email || 'tu email'}
                   </p>
+                </div>
+              )}
+
+              {/* Bureau API Actions */}
+              {activeCategory === 'bureau_apis' && (
+                <div className="mt-6 pt-6 border-t border-slate-700/50">
+                  <h3 className="font-semibold text-white mb-4">Verificar Conexiones</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {['experian', 'equifax', 'transunion'].map(bureau => (
+                      <button
+                        key={bureau}
+                        onClick={() => testBureauConnection(bureau)}
+                        disabled={testingBureau[bureau]}
+                        className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
+                      >
+                        {testingBureau[bureau] ? (
+                          <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                          <Globe size={18} />
+                        )}
+                        {bureau.charAt(0).toUpperCase() + bureau.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-4 p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl">
+                    <p className="text-sm text-teal-300">
+                      <strong>Modo Sandbox:</strong> Si no se configuran credenciales, el sistema genera datos 
+                      simulados automáticamente para pruebas. Configure las credenciales reales para conectarse 
+                      a los bureaus de crédito en producción.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

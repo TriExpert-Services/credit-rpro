@@ -39,6 +39,16 @@ export default function Layout() {
     { name: 'Profile', href: '/profile', icon: User },
   ];
 
+  // Admin-only navigation items
+  const adminNavigation = [
+    { name: 'Configuración', href: '/admin/settings', icon: Settings },
+    { name: 'Empresa', href: '/admin/company', icon: Building2 },
+  ];
+
+  const allNavigation = isAdmin 
+    ? [...navigation, ...adminNavigation] 
+    : navigation;
+
   const isActive = (path) => location.pathname === path;
 
   const getInitials = () => {
@@ -73,7 +83,7 @@ export default function Layout() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-2">
-              {navigation.map((item) => {
+              {allNavigation.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 return (
@@ -235,7 +245,7 @@ export default function Layout() {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-white/20 glass animate-fade-in">
             <nav className="px-4 py-4 space-y-2">
-              {navigation.map((item) => {
+              {allNavigation.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 return (

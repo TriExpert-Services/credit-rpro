@@ -500,6 +500,22 @@ export const userService = {
 };
 
 // ============================================
+// Company Settings Service (Admin)
+// ============================================
+
+/**
+ * Servicios de datos de empresa (admin)
+ * @namespace companyService
+ */
+export const companyService = {
+  /** Obtiene el perfil de la empresa */
+  getProfile: () => api.get('/company'),
+
+  /** Actualiza el perfil de la empresa (admin only) */
+  updateProfile: (data) => api.put('/company', data),
+};
+
+// ============================================
 // Utility Functions
 // ============================================
 

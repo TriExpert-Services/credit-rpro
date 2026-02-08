@@ -36,6 +36,7 @@ const FeeDisclosure = lazy(() => import('./pages/FeeDisclosure'));
 const LegalOnboarding = lazy(() => import('./pages/LegalOnboarding'));
 const AdminCompliance = lazy(() => import('./pages/AdminCompliance'));
 const BureauReports = lazy(() => import('./pages/BureauReports'));
+const CompanySettings = lazy(() => import('./pages/CompanySettings'));
 
 // Auth0 Configuration
 const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -130,6 +131,7 @@ function AppRoutes() {
             <Route path="admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
             <Route path="admin/payments" element={<AdminRoute><AdminPayments /></AdminRoute>} />
             <Route path="admin/compliance" element={<AdminRoute><AdminCompliance /></AdminRoute>} />
+            <Route path="admin/company" element={<AdminRoute><CompanySettings /></AdminRoute>} />
           </Route>
 
           {/* Public pages - accessible without layout */}

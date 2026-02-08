@@ -4,7 +4,7 @@ import { dashboardService } from '../services/api';
 import { 
   TrendingUp, TrendingDown, AlertCircle, FileText, CheckCircle, Zap, ArrowRight, 
   Target, Shield, Clock, Calendar, ChevronRight, Award, BarChart3, PieChart,
-  Bell, Sparkles, RefreshCw, Eye, Activity, CreditCard, AlertTriangle, CheckCircle2
+  Bell, Sparkles, RefreshCw, Eye, Activity, CreditCard, AlertTriangle, CheckCircle2, Building2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
@@ -222,6 +222,13 @@ export default function ClientDashboard() {
             <Sparkles size={18} />
             Analyze Report
           </Link>
+          <Link 
+            to="/bureau-reports"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/25"
+          >
+            <Building2 size={18} />
+            Bureau Reports
+          </Link>
         </div>
       </div>
 
@@ -267,13 +274,22 @@ export default function ClientDashboard() {
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 text-center border border-white/10">
                 <CreditCard size={48} className="mx-auto mb-4 text-indigo-300" />
                 <p className="text-indigo-200 mb-4">No credit scores registered yet</p>
-                <Link 
-                  to="/credit-report-analysis"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all text-sm"
-                >
-                  <Sparkles size={16} />
-                  Upload Credit Report
-                </Link>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link 
+                    to="/credit-report-analysis"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all text-sm"
+                  >
+                    <Sparkles size={16} />
+                    Upload Credit Report
+                  </Link>
+                  <Link 
+                    to="/bureau-reports"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500/30 to-cyan-500/30 border border-teal-500/40 rounded-lg hover:from-teal-500/40 hover:to-cyan-500/40 transition-all text-sm text-teal-200"
+                  >
+                    <Building2 size={16} />
+                    Pull from Bureaus
+                  </Link>
+                </div>
               </div>
             )}
 
